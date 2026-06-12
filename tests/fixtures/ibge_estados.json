@@ -1,0 +1,32 @@
+[
+ {
+  "id": 12,
+  "sigla": "AC",
+  "nome": "Acre",
+  "regiao": {
+   "id": 1,
+   "sigla": "N",
+   "nome": "Norte"
+  }
+ },
+ {
+  "id": 27,
+  "sigla": "AL",
+  "nome": "Alagoas",
+  "regiao": {
+   "id": 2,
+   "sigla": "NE",
+   "nome": "Nordeste"
+  }
+ },
+ {
+  "id": 16,
+  "sigla": "AP",
+  "nome": "Amapá",
+  "regiao": {
+   "id": 1,
+   "sigla": "N",
+   "nome": "Norte"
+  }
+ }
+]

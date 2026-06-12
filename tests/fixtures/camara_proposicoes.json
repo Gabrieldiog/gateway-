@@ -1,0 +1,48 @@
+{
+ "dados": [
+  {
+   "id": 2481874,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2481874",
+   "siglaTipo": "PL",
+   "codTipo": 139,
+   "numero": 1,
+   "ano": 2025,
+   "ementa": "Dispõe sobre a criação de oito varas federais no Estado de Santa Catarina, a transformação de cargos de juiz federal substituto na Justiça Federal da 4ª Região e a criação de cargos de juízes federais e dá outras providências.",
+   "dataApresentacao": "2025-01-02T17:58"
+  },
+  {
+   "id": 2481875,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2481875",
+   "siglaTipo": "PL",
+   "codTipo": 139,
+   "numero": 2,
+   "ano": 2025,
+   "ementa": "Dispõe sobre a reestruturação de cargos da magistratura no quadro permanente da Justiça Federal da 1ª Região e sobre a criação da 2ª Turma Recursal dos Juizados Especiais Federais da Seção Judiciária do Piauí.",
+   "dataApresentacao": "2025-01-02T18:10"
+  },
+  {
+   "id": 2482075,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2482075",
+   "siglaTipo": "PL",
+   "codTipo": 139,
+   "numero": 5,
+   "ano": 2025,
+   "ementa": "Proíbe a utilização de recursos públicos para shows e apresentações artísticas que promovam ou façam apologia ao crime organizado, e altera a Lei Complementar nº 195, de 8 de julho de 2022 (Lei Paulo Gustavo), e a Lei nº 8.313, de 23 de dezembro de 1991 (Lei Rouanet), para incluir vedações quanto à captação de recursos para esse fim.",
+   "dataApresentacao": "2025-02-02T13:01"
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&itens=3"
+  },
+  {
+   "rel": "next",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&pagina=2&itens=3"
+  },
+  {
+   "rel": "first",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL&ano=2025&pagina=1&itens=3"
+  }
+ ]
+}

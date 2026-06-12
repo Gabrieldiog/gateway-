@@ -1,0 +1,57 @@
+{
+ "dados": [
+  {
+   "id": "2630579-2",
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/votacoes/2630579-2",
+   "data": "2026-06-10",
+   "dataHoraRegistro": "2026-06-10T17:48:42",
+   "siglaOrgao": "PLP10821",
+   "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/539844",
+   "uriEvento": "https://dadosabertos.camara.leg.br/api/v2/eventos/82394",
+   "proposicaoObjeto": "REQ 13/2026 PLP10821",
+   "uriProposicaoObjeto": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2630579",
+   "descricao": "Aprovado o Requerimento, com alteração para incluir a realização de Seminário no Estado do Rio de Janeiro, a pedido da Deputada Soraya Santos.",
+   "aprovacao": 1
+  },
+  {
+   "id": "2630757-2",
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/votacoes/2630757-2",
+   "data": "2026-06-10",
+   "dataHoraRegistro": "2026-06-10T17:45:58",
+   "siglaOrgao": "PLP10821",
+   "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/539844",
+   "uriEvento": "https://dadosabertos.camara.leg.br/api/v2/eventos/82394",
+   "proposicaoObjeto": "REQ 15/2026 PLP10821",
+   "uriProposicaoObjeto": "https://dadosabertos.camara.leg.br/api/v2/proposicoes/2630757",
+   "descricao": "Aprovado o Requerimento.",
+   "aprovacao": 1
+  },
+  {
+   "id": "2596503-25",
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/votacoes/2596503-25",
+   "data": "2026-06-10",
+   "dataHoraRegistro": "2026-06-10T16:10:40",
+   "siglaOrgao": "CCOM",
+   "uriOrgao": "https://dadosabertos.camara.leg.br/api/v2/orgaos/539385",
+   "uriEvento": "https://dadosabertos.camara.leg.br/api/v2/eventos/82373",
+   "proposicaoObjeto": null,
+   "uriProposicaoObjeto": null,
+   "descricao": "Submetido à votação, foi aprovado o Parecer.",
+   "aprovacao": 1
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/votacoes?itens=3"
+  },
+  {
+   "rel": "next",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/votacoes?pagina=2&itens=3"
+  },
+  {
+   "rel": "first",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/votacoes?pagina=1&itens=3"
+  }
+ ]
+}

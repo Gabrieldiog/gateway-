@@ -1,0 +1,51 @@
+{
+ "dados": [
+  {
+   "id": 221328,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/221328",
+   "nome": "Adilson Barroso",
+   "siglaPartido": "PL",
+   "uriPartido": "https://dadosabertos.camara.leg.br/api/v2/partidos/37906",
+   "siglaUf": "SP",
+   "idLegislatura": 57,
+   "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/221328.jpg",
+   "email": "dep.adilsonbarroso@camara.leg.br"
+  },
+  {
+   "id": 204528,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/204528",
+   "nome": "Adriana Ventura",
+   "siglaPartido": "NOVO",
+   "uriPartido": "https://dadosabertos.camara.leg.br/api/v2/partidos/37901",
+   "siglaUf": "SP",
+   "idLegislatura": 57,
+   "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/204528.jpg",
+   "email": "dep.adrianaventura@camara.leg.br"
+  },
+  {
+   "id": 204501,
+   "uri": "https://dadosabertos.camara.leg.br/api/v2/deputados/204501",
+   "nome": "Alencar Santana",
+   "siglaPartido": "PT",
+   "uriPartido": "https://dadosabertos.camara.leg.br/api/v2/partidos/36844",
+   "siglaUf": "SP",
+   "idLegislatura": 57,
+   "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/204501.jpg",
+   "email": "dep.alencarsantana@camara.leg.br"
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/deputados?siglaUf=SP&itens=3&ordem=ASC&ordenarPor=nome"
+  },
+  {
+   "rel": "next",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/deputados?siglaUf=SP&ordem=ASC&ordenarPor=nome&pagina=2&itens=3"
+  },
+  {
+   "rel": "first",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/deputados?siglaUf=SP&ordem=ASC&ordenarPor=nome&pagina=1&itens=3"
+  }
+ ]
+}

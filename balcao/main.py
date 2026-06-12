@@ -1,13 +1,19 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIASGIMiddleware
 
 from balcao import connectors  # noqa: F401  o import registra as fontes
+from balcao.cache import CacheRespostas
 from balcao.config import get_settings
 from balcao.connectors.base import connector_classes
 from balcao.exceptions import BalcaoError
 from balcao.http import cria_client
+from balcao.logs import configura_logging, loga
+from balcao.ratelimit import cria_limiter
 from balcao.routers import meta, sources
 
 
@@ -16,6 +22,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     client = cria_client(settings)
     app.state.client = client
+    app.state.cache = CacheRespostas(ttl=settings.cache_ttl)
     app.state.connectors = {
         name: cls(client) for name, cls in connector_classes().items()
     }
@@ -24,6 +31,9 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
+    settings = get_settings()
+    logger = configura_logging(settings.debug)
+
     app = FastAPI(
         title="Balcão",
         version="0.1.0",
@@ -33,9 +43,31 @@ def create_app() -> FastAPI:
         ),
         lifespan=lifespan,
     )
+
+    # a variante ASGI e a unica que aceita exception handler async
+    app.state.limiter = cria_limiter(settings.rate_limit)
+    app.add_middleware(SlowAPIASGIMiddleware)
+
     # meta primeiro: /v1/fontes e rota exata e nao pode cair na generica /v1/{fonte}
     app.include_router(meta.router)
     app.include_router(sources.router)
+
+    @app.middleware("http")
+    async def loga_requisicoes(request: Request, call_next):
+        inicio = time.perf_counter()
+        response = await call_next(request)
+        ms = round((time.perf_counter() - inicio) * 1000, 1)
+        dados = {
+            "metodo": request.method,
+            "caminho": request.url.path,
+            "status": response.status_code,
+            "ms": ms,
+        }
+        cache = getattr(request.state, "cache", None)
+        if cache:
+            dados["cache"] = cache
+        loga(logger, "request", **dados)
+        return response
 
     @app.exception_handler(BalcaoError)
     async def trata_erro_balcao(request: Request, exc: BalcaoError) -> JSONResponse:
@@ -43,6 +75,13 @@ def create_app() -> FastAPI:
         if exc.detalhes:
             corpo["detalhes"] = exc.detalhes
         return JSONResponse(status_code=exc.status_code, content=corpo)
+
+    @app.exception_handler(RateLimitExceeded)
+    async def trata_rate_limit(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+        return JSONResponse(
+            status_code=429,
+            content={"erro": "muitas requisicoes, tente de novo em instantes"},
+        )
 
     return app
 

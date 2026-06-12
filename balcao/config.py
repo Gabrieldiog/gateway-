@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     debug: bool = False
     http_timeout: float = 15.0
     cache_ttl: int = 600
+    rate_limit: str = "100/minute"
 
 
 @lru_cache

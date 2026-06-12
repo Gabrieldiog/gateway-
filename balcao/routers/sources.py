@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 
+from balcao.cache import CacheRespostas
 from balcao.connectors.base import NormalizedResponse
 from balcao.exceptions import FonteNaoEncontrada
 
@@ -14,4 +15,16 @@ async def consulta_fonte(fonte: str, recurso: str, request: Request) -> Normaliz
     conector = conectores.get(fonte)
     if conector is None:
         raise FonteNaoEncontrada(fonte, sorted(conectores))
-    return await conector.fetch(recurso, **dict(request.query_params))
+    params = dict(request.query_params)
+
+    cache: CacheRespostas = request.app.state.cache
+    chave = cache.chave(fonte, recurso, params)
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada.model_copy(update={"meta": {**guardada.meta, "cache": "hit"}})
+
+    request.state.cache = "miss"
+    resposta = await conector.fetch(recurso, **params)
+    cache.guarda(chave, resposta)
+    return resposta
