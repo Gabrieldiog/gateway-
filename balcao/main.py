@@ -14,7 +14,8 @@ from balcao.exceptions import BalcaoError
 from balcao.http import cria_client
 from balcao.logs import configura_logging, loga
 from balcao.ratelimit import cria_limiter
-from balcao.routers import meta, sources
+from balcao.resilience import CircuitBreaker
+from balcao.routers import meta, sources, unified
 
 
 @asynccontextmanager
@@ -22,9 +23,16 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     client = cria_client(settings)
     app.state.client = client
-    app.state.cache = CacheRespostas(ttl=settings.cache_ttl)
+    app.state.cache = CacheRespostas(
+        ttl=settings.cache_ttl, stale_ttl=settings.cache_stale_ttl
+    )
     app.state.connectors = {
-        name: cls(client) for name, cls in connector_classes().items()
+        name: cls(
+            client,
+            retry_tentativas=settings.retry_tentativas,
+            breaker=CircuitBreaker(settings.breaker_falhas, settings.breaker_cooldown),
+        )
+        for name, cls in connector_classes().items()
     }
     yield
     await client.aclose()
@@ -48,8 +56,10 @@ def create_app() -> FastAPI:
     app.state.limiter = cria_limiter(settings.rate_limit)
     app.add_middleware(SlowAPIASGIMiddleware)
 
-    # meta primeiro: /v1/fontes e rota exata e nao pode cair na generica /v1/{fonte}
+    # rotas exatas (/v1/fontes, /v1/buscar, /v1/gastos) antes da generica
+    # /v1/{fonte}/{recurso}, senao "buscar" viraria nome de fonte
     app.include_router(meta.router)
+    app.include_router(unified.router)
     app.include_router(sources.router)
 
     @app.middleware("http")

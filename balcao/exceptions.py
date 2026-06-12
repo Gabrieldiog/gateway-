@@ -45,14 +45,25 @@ class ErroUpstream(BalcaoError):
 
     status_code = 502
 
-    def __init__(self, fonte: str, upstream_status: int | None = None):
+    def __init__(
+        self,
+        fonte: str,
+        upstream_status: int | None = None,
+        circuito_aberto: bool = False,
+    ):
+        detalhes: dict = {"fonte": fonte}
         if upstream_status == 404:
             # nao encontrado na fonte e um 404 nosso, nao falha de gateway
             self.status_code = 404
             mensagem = f"nao encontrado na fonte {fonte!r}"
+        elif circuito_aberto:
+            mensagem = (
+                f"a fonte {fonte!r} esta suspensa por instabilidade, "
+                "tente de novo em instantes"
+            )
+            detalhes["circuito"] = "aberto"
         else:
             mensagem = f"a fonte {fonte!r} esta indisponivel ou respondeu com erro"
-        detalhes = {"fonte": fonte}
         if upstream_status:
             detalhes["status_upstream"] = upstream_status
         super().__init__(mensagem, detalhes)

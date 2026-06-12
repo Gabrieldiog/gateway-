@@ -10,7 +10,11 @@ class Settings(BaseSettings):
     debug: bool = False
     http_timeout: float = 15.0
     cache_ttl: int = 600
+    cache_stale_ttl: int = 86400
     rate_limit: str = "100/minute"
+    retry_tentativas: int = 3
+    breaker_falhas: int = 5
+    breaker_cooldown: float = 30.0
 
 
 @lru_cache

@@ -17,6 +17,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 # prefixo de URL -> fixture; os mais especificos vem primeiro
 ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528/despesas", "camara_despesas"),
+    ("https://dadosabertos.camara.leg.br/api/v2/deputados/221328/despesas", "camara_despesas"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528", "camara_deputado_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/999999999", None),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados", "camara_deputados"),
@@ -24,6 +25,7 @@ ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
     ("https://servicodados.ibge.gov.br/api/v1/localidades/estados/SP/municipios", "ibge_municipios_sp"),
+    ("https://servicodados.ibge.gov.br/api/v1/localidades/municipios", "ibge_municipios_sp"),
     ("https://servicodados.ibge.gov.br/api/v1/localidades/estados", "ibge_estados"),
     ("https://legis.senado.leg.br/dadosabertos/senador/lista/atual", "senado_lista"),
 ]
