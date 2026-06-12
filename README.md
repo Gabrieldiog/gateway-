@@ -26,7 +26,7 @@ Câmara dos Deputados · Senado Federal · Banco Central (SGS) · IBGE · Brasil
 
 ## Status
 
-- [ ] Fase 0 — Spike (conector Câmara provando o fluxo httpx → normalização → resposta)
+- [x] Fase 0 — Spike (conector Câmara provando o fluxo httpx → normalização → resposta)
 - [ ] Fase 1 — Gateway core (FastAPI + conectores + cache + rate-limit + Swagger)
 - [ ] Fase 2 — Resiliência + busca unificada
 - [ ] Fase 3 — Fontes com chave (Transparência, PNCP)
