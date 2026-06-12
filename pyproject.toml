@@ -1,0 +1,13 @@
+[project]
+name = "balcao"
+version = "0.1.0"
+description = "API gateway que unifica APIs públicas brasileiras — normalização, cache, resiliência e busca unificada"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "httpx>=0.28",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "uvicorn[standard]>=0.34",
+]
