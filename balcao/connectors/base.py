@@ -4,6 +4,8 @@ from typing import Any, ClassVar
 import httpx
 from pydantic import BaseModel, Field
 
+from balcao.exceptions import ErroUpstream
+
 
 class NormalizedResponse(BaseModel):
     """Envelope que toda fonte devolve, independente de como ela responde."""
@@ -22,6 +24,7 @@ class BaseConnector(ABC):
     base_url: ClassVar[str]
     requires_key: ClassVar[bool] = False
     description: ClassVar[str] = ""
+    resources: ClassVar[dict[str, str]] = {}
 
     def __init__(self, client: httpx.AsyncClient):
         self.client = client
@@ -31,9 +34,14 @@ class BaseConnector(ABC):
         """Traduz params genericos pra chamada da fonte e devolve dados normalizados."""
 
     async def get_json(self, path: str, params: dict | None = None) -> Any:
-        resp = await self.client.get(f"{self.base_url}{path}", params=params)
-        resp.raise_for_status()
-        return resp.json()
+        try:
+            resp = await self.client.get(f"{self.base_url}{path}", params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPStatusError as exc:
+            raise ErroUpstream(self.name, exc.response.status_code) from exc
+        except httpx.HTTPError as exc:
+            raise ErroUpstream(self.name) from exc
 
 
 _registry: dict[str, type[BaseConnector]] = {}

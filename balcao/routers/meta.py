@@ -14,6 +14,7 @@ class FonteOut(BaseModel):
     base_url: str
     precisa_chave: bool
     descricao: str
+    recursos: dict[str, str]
 
 
 class FontesOut(BaseModel):
@@ -35,6 +36,7 @@ async def fontes(request: Request) -> FontesOut:
             base_url=c.base_url,
             precisa_chave=c.requires_key,
             descricao=c.description,
+            recursos=c.resources,
         )
         for c in conectores
     ]
