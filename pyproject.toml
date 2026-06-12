@@ -5,9 +5,21 @@ description = "API gateway que unifica APIs públicas brasileiras — normaliza�
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "cachetools>=5.5",
     "fastapi>=0.115",
     "httpx>=0.28",
     "pydantic>=2.10",
     "pydantic-settings>=2.7",
+    "slowapi>=0.1.9",
     "uvicorn[standard]>=0.34",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.25",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

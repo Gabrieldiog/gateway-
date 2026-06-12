@@ -48,3 +48,37 @@ class Proposicao(BaseModel):
     numero: int | None = None
     ano: int | None = None
     ementa: str
+
+
+class Senador(BaseModel):
+    fonte: str = "senado"
+    id: int
+    nome: str
+    partido: str | None = None
+    uf: str | None = None
+    email: str | None = None
+    foto: str | None = None
+
+
+class PontoSerie(BaseModel):
+    fonte: str = "bacen"
+    serie: int
+    nome: str | None = None
+    data: date | None = None
+    valor: Decimal
+
+
+class Estado(BaseModel):
+    fonte: str = "ibge"
+    id: int
+    sigla: str
+    nome: str
+    regiao: str | None = None
+
+
+class Municipio(BaseModel):
+    fonte: str = "ibge"
+    id: int
+    nome: str
+    uf: str | None = None
+    regiao: str | None = None

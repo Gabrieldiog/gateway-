@@ -19,13 +19,24 @@ def so_digitos(valor: str | None) -> str | None:
 
 
 def para_data(valor: str | None) -> date | None:
-    # as fontes mandam "2025-01-15", "2025-01-15T00:00:00" ou nada
+    # as fontes mandam "2025-01-15", "2025-01-15T00:00:00", "15/01/2025" ou nada
     if not valor:
         return None
+    texto = str(valor).strip()
     try:
-        return datetime.fromisoformat(str(valor)).date()
+        return datetime.fromisoformat(texto).date()
+    except ValueError:
+        pass
+    try:
+        return datetime.strptime(texto, "%d/%m/%Y").date()
     except ValueError:
         return None
+
+
+def data_br(valor: str | None) -> str | None:
+    # algumas fontes (BACEN) so aceitam dd/mm/aaaa na consulta
+    d = para_data(valor)
+    return d.strftime("%d/%m/%Y") if d else None
 
 
 def limpa_texto(valor: str | None) -> str:

@@ -1,0 +1,67 @@
+{
+ "dados": [
+  {
+   "ano": 2025,
+   "mes": 1,
+   "tipoDespesa": "MANUTENÇÃO DE ESCRITÓRIO DE APOIO À ATIVIDADE PARLAMENTAR.",
+   "codDocumento": 7860955,
+   "tipoDocumento": "Nota Fiscal Eletrônica",
+   "codTipoDocumento": 4,
+   "dataDocumento": "2024-12-22",
+   "numDocumento": "8214",
+   "valorDocumento": 275.0,
+   "urlDocumento": "https://www.camara.leg.br/cota-parlamentar/documentos/publ/3195/2025/7860955.pdf",
+   "nomeFornecedor": "Adobe Systems Software Ireland Ltd",
+   "cnpjCpfFornecedor": "00000000000010",
+   "valorLiquido": 275.0,
+   "valorGlosa": 0.0,
+   "numRessarcimento": "",
+   "codLote": 2032503,
+   "parcela": 0
+  },
+  {
+   "ano": 2025,
+   "mes": 2,
+   "tipoDespesa": "MANUTENÇÃO DE ESCRITÓRIO DE APOIO À ATIVIDADE PARLAMENTAR.",
+   "codDocumento": 7885642,
+   "tipoDocumento": "Nota Fiscal Eletrônica",
+   "codTipoDocumento": 4,
+   "dataDocumento": "2025-02-22",
+   "numDocumento": "9051",
+   "valorDocumento": 275.0,
+   "urlDocumento": "https://www.camara.leg.br/cota-parlamentar/documentos/publ/3195/2025/7885642.pdf",
+   "nomeFornecedor": "Adobe Systems Software Ireland Ltd",
+   "cnpjCpfFornecedor": "00000000000010",
+   "valorLiquido": 275.0,
+   "valorGlosa": 0.0,
+   "numRessarcimento": "",
+   "codLote": 2041188,
+   "parcela": 0
+  },
+  {
+   "ano": 2025,
+   "mes": 3,
+   "tipoDespesa": "  COMBUSTÍVEIS E LUBRIFICANTES.  ",
+   "codDocumento": 7901234,
+   "tipoDocumento": "Nota Fiscal",
+   "codTipoDocumento": 0,
+   "dataDocumento": null,
+   "numDocumento": "112233",
+   "valorDocumento": 180.5,
+   "urlDocumento": "",
+   "nomeFornecedor": "POSTO ALVORADA LTDA",
+   "cnpjCpfFornecedor": "12.345.678/0001-90",
+   "valorLiquido": 180.5,
+   "valorGlosa": 0.0,
+   "numRessarcimento": "",
+   "codLote": 2045110,
+   "parcela": 0
+  }
+ ],
+ "links": [
+  {
+   "rel": "self",
+   "href": "https://dadosabertos.camara.leg.br/api/v2/deputados/204528/despesas?ano=2025&itens=3"
+  }
+ ]
+}
