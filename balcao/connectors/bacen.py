@@ -26,6 +26,7 @@ class BacenConnector(BaseConnector):
     name = "bacen"
     base_url = "https://api.bcb.gov.br/dados/serie"
     description = "Banco Central (SGS): Selic, CDI, IPCA, IGP-M, câmbio e mais de 190 séries econômicas"
+    suporta_busca = True
     resources = {
         "serie/{codigo}": f"pontos de uma série do SGS; filtros: {', '.join(sorted(PARAMS_SERIE))}",
         **{
@@ -43,6 +44,17 @@ class BacenConnector(BaseConnector):
                 return await self._serie(recurso, int(codigo), params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    async def buscar(self, q: str) -> list[dict]:
+        termo = q.casefold()
+        achados = []
+        for apelido, codigo in SERIES.items():
+            if termo in apelido:
+                resposta = await self._serie(apelido, codigo, {"ultimos": "5"}, nome=apelido)
+                achados += [
+                    {"tipo_resultado": "serie_economica", **p} for p in resposta.dados
+                ]
+        return achados
 
     async def _serie(
         self, recurso: str, codigo: int, params: dict, nome: str | None = None

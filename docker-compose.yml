@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CACHE_TTL: ${CACHE_TTL:-600}
+      CACHE_STALE_TTL: ${CACHE_STALE_TTL:-86400}
+      RATE_LIMIT: ${RATE_LIMIT:-100/minute}
+      HTTP_TIMEOUT: ${HTTP_TIMEOUT:-15}
+    restart: unless-stopped

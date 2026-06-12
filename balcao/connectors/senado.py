@@ -15,6 +15,7 @@ class SenadoConnector(BaseConnector):
     name = "senado"
     base_url = "https://legis.senado.leg.br/dadosabertos"
     description = "Senado Federal: senadores em exercício"
+    suporta_busca = True
     resources = {
         "senadores": f"senadores em exercício; filtros: {', '.join(sorted(PARAMS_SENADORES))}",
         "senadores/{id}": "detalhe de um senador",
@@ -29,6 +30,15 @@ class SenadoConnector(BaseConnector):
                 return await self._senador_detalhe(recurso, int(sen_id))
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    async def buscar(self, q: str) -> list[dict]:
+        resposta = await self._senadores("senadores", {})
+        termo = q.casefold()
+        return [
+            {"tipo_resultado": "senador", **s}
+            for s in resposta.dados
+            if termo in s["nome"].casefold()
+        ]
 
     async def _senadores(self, recurso: str, params: dict) -> NormalizedResponse:
         invalidos = sorted(set(params) - PARAMS_SENADORES)
