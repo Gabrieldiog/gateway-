@@ -4,21 +4,34 @@ fonte, o que protege os limites de quem esta atras do gateway."""
 import time
 
 from cachetools import TTLCache
-
-from balcao.connectors.base import NormalizedResponse
+from pydantic import BaseModel
 
 
 class CacheRespostas:
-    def __init__(self, ttl: int, max_itens: int = 2048, timer=time.monotonic):
+    """Dois niveis: o fresco respeita o TTL normal; o velho dura bem mais
+    e so e servido quando a fonte esta fora do ar (stale e melhor que erro)."""
+
+    def __init__(
+        self,
+        ttl: int,
+        max_itens: int = 2048,
+        stale_ttl: int = 86400,
+        timer=time.monotonic,
+    ):
         self._itens: TTLCache = TTLCache(maxsize=max_itens, ttl=ttl, timer=timer)
+        self._velhos: TTLCache = TTLCache(maxsize=max_itens, ttl=stale_ttl, timer=timer)
 
     @staticmethod
     def chave(fonte: str, recurso: str, params: dict) -> str:
         query = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
         return f"{fonte}:{recurso}?{query}"
 
-    def pega(self, chave: str) -> NormalizedResponse | None:
+    def pega(self, chave: str) -> BaseModel | None:
         return self._itens.get(chave)
 
-    def guarda(self, chave: str, resposta: NormalizedResponse) -> None:
+    def pega_velho(self, chave: str) -> BaseModel | None:
+        return self._velhos.get(chave)
+
+    def guarda(self, chave: str, resposta: BaseModel) -> None:
         self._itens[chave] = resposta
+        self._velhos[chave] = resposta

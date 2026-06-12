@@ -1,3 +1,4 @@
+import asyncio
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -52,6 +53,7 @@ class CamaraConnector(BaseConnector):
     name = "camara"
     base_url = "https://dadosabertos.camara.leg.br/api/v2"
     description = "Câmara dos Deputados: deputados, despesas (CEAP), votações e proposições"
+    suporta_busca = True
     resources = {
         "deputados": f"lista deputados; filtros: {', '.join(PARAMS_DEPUTADOS)}",
         "deputados/{id}": "detalhe de um deputado",
@@ -75,6 +77,23 @@ class CamaraConnector(BaseConnector):
                 return await self._proposicoes(recurso, params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    async def buscar(self, q: str) -> list[dict]:
+        # deputados por nome e proposicoes por palavra-chave, em paralelo
+        deputados, proposicoes = await asyncio.gather(
+            self.get_json("/deputados", params={"nome": q, "itens": 10}),
+            self.get_json("/proposicoes", params={"keywords": q, "itens": 10}),
+        )
+        achados = []
+        for b in deputados.get("dados", []):
+            achados.append(
+                {"tipo_resultado": "deputado", **self._norm_deputado(b).model_dump(mode="json")}
+            )
+        for b in proposicoes.get("dados", []):
+            achados.append(
+                {"tipo_resultado": "proposicao", **self._norm_proposicao(b).model_dump(mode="json")}
+            )
+        return achados
 
     async def _deputados(self, recurso: str, params: dict) -> NormalizedResponse:
         query = self._traduz(recurso, params, PARAMS_DEPUTADOS)

@@ -13,6 +13,7 @@ class IbgeConnector(BaseConnector):
     name = "ibge"
     base_url = "https://servicodados.ibge.gov.br/api/v1"
     description = "IBGE: estados e municípios do Brasil"
+    suporta_busca = True
     resources = {
         "estados": "as 27 unidades da federação; sem filtros",
         "municipios": "municípios do país; filtros: uf (sem ele vêm os 5570)",
@@ -27,6 +28,22 @@ class IbgeConnector(BaseConnector):
                 return await self._municipios(recurso, params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    async def buscar(self, q: str) -> list[dict]:
+        termo = q.casefold()
+        estados = await self._estados("estados", {})
+        achados = [
+            {"tipo_resultado": "estado", **e}
+            for e in estados.dados
+            if termo in e["nome"].casefold() or termo == e["sigla"].casefold()
+        ]
+        municipios = await self._municipios("municipios", {})
+        achados += [
+            {"tipo_resultado": "municipio", **m}
+            for m in municipios.dados
+            if termo in m["nome"].casefold()
+        ][:10]
+        return achados
 
     async def _estados(self, recurso: str, params: dict) -> NormalizedResponse:
         if params:
