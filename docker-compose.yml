@@ -9,3 +9,14 @@ services:
       RATE_LIMIT: ${RATE_LIMIT:-100/minute}
       HTTP_TIMEOUT: ${HTTP_TIMEOUT:-15}
     restart: unless-stopped
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      # nome do serviço na rede do compose; o Next consulta a API server-to-server
+      BALCAO_API_URL: http://api:8000
+    depends_on:
+      - api
+    restart: unless-stopped

@@ -82,12 +82,17 @@ Toda resposta de fonte vem no mesmo envelope:
 }
 ```
 
+## Dashboard
+
+Tem uma view web em [`web/`](web/) — um "diário de dados públicos" que consome o gateway: Câmara, Senado, Banco Central e IBGE numa interface única, com **busca unificada** que dispara as fontes em paralelo e mostra a latência e o estado do cache de cada uma ao vivo. Next.js 16 + Tailwind + Recharts, falando com a API por um proxy server-to-server (sem CORS). Detalhes no [README da view](web/README.md).
+
 ## Rodando
 
-Com Docker:
+Com Docker (sobe a API e a dashboard juntas):
 
 ```bash
 docker compose up --build
+# API em http://localhost:8000 · dashboard em http://localhost:3000
 ```
 
 Sem Docker:
@@ -134,5 +139,6 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] Fase 0 — Spike (fluxo httpx → normalização → resposta)
 - [x] Fase 1 — Gateway core: conectores, cache, rate limit, logging, Swagger, testes offline
 - [x] Fase 2 — Resiliência (retry + breaker + stale) e busca unificada
+- [x] Dashboard web (`web/`) — diário de dados públicos sobre o gateway
 - [ ] Fase 3 — Fontes com chave (Portal da Transparência, PNCP)
-- [ ] Fase 4 — Dashboard web e MCP server (consultas por agentes de IA)
+- [ ] Fase 4 — MCP server (consultas por agentes de IA)

@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #f4efe6;
+  --color-surface: #fbf8f1;
+  --color-surface-2: #efe8da;
+  --color-ink: #1c1a17;
+  --color-muted: #8a8377;
+  --color-line: #d9d0c1;
+  --color-accent: #9e2b25;
+  --color-accent-2: #1f5c5a;
+  --color-ocre: #d69a4c;
+  --color-ok: #3e7c5a;
+  --color-erro: #a33529;
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-public-sans);
+  --font-editorial: var(--font-newsreader);
+  --font-mono: var(--font-spline-mono);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  /* textura levíssima de papel: pontos creme num grid esparso */
+  background-image:
+    radial-gradient(rgba(28, 26, 23, 0.022) 1px, transparent 1px),
+    radial-gradient(rgba(28, 26, 23, 0.018) 1px, transparent 1px);
+  background-size: 22px 22px, 22px 22px;
+  background-position: 0 0, 11px 11px;
+}
+
+/* régua editorial dupla — o motivo que abre cada caderno */
+.regua-dupla {
+  border-top: 2px solid var(--color-ink);
+  position: relative;
+}
+.regua-dupla::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 3px;
+  border-top: 0.5px solid var(--color-ink);
+  opacity: 0.55;
+}
+
+.kicker {
+  font-family: var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+}
+
+.num {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@keyframes compor {
+  from { opacity: 0; transform: translateY(0.6rem); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
+}
+.compor { animation: compor 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes desenha-regua {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.desenha-regua { transform-origin: left; animation: desenha-regua 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@keyframes carimbo-shake {
+  0%, 100% { transform: rotate(-3deg) translateX(0); }
+  25% { transform: rotate(-3deg) translateX(-3px); }
+  75% { transform: rotate(-3deg) translateX(3px); }
+}
+.carimbo-shake { animation: carimbo-shake 0.32s ease-in-out 1; }
+
+@keyframes pulsar {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+.pulsar { animation: pulsar 1.4s ease-in-out infinite; }
+
+@keyframes imprime {
+  from { opacity: 0; transform: translateY(8px); background-color: var(--color-surface); }
+  to { opacity: 1; transform: translateY(0); background-color: transparent; }
+}
+.imprime { animation: imprime 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .compor, .desenha-regua, .carimbo-shake, .pulsar, .imprime {
+    animation: none !important;
+  }
+  .compor { opacity: 1; transform: none; clip-path: none; }
+  .imprime { opacity: 1; transform: none; }
+}
+
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border: 3px solid var(--color-bg);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+::selection { background: var(--color-accent); color: var(--color-surface); }
