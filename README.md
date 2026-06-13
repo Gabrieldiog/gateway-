@@ -86,6 +86,15 @@ Toda resposta de fonte vem no mesmo envelope:
 
 Tem uma view web em [`web/`](web/) — um "diário de dados públicos" que consome o gateway: Câmara, Senado, Banco Central e IBGE numa interface única, com **busca unificada** que dispara as fontes em paralelo e mostra a latência e o estado do cache de cada uma ao vivo. Next.js 16 + Tailwind + Recharts, falando com a API por um proxy server-to-server (sem CORS). Detalhes no [README da view](web/README.md).
 
+## MCP — consultas por agentes de IA
+
+O mesmo núcleo é exposto como um servidor [MCP](https://modelcontextprotocol.io) (via FastMCP), pra um agente (Claude, etc.) consultar dados públicos com ferramentas: `buscar`, `deputados`, `gastos`, `senadores`, `serie_economica`, `municipios` e `listar_fontes`. A lógica é a mesma que responde no HTTP — a busca em leque e os conectores vivem em [`balcao/search.py`](balcao/search.py) e são reusados pelas duas portas.
+
+```bash
+pip install -e ".[mcp]"
+python -m balcao.mcp_server      # stdio, pra plugar num cliente MCP
+```
+
 ## Rodando
 
 Com Docker (sobe a API e a dashboard juntas):
@@ -140,5 +149,5 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] Fase 1 — Gateway core: conectores, cache, rate limit, logging, Swagger, testes offline
 - [x] Fase 2 — Resiliência (retry + breaker + stale) e busca unificada
 - [x] Dashboard web (`web/`) — diário de dados públicos sobre o gateway
-- [ ] Fase 3 — Fontes com chave (Portal da Transparência, PNCP)
-- [ ] Fase 4 — MCP server (consultas por agentes de IA)
+- [x] Fase 4 — MCP server (FastMCP): os conectores como ferramentas de IA
+- [ ] Fase 3 — Fontes com chave: Portal da Transparência (token) e PNCP (API instável)
