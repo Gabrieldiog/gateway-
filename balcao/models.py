@@ -82,3 +82,32 @@ class Municipio(BaseModel):
     nome: str
     uf: str | None = None
     regiao: str | None = None
+
+
+class VotoDeputado(BaseModel):
+    fonte: str = "camara"
+    votacao_id: str
+    voto: str  # Sim, Não, Abstenção, Obstrução
+    deputado_id: int
+    deputado: str
+    partido: str | None = None
+    uf: str | None = None
+    data: date | None = None  # quando o voto foi registrado
+
+
+class Estabelecimento(BaseModel):
+    fonte: str = "sus"
+    cnes: int
+    nome: str
+    tipo: str | None = None  # descrição do tipo (HOSPITAL GERAL, POSTO DE SAUDE...)
+    tipo_codigo: int | None = None
+    esfera: str | None = None  # MUNICIPAL, ESTADUAL, FEDERAL, PRIVADA
+    cnpj: str | None = None
+    municipio_id: int | None = None
+    uf: str | None = None
+    bairro: str | None = None
+    endereco: str | None = None
+    telefone: str | None = None
+    email: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None

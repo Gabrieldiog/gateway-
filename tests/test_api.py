@@ -4,12 +4,12 @@ async def test_health(api):
     assert resp.json()["status"] == "ok"
 
 
-async def test_fontes_lista_os_quatro_conectores(api):
+async def test_fontes_lista_os_conectores(api):
     resp = await api.get("/v1/fontes")
     assert resp.status_code == 200
     corpo = resp.json()
     nomes = {f["nome"] for f in corpo["fontes"]}
-    assert nomes == {"camara", "senado", "bacen", "ibge"}
+    assert nomes == {"camara", "senado", "bacen", "ibge", "sus"}
     camara = next(f for f in corpo["fontes"] if f["nome"] == "camara")
     assert "deputados" in camara["recursos"]
 

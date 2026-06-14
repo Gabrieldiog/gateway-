@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import Deputado, Despesa, Proposicao, Votacao
+from balcao.models import Deputado, Despesa, Proposicao, Votacao, VotoDeputado
 from balcao.normalize import limpa_texto, normaliza_uf, para_data, so_digitos
 
 # de um lado os nomes genericos do Balcao, do outro os que a Camara espera
@@ -59,6 +59,8 @@ class CamaraConnector(BaseConnector):
         "deputados/{id}": "detalhe de um deputado",
         "deputados/{id}/despesas": f"despesas CEAP; filtros: {', '.join(PARAMS_DESPESAS)}",
         "votacoes": f"votações; filtros: {', '.join(PARAMS_VOTACOES)}",
+        "votacoes/{id}": "detalhe de uma votação (placar, data, órgão)",
+        "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
     }
 
@@ -73,6 +75,10 @@ class CamaraConnector(BaseConnector):
                 return await self._despesas(recurso, int(dep_id), params)
             case ["votacoes"]:
                 return await self._votacoes(recurso, params)
+            case ["votacoes", vid, "votos"]:  # id tem hífen ("2629954-8"), não é só dígito
+                return await self._votos(recurso, vid)
+            case ["votacoes", vid]:
+                return await self._votacao_detalhe(recurso, vid)
             case ["proposicoes"]:
                 return await self._proposicoes(recurso, params)
             case _:
@@ -133,6 +139,40 @@ class CamaraConnector(BaseConnector):
         query = self._traduz(recurso, params, PARAMS_VOTACOES)
         bruto = await self.get_json("/votacoes", params=query)
         return self._envelopa(recurso, bruto, params, self._norm_votacao)
+
+    async def _votacao_detalhe(self, recurso: str, vid: str) -> NormalizedResponse:
+        bruto = await self.get_json(f"/votacoes/{vid}")
+        dado = bruto.get("dados", {})
+        return NormalizedResponse(
+            fonte=self.name,
+            recurso=recurso,
+            dados=[self._norm_votacao(dado).model_dump(mode="json")],
+            total=1,
+        )
+
+    async def _votos(self, recurso: str, vid: str) -> NormalizedResponse:
+        bruto = await self.get_json(f"/votacoes/{vid}/votos")
+        itens, descartados = [], 0
+        placar: dict[str, int] = {}
+        for v in bruto.get("dados", []):
+            try:
+                voto = self._norm_voto(v, vid)
+            except (ValidationError, KeyError):
+                descartados += 1
+                continue
+            itens.append(voto.model_dump(mode="json"))
+            placar[voto.voto] = placar.get(voto.voto, 0) + 1
+        meta: dict[str, Any] = {}
+        if placar:
+            meta["placar"] = placar
+        else:
+            # votação simbólica é aprovada "de viva voz" e não guarda voto por deputado
+            meta["aviso"] = "votação simbólica não registra voto por deputado; só as nominais têm"
+        if descartados:
+            meta["descartados"] = descartados
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
 
     async def _proposicoes(self, recurso: str, params: dict) -> NormalizedResponse:
         query = self._traduz(recurso, params, PARAMS_PROPOSICOES)
@@ -208,6 +248,18 @@ class CamaraConnector(BaseConnector):
             orgao=b.get("siglaOrgao"),
             descricao=limpa_texto(b.get("descricao")),
             aprovada=bool(aprovacao) if aprovacao is not None else None,
+        )
+
+    def _norm_voto(self, b: dict, vid: str) -> VotoDeputado:
+        dep = b.get("deputado_") or {}
+        return VotoDeputado(
+            votacao_id=vid,
+            voto=limpa_texto(b.get("tipoVoto")),
+            deputado_id=dep["id"],
+            deputado=limpa_texto(dep.get("nome")),
+            partido=dep.get("siglaPartido"),
+            uf=normaliza_uf(dep.get("siglaUf")),
+            data=para_data(b.get("dataRegistroVoto")),
         )
 
     def _norm_proposicao(self, b: dict) -> Proposicao:

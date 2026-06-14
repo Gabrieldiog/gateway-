@@ -1,0 +1,17 @@
+{
+ "codigo_cnes": 2077485,
+ "nome_fantasia": "HOSPITAL DAS CLINICAS",
+ "nome_razao_social": "HOSPITAL DAS CLINICAS DA FMUSP",
+ "codigo_tipo_unidade": 5,
+ "descricao_esfera_administrativa": "ESTADUAL",
+ "numero_cnpj": "60448040000139",
+ "codigo_municipio": 355030,
+ "codigo_uf": 35,
+ "bairro_estabelecimento": "CERQUEIRA CESAR",
+ "endereco_estabelecimento": "AV DR ENEAS DE CARVALHO AGUIAR",
+ "numero_estabelecimento": "255",
+ "numero_telefone_estabelecimento": "11 26617000",
+ "endereco_email_estabelecimento": "contato@hc.gov.br",
+ "latitude_estabelecimento_decimo_grau": -23.5577,
+ "longitude_estabelecimento_decimo_grau": -46.6703
+}
