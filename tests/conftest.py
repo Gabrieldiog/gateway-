@@ -42,6 +42,10 @@ def carrega_fixture(nome: str) -> dict | list:
 
 def responde_fake(request: httpx.Request) -> httpx.Response:
     url = str(request.url)
+    # Tesouro/SICONFI: mesmo path /dca, distingue pelo anexo na query
+    if "siconfi/tt/dca" in url:
+        fixture = "tesouro_receitas" if "I-C" in url else "tesouro_despesas"
+        return httpx.Response(200, json=carrega_fixture(fixture))
     for prefixo, nome in ROTAS_FAKE:
         if url.startswith(prefixo):
             if nome is None:

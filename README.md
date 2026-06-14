@@ -128,6 +128,7 @@ Testes (a suite roda **sem internet** — as fixtures gravadas respondem no luga
 | Banco Central (SGS) | Selic, CDI, IPCA, IGP-M, câmbio e qualquer série por código | não |
 | IBGE | estados, municípios | não |
 | Ministério da Saúde (CNES) | estabelecimentos de saúde: hospitais, UBS, prontos-socorros | não |
+| Tesouro Nacional (SICONFI) | receita, arrecadação de impostos e despesa por função dos estados | não |
 | Portal da Transparência | contratos, sanções *(planejado)* | token grátis |
 
 ## As armadilhas de cada fonte (e como o Balcão resolve)
@@ -143,6 +144,7 @@ A parte divertida de unificar dados públicos é descobrir que **cada API tem su
 - **Voto por deputado só existe em votação nominal**: as votações simbólicas (aprovadas "de viva voz") respondem `dados: []`. Em vez de devolver vazio sem explicação, o Balcão põe um `aviso` no `meta`; nas nominais, monta também o `placar` (Sim/Não/Abstenção/Obstrução).
 - **O CNES (SUS) não devolve total nem link de próxima página** e identifica o tipo de unidade só por um código numérico. O Balcão pagina com `limite`/`pagina`, traduz `uf` (sigla → código IBGE) e converte o código do tipo no nome legível (`5` → `HOSPITAL GERAL`).
 - **Registro podre não derruba o lote**: item que falha validação é descartado e contado em `meta.descartados`.
+- **O SICONFI (Tesouro) é lento e cheio de código**: pede o nome exato do anexo (DCA-Anexo I-C pra receita, I-E pra despesa), a coluna certa (`Receitas Brutas Realizadas`, `Despesas Empenhadas`) e o `cod_conta` vem com prefixo de rótulo (`RO1.1.1.0.00.0.0`). O conector resolve tudo isso e devolve só os números que importam: receita, impostos e despesa por função.
 
 ## Stack
 
@@ -155,5 +157,6 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] Fase 2 — Resiliência (retry + breaker + stale) e busca unificada
 - [x] Dashboard web (`web/`) — diário de dados públicos sobre o gateway
 - [x] Fase 4 — MCP server (FastMCP): os conectores como ferramentas de IA
+- [x] Tesouro Nacional (SICONFI): receita, impostos e gastos por função dos estados
 - [x] SUS (CNES) e voto por deputado na Câmara
 - [ ] Fase 3 — Fontes com chave: Portal da Transparência (token) e PNCP (API instável)

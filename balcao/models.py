@@ -111,3 +111,21 @@ class Estabelecimento(BaseModel):
     email: str | None = None
     latitude: float | None = None
     longitude: float | None = None
+
+
+class FinancaEstado(BaseModel):
+    fonte: str = "tesouro"
+    uf: str
+    ano: int
+    populacao: int | None = None
+    receita_total: Decimal
+    receita_impostos: Decimal | None = None  # quanto vem de impostos
+    despesa_total: Decimal
+
+
+class DespesaFuncao(BaseModel):
+    fonte: str = "tesouro"
+    uf: str
+    ano: int
+    funcao: str  # saúde, educação, segurança...
+    valor: Decimal
