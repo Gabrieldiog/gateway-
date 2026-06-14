@@ -15,7 +15,7 @@ export default function CadernoExpediente() {
   return (
     <div>
       <CadernoHeader
-        numero="VI"
+        numero="X"
         kicker="Expediente"
         titulo="As repartições do Balcão"
         resumo="Cada fonte implementa o mesmo contrato: traduz a chamada genérica para a sua API e devolve no schema normalizado. Plugar uma nova é escrever uma classe e registrá-la — esta página se monta a partir do que o gateway de fato expõe em /v1/fontes."
