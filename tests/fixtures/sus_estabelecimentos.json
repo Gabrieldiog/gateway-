@@ -1,0 +1,45 @@
+{
+ "estabelecimentos": [
+  {
+   "codigo_cnes": 2077485,
+   "nome_fantasia": "HOSPITAL DAS CLINICAS",
+   "nome_razao_social": "HOSPITAL DAS CLINICAS DA FMUSP",
+   "codigo_tipo_unidade": 5,
+   "descricao_esfera_administrativa": "ESTADUAL",
+   "numero_cnpj": "60448040000139",
+   "numero_cnpj_entidade": null,
+   "codigo_municipio": 355030,
+   "codigo_uf": 35,
+   "bairro_estabelecimento": "CERQUEIRA CESAR",
+   "endereco_estabelecimento": "AV DR ENEAS DE CARVALHO AGUIAR",
+   "numero_estabelecimento": "255",
+   "numero_telefone_estabelecimento": "11 26617000",
+   "endereco_email_estabelecimento": "Contato@HC.Gov.BR ",
+   "latitude_estabelecimento_decimo_grau": -23.5577,
+   "longitude_estabelecimento_decimo_grau": -46.6703
+  },
+  {
+   "codigo_cnes": 9629963,
+   "nome_fantasia": "  UBS VILA   MEDON ",
+   "nome_razao_social": "IACOMUSSI SAUDE LTDA",
+   "codigo_tipo_unidade": 2,
+   "descricao_esfera_administrativa": "MUNICIPAL",
+   "numero_cnpj": null,
+   "numero_cnpj_entidade": "19550205000179",
+   "codigo_municipio": 350160,
+   "codigo_uf": 35,
+   "bairro_estabelecimento": "VILA MEDON",
+   "endereco_estabelecimento": "RUA NIELS NIELSEN",
+   "numero_estabelecimento": "150",
+   "numero_telefone_estabelecimento": "19 996017101",
+   "endereco_email_estabelecimento": null,
+   "latitude_estabelecimento_decimo_grau": -22.7467,
+   "longitude_estabelecimento_decimo_grau": -47.3345
+  },
+  {
+   "nome_fantasia": "REGISTRO SEM CNES",
+   "codigo_tipo_unidade": 22,
+   "codigo_uf": 35
+  }
+ ]
+}

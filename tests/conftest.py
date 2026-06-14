@@ -21,6 +21,9 @@ ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528", "camara_deputado_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/999999999", None),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados", "camara_deputados"),
+    ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8/votos", "camara_votos"),
+    ("https://dadosabertos.camara.leg.br/api/v2/votacoes/9999999-9/votos", "camara_votos_vazio"),
+    ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8", "camara_votacao_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes", "camara_votacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
@@ -28,6 +31,8 @@ ROTAS_FAKE = [
     ("https://servicodados.ibge.gov.br/api/v1/localidades/municipios", "ibge_municipios_sp"),
     ("https://servicodados.ibge.gov.br/api/v1/localidades/estados", "ibge_estados"),
     ("https://legis.senado.leg.br/dadosabertos/senador/lista/atual", "senado_lista"),
+    ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos/2077485", "sus_estabelecimento"),
+    ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos", "sus_estabelecimentos"),
 ]
 
 

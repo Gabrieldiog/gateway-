@@ -1,0 +1,55 @@
+{
+ "dados": [
+  {
+   "tipoVoto": "Sim",
+   "dataRegistroVoto": "2026-06-03T12:08:22",
+   "deputado_": {
+    "id": 141391,
+    "nome": "Arnaldo Jardim",
+    "siglaPartido": "CIDADANIA",
+    "siglaUf": "SP",
+    "urlFoto": "https://www.camara.leg.br/internet/deputado/bandep/141391.jpg",
+    "email": "dep.arnaldojardim@camara.leg.br"
+   }
+  },
+  {
+   "tipoVoto": "Não",
+   "dataRegistroVoto": "2026-06-03T12:09:00",
+   "deputado_": {
+    "id": 204560,
+    "nome": "  Maria   Silva  ",
+    "siglaPartido": "PT",
+    "siglaUf": "rj"
+   }
+  },
+  {
+   "tipoVoto": "Abstenção",
+   "dataRegistroVoto": "2026-06-03T12:09:10",
+   "deputado_": {
+    "id": 74858,
+    "nome": "João Souza",
+    "siglaPartido": "PP",
+    "siglaUf": "MG"
+   }
+  },
+  {
+   "tipoVoto": "Obstrução",
+   "dataRegistroVoto": "2026-06-03T12:09:20",
+   "deputado_": {
+    "id": 160508,
+    "nome": "Ana Costa",
+    "siglaPartido": "PSOL",
+    "siglaUf": "BA"
+   }
+  },
+  {
+   "tipoVoto": "Sim",
+   "dataRegistroVoto": "2026-06-03T12:09:30",
+   "deputado_": {
+    "nome": "Registro Sem Id",
+    "siglaPartido": "X",
+    "siglaUf": "SP"
+   }
+  }
+ ]
+}

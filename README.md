@@ -44,10 +44,12 @@ cliente HTTP ──► FastAPI (rotas + OpenAPI)
 ```bash
 curl "localhost:8000/v1/camara/deputados?uf=SP&partido=PL"
 curl "localhost:8000/v1/camara/deputados/204528/despesas?ano=2025"
+curl "localhost:8000/v1/camara/votacoes/2629954-8/votos"   # voto de cada deputado + placar no meta
 curl "localhost:8000/v1/bacen/selic?ultimos=10"        # atalhos: selic, cdi, ipca, igpm, dolar, euro
 curl "localhost:8000/v1/bacen/serie/433?data_inicio=2026-01-01&data_fim=2026-03-31"
 curl "localhost:8000/v1/ibge/municipios?uf=SP"
 curl "localhost:8000/v1/senado/senadores?uf=SP&partido=PSD"
+curl "localhost:8000/v1/sus/estabelecimentos?uf=SP&tipo=5"  # hospitais gerais; tipo é o código CNES
 ```
 
 **Busca unificada** — fan-out paralelo, erro numa fonte não derruba as outras:
@@ -121,10 +123,11 @@ Testes (a suite roda **sem internet** — as fixtures gravadas respondem no luga
 
 | Fonte | Recursos | Chave? |
 |---|---|---|
-| Câmara dos Deputados | deputados, despesas (CEAP), votações, proposições | não |
+| Câmara dos Deputados | deputados, despesas (CEAP), votações, voto por deputado, proposições | não |
 | Senado Federal | senadores em exercício, detalhe | não |
 | Banco Central (SGS) | Selic, CDI, IPCA, IGP-M, câmbio e qualquer série por código | não |
 | IBGE | estados, municípios | não |
+| Ministério da Saúde (CNES) | estabelecimentos de saúde: hospitais, UBS, prontos-socorros | não |
 | Tesouro Nacional (SICONFI) | receita, arrecadação de impostos e despesa por função dos estados | não |
 | Portal da Transparência | contratos, sanções *(planejado)* | token grátis |
 
@@ -138,6 +141,8 @@ A parte divertida de unificar dados públicos é descobrir que **cada API tem su
 - **O Senado responde XML por padrão** (JSON só com header `Accept`) e enterra a lista em `ListaParlamentarEmExercicio.Parlamentares.Parlamentar`. E a lista atual **não aceita filtro**: o recorte por UF/partido é feito no gateway.
 - **A Câmara devolve CNPJ ora com máscara, ora sem**, datas ora com hora, ora sem, ora nulas, e textos com espaços duplicados e ponto final solto. Os normalizadores aplainam tudo.
 - **O endpoint de despesas da Câmara já degradou em produção** durante o desenvolvimento — respondendo 200 com lista vazia pra qualquer deputado. É exatamente o cenário do fallback stale: se a fonte cai e existe resposta recente em cache, o Balcão serve o dado velho com aviso em `meta` em vez de quebrar.
+- **Voto por deputado só existe em votação nominal**: as votações simbólicas (aprovadas "de viva voz") respondem `dados: []`. Em vez de devolver vazio sem explicação, o Balcão põe um `aviso` no `meta`; nas nominais, monta também o `placar` (Sim/Não/Abstenção/Obstrução).
+- **O CNES (SUS) não devolve total nem link de próxima página** e identifica o tipo de unidade só por um código numérico. O Balcão pagina com `limite`/`pagina`, traduz `uf` (sigla → código IBGE) e converte o código do tipo no nome legível (`5` → `HOSPITAL GERAL`).
 - **Registro podre não derruba o lote**: item que falha validação é descartado e contado em `meta.descartados`.
 - **O SICONFI (Tesouro) é lento e cheio de código**: pede o nome exato do anexo (DCA-Anexo I-C pra receita, I-E pra despesa), a coluna certa (`Receitas Brutas Realizadas`, `Despesas Empenhadas`) e o `cod_conta` vem com prefixo de rótulo (`RO1.1.1.0.00.0.0`). O conector resolve tudo isso e devolve só os números que importam: receita, impostos e despesa por função.
 
@@ -153,4 +158,5 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] Dashboard web (`web/`) — diário de dados públicos sobre o gateway
 - [x] Fase 4 — MCP server (FastMCP): os conectores como ferramentas de IA
 - [x] Tesouro Nacional (SICONFI): receita, impostos e gastos por função dos estados
+- [x] SUS (CNES) e voto por deputado na Câmara
 - [ ] Fase 3 — Fontes com chave: Portal da Transparência (token) e PNCP (API instável)
