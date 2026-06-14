@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BuscaUnificada } from "@/components/BuscaUnificada";
+import { Escala } from "@/components/Escala";
 import { CADERNOS } from "@/lib/cadernos";
 import { AzulejoGlifo } from "@/components/Azulejo";
 
@@ -14,15 +15,17 @@ export default function Capa() {
         <span className="italic text-accent">dados públicos</span> brasileiros.
       </h1>
       <p className="mt-5 max-w-[64ch] font-editorial text-lg leading-relaxed text-ink/80">
-        Uma porta só para a Câmara, o Senado, o Banco Central e o IBGE — tudo
-        normalizado no mesmo formato, com cache e resiliência. Faça uma busca: as
-        fontes respondem em paralelo e <em>imprimem</em> aqui conforme chegam, com
-        a latência de cada uma e o estado do cache à mostra.
+        Uma porta só para a Câmara, o Senado, o Banco Central, o IBGE, o SUS e o
+        Tesouro — tudo normalizado no mesmo formato, com cache e resiliência.
+        Faça uma busca: as fontes respondem em paralelo e <em>imprimem</em> aqui
+        conforme chegam, com a latência de cada uma e o estado do cache à mostra.
       </p>
 
       <div className="regua-dupla desenha-regua my-7" />
 
       <BuscaUnificada />
+
+      <Escala />
 
       <section className="mt-14">
         <p className="kicker mb-4 flex items-center gap-2">
