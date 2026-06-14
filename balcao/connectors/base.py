@@ -47,14 +47,18 @@ class BaseConnector(ABC):
         seta suporta_busca = True e implementa."""
         raise NotImplementedError
 
-    async def get_json(self, path: str, params: dict | None = None) -> Any:
+    async def get_json(
+        self, path: str, params: dict | None = None, timeout: float | None = None
+    ) -> Any:
         if self.breaker.aberto:
             raise ErroUpstream(self.name, circuito_aberto=True)
+        # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar
+        extra = {} if timeout is None else {"timeout": timeout}
         resp: httpx.Response | None = None
         try:
             async for tentativa in com_retry(self.retry_tentativas):
                 with tentativa:
-                    resp = await self.client.get(f"{self.base_url}{path}", params=params)
+                    resp = await self.client.get(f"{self.base_url}{path}", params=params, **extra)
                     resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
             # 4xx e pedido errado, nao fonte doente; so 5xx conta pro breaker

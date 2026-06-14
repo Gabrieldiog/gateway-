@@ -1,0 +1,59 @@
+{
+ "items": [
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "Despesas Exceto Intraorçamentárias",
+   "valor": 272678508647.89,
+   "populacao": 44000000
+  },
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "12 - Educação",
+   "valor": 40000000000.0,
+   "populacao": 44000000
+  },
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "10 - Saúde",
+   "valor": 30000000000.0,
+   "populacao": 44000000
+  },
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "06 - Segurança Pública",
+   "valor": 20000000000.0,
+   "populacao": 44000000
+  },
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "10.301 - Atenção Básica",
+   "valor": 15000000000.0,
+   "populacao": 44000000
+  },
+  {
+   "exercicio": 2021,
+   "uf": "SP",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Liquidadas",
+   "conta": "10 - Saúde",
+   "valor": 28000000000.0,
+   "populacao": 44000000
+  }
+ ],
+ "hasMore": false
+}
