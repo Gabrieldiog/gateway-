@@ -1,0 +1,16 @@
+{
+ "success": true,
+ "result": {
+  "resource_id": "res-1",
+  "total": 1500,
+  "fields": [
+   {"id": "_id", "type": "int"},
+   {"id": "agente", "type": "text"},
+   {"id": "valor", "type": "numeric"}
+  ],
+  "records": [
+   {"_id": 1, "agente": "CEMIG", "valor": "123.45"},
+   {"_id": 2, "agente": "COPEL", "valor": "99.90"}
+  ]
+ }
+}

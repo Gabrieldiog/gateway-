@@ -48,6 +48,11 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     if "siconfi/tt/dca" in url:
         fixture = "tesouro_receitas" if "I-C" in url else "tesouro_despesas"
         return httpx.Response(200, json=carrega_fixture(fixture))
+    # CKAN (ANEEL, MME, ANTT): mesma API em hosts diferentes, distingue pela ação
+    if "/api/3/action/package_search" in url:
+        return httpx.Response(200, json=carrega_fixture("ckan_datasets"))
+    if "/api/3/action/datastore_search" in url:
+        return httpx.Response(200, json=carrega_fixture("ckan_datastore"))
     for prefixo, nome in ROTAS_FAKE:
         if url.startswith(prefixo):
             if nome is None:

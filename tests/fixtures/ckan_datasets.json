@@ -1,0 +1,29 @@
+{
+ "success": true,
+ "result": {
+  "count": 69,
+  "results": [
+   {
+    "id": "abc-123",
+    "name": "componentes-tarifarias",
+    "title": "Componentes Tarifárias",
+    "organization": {"title": "ANEEL", "name": "aneel"},
+    "metadata_modified": "2026-01-10T12:00:00",
+    "resources": [
+     {"id": "res-1", "name": "Componentes 2024", "format": "csv", "datastore_active": true},
+     {"id": "res-2", "name": "Dicionário de dados", "format": "pdf", "datastore_active": false}
+    ]
+   },
+   {
+    "id": "def-456",
+    "name": "geracao-distribuida",
+    "title": "Geração Distribuída",
+    "organization": {"title": "ANEEL", "name": "aneel"},
+    "metadata_modified": "2026-02-01T09:00:00",
+    "resources": [
+     {"id": "res-3", "name": "GD por município", "format": "csv", "datastore_active": true}
+    ]
+   }
+  ]
+ }
+}
