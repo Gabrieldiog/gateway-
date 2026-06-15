@@ -151,3 +151,22 @@ class DatasetCKAN(BaseModel):
     atualizado: str | None = None
     # recursos do conjunto; datastore=True significa que dá pra puxar linha via /dados/{id}
     recursos: list[dict] = []
+
+
+class SerieIpea(BaseModel):
+    fonte: str = "ipeadata"
+    codigo: str  # SERCODIGO
+    nome: str
+    unidade: str | None = None
+    periodicidade: str | None = None  # Mensal, Anual...
+    fonte_dados: str | None = None  # quem produz o dado original (IBGE, BCB...)
+    base: str | None = None  # Macroeconômico, Regional, Social
+    ativa: bool = True
+
+
+class PontoIpea(BaseModel):
+    fonte: str = "ipeadata"
+    codigo: str
+    data: date | None = None
+    valor: float | None = None
+    territorio: str | None = None  # quando a série é regional
