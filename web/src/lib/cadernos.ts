@@ -14,8 +14,9 @@ export const CADERNOS: Caderno[] = [
   { num: "VI", nome: "Tesouro", sub: "contas dos estados", href: "/tesouro" },
   { num: "VII", nome: "Saúde", sub: "estabelecimentos do SUS", href: "/saude" },
   { num: "VIII", nome: "Votos", sub: "como cada deputado votou", href: "/votos" },
-  { num: "IX", nome: "Manual", sub: "como chamar a API", href: "/docs" },
-  { num: "X", nome: "Expediente", sub: "as fontes", href: "/fontes" },
+  { num: "IX", nome: "Agro", sub: "produção e rebanho", href: "/agro" },
+  { num: "X", nome: "Manual", sub: "como chamar a API", href: "/docs" },
+  { num: "XI", nome: "Expediente", sub: "as fontes", href: "/fontes" },
 ];
 
 export function cadernoAtivo(path: string, href: string): boolean {

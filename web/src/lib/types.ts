@@ -123,6 +123,17 @@ export interface DespesaFuncao {
   valor: string;
 }
 
+export interface IndicadorAgro {
+  fonte: string;
+  localidade: string;
+  localidade_id: number | null;
+  ano: number;
+  item: string;
+  variavel: string;
+  valor: number | null;
+  unidade: string | null;
+}
+
 export interface ResultadoBusca {
   tipo_resultado: string;
   [campo: string]: unknown;
