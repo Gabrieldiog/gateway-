@@ -129,3 +129,14 @@ class DespesaFuncao(BaseModel):
     ano: int
     funcao: str  # saúde, educação, segurança...
     valor: Decimal
+
+
+class IndicadorAgro(BaseModel):
+    fonte: str = "sidra"
+    localidade: str  # nome do estado ou município
+    localidade_id: int | None = None  # código IBGE
+    ano: int
+    item: str  # soja, milho, Bovino... (cultura ou rebanho)
+    variavel: str  # quantidade produzida, área plantada, efetivo do rebanho...
+    valor: float | None = None  # None quando a fonte não tem o dado (vem "-" ou "..")
+    unidade: str | None = None  # Toneladas, Hectares, Cabeças...

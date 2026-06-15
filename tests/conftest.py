@@ -33,6 +33,8 @@ ROTAS_FAKE = [
     ("https://legis.senado.leg.br/dadosabertos/senador/lista/atual", "senado_lista"),
     ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos/2077485", "sus_estabelecimento"),
     ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos", "sus_estabelecimentos"),
+    ("https://apisidra.ibge.gov.br/values/t/1612", "sidra_producao"),
+    ("https://apisidra.ibge.gov.br/values/t/3939", "sidra_rebanho"),
 ]
 
 
