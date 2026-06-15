@@ -52,6 +52,8 @@ curl "localhost:8000/v1/senado/senadores?uf=SP&partido=PSD"
 curl "localhost:8000/v1/sus/estabelecimentos?uf=SP&tipo=5"  # hospitais gerais; tipo é o código CNES
 curl "localhost:8000/v1/sidra/producao?produto=soja&ano=2023"  # produção de soja por estado
 curl "localhost:8000/v1/sidra/rebanho?animal=bovino&municipio=5107925"  # rebanho num município
+curl "localhost:8000/v1/aneel/datasets?q=tarifa"        # busca conjuntos num portal CKAN
+curl "localhost:8000/v1/aneel/dados/{recurso_id}"       # linhas reais de um recurso (datastore)
 ```
 
 **Busca unificada** — fan-out paralelo, erro numa fonte não derruba as outras:
@@ -132,6 +134,7 @@ Testes (a suite roda **sem internet** — as fixtures gravadas respondem no luga
 | Ministério da Saúde (CNES) | estabelecimentos de saúde: hospitais, UBS, prontos-socorros | não |
 | Tesouro Nacional (SICONFI) | receita, arrecadação de impostos e despesa por função dos estados | não |
 | IBGE SIDRA (agro) | produção agrícola (PAM) e pecuária por estado/município | não |
+| ANEEL · MME · ANTT (CKAN) | datasets e linhas reais (datastore) de energia, mineração e transporte | não |
 | Portal da Transparência | contratos, sanções *(planejado)* | token grátis |
 
 ## As armadilhas de cada fonte (e como o Balcão resolve)
@@ -149,6 +152,7 @@ A parte divertida de unificar dados públicos é descobrir que **cada API tem su
 - **Registro podre não derruba o lote**: item que falha validação é descartado e contado em `meta.descartados`.
 - **O SICONFI (Tesouro) é lento e cheio de código**: pede o nome exato do anexo (DCA-Anexo I-C pra receita, I-E pra despesa), a coluna certa (`Receitas Brutas Realizadas`, `Despesas Empenhadas`) e o `cod_conta` vem com prefixo de rótulo (`RO1.1.1.0.00.0.0`). O conector resolve tudo isso e devolve só os números que importam: receita, impostos e despesa por função.
 - **O SIDRA (IBGE) fala em código**: a resposta é uma lista onde o 1º item é o cabeçalho, as chaves são crípticas (`D1N` = localidade, `D2N` = variável, `D4N` = produto, `V` = valor), e ausência de dado vem como `"-"`, `".."` ou `"X"`. O conector lê o cabeçalho, traduz nomes amigáveis (`produto=soja`, `variavel=quantidade`) pros códigos de tabela/classificação do SIDRA, e devolve registros limpos com o valor já numérico (ou `null`).
+- **Muitos portais do governo rodam CKAN** (ANEEL, MME, ANTT...) com a mesma API. Em vez de um conector por órgão, há um **motor CKAN** (`connectors/ckan.py`): plugar um novo portal é uma subclasse com `name` + `base_url`. `/datasets` busca os conjuntos (com a marca de quais têm `datastore`) e `/dados/{id}` traz as linhas reais via `datastore_search` — porque CKAN é catálogo, e nem todo recurso expõe dado tabular (alguns são só CSV pra download).
 
 ## Stack
 
@@ -164,4 +168,5 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] Tesouro Nacional (SICONFI): receita, impostos e gastos por função dos estados
 - [x] SUS (CNES) e voto por deputado na Câmara
 - [x] IBGE SIDRA: produção agrícola e pecuária (agro) por estado/município
+- [x] Motor CKAN reutilizável: ANEEL, MME e ANTT (energia, mineração, transporte)
 - [ ] Fase 3 — Fontes com chave: Portal da Transparência (token) e PNCP (API instável)

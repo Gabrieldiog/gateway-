@@ -140,3 +140,14 @@ class IndicadorAgro(BaseModel):
     variavel: str  # quantidade produzida, área plantada, efetivo do rebanho...
     valor: float | None = None  # None quando a fonte não tem o dado (vem "-" ou "..")
     unidade: str | None = None  # Toneladas, Hectares, Cabeças...
+
+
+class DatasetCKAN(BaseModel):
+    fonte: str  # aneel, mme, antt... (cada portal CKAN é uma fonte)
+    id: str
+    nome: str  # slug do conjunto
+    titulo: str
+    organizacao: str | None = None
+    atualizado: str | None = None
+    # recursos do conjunto; datastore=True significa que dá pra puxar linha via /dados/{id}
+    recursos: list[dict] = []
