@@ -1,0 +1,23 @@
+{
+ "@odata.context": "http://www.ipeadata.gov.br/api/odata4/$metadata#Metadados",
+ "value": [
+  {
+   "SERCODIGO": "BM12_IPCA2012",
+   "SERNOME": "IPCA - núcleo médias aparadas com suavização",
+   "UNINOME": "(% a.m.)",
+   "PERNOME": "Mensal",
+   "FNTNOME": "Banco Central do Brasil",
+   "BASNOME": "Macroeconômico",
+   "SERSTATUS": "A"
+  },
+  {
+   "SERCODIGO": "PRECOS12_IPCAG12",
+   "SERNOME": "IPCA - geral - índice (descontinuada)",
+   "UNINOME": "(2020=100)",
+   "PERNOME": "Mensal",
+   "FNTNOME": "Instituto Brasileiro de Geografia e Estatística",
+   "BASNOME": "Macroeconômico",
+   "SERSTATUS": "I"
+  }
+ ]
+}

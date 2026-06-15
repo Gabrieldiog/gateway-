@@ -35,6 +35,8 @@ ROTAS_FAKE = [
     ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos", "sus_estabelecimentos"),
     ("https://apisidra.ibge.gov.br/values/t/1612", "sidra_producao"),
     ("https://apisidra.ibge.gov.br/values/t/3939", "sidra_rebanho"),
+    ("http://www.ipeadata.gov.br/api/odata4/Metadados", "ipeadata_series"),
+    ("http://www.ipeadata.gov.br/api/odata4/ValoresSerie", "ipeadata_valores"),
 ]
 
 
