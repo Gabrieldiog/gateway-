@@ -1,0 +1,20 @@
+[
+ {
+  "NC": "Nível Territorial (Código)", "NN": "Nível Territorial",
+  "MC": "Unidade de Medida (Código)", "MN": "Unidade de Medida", "V": "Valor",
+  "D1C": "Unidade da Federação (Código)", "D1N": "Unidade da Federação",
+  "D2C": "Variável (Código)", "D2N": "Variável",
+  "D3C": "Ano (Código)", "D3N": "Ano",
+  "D4C": "Tipo de rebanho (Código)", "D4N": "Tipo de rebanho"
+ },
+ {
+  "NC": "3", "NN": "Unidade da Federação", "MC": "654", "MN": "Cabeças", "V": "34200000",
+  "D1C": "51", "D1N": "Mato Grosso", "D2C": "105", "D2N": "Efetivo dos rebanhos",
+  "D3C": "2023", "D3N": "2023", "D4C": "2670", "D4N": "Bovino"
+ },
+ {
+  "NC": "3", "NN": "Unidade da Federação", "MC": "654", "MN": "Cabeças", "V": "24300000",
+  "D1C": "52", "D1N": "Goiás", "D2C": "105", "D2N": "Efetivo dos rebanhos",
+  "D3C": "2023", "D3N": "2023", "D4C": "2670", "D4N": "Bovino"
+ }
+]
