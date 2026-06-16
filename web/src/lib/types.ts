@@ -67,6 +67,73 @@ export interface Municipio {
   regiao: string | null;
 }
 
+export interface Votacao {
+  fonte: string;
+  id: string;
+  data: string | null;
+  orgao: string | null;
+  descricao: string;
+  aprovada: boolean | null;
+}
+
+export interface VotoDeputado {
+  fonte: string;
+  votacao_id: string;
+  voto: string; // Sim, Não, Abstenção, Obstrução
+  deputado_id: number;
+  deputado: string;
+  partido: string | null;
+  uf: string | null;
+  data: string | null;
+}
+
+export interface Estabelecimento {
+  fonte: string;
+  cnes: number;
+  nome: string;
+  tipo: string | null;
+  tipo_codigo: number | null;
+  esfera: string | null;
+  cnpj: string | null;
+  municipio_id: number | null;
+  uf: string | null;
+  bairro: string | null;
+  endereco: string | null;
+  telefone: string | null;
+  email: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+export interface FinancaEstado {
+  fonte: string;
+  uf: string;
+  ano: number;
+  populacao: number | null;
+  receita_total: string;
+  receita_impostos: string | null;
+  despesa_total: string;
+}
+
+export interface DespesaFuncao {
+  fonte: string;
+  uf: string;
+  ano: number;
+  funcao: string;
+  valor: string;
+}
+
+export interface IndicadorAgro {
+  fonte: string;
+  localidade: string;
+  localidade_id: number | null;
+  ano: number;
+  item: string;
+  variavel: string;
+  valor: number | null;
+  unidade: string | null;
+}
+
 export interface ResultadoBusca {
   tipo_resultado: string;
   [campo: string]: unknown;

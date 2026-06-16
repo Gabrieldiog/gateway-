@@ -48,7 +48,7 @@ export default function CadernoDocs() {
   return (
     <div>
       <CadernoHeader
-        numero="VI"
+        numero="X"
         kicker="Manual"
         titulo="Como chamar o Balcão"
         resumo="Uma URL para cada coisa, todas no mesmo formato. Você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."
@@ -116,7 +116,7 @@ export default function CadernoDocs() {
           <AzulejoGlifo size={14} className="text-accent-2/60" />
           A resposta, sempre no mesmo envelope
         </p>
-        <pre className="num overflow-x-auto rounded-md bg-ink/[0.03] p-4 text-[0.8rem] leading-relaxed text-ink/85">
+        <pre className="num overflow-x-auto rounded-md bg-ink/3 p-4 text-[0.8rem] leading-relaxed text-ink/85">
 {`{
   "fonte": "camara",
   "recurso": "deputados",

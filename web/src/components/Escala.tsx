@@ -83,7 +83,7 @@ function Configurador() {
       </div>
 
       {/* o envelope que volta, encolhendo conforme os filtros */}
-      <div className="rounded-md border border-line bg-ink/[0.03] p-4">
+      <div className="rounded-md border border-line bg-ink/3 p-4">
         <div className="kicker mb-2 flex items-center justify-between">
           <span>resposta</span>
           <span className="text-accent-2">
