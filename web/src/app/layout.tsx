@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Public_Sans, Newsreader, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Masthead } from "@/components/Masthead";
 import { Indice } from "@/components/Indice";
 import { IndiceMobile } from "@/components/IndiceMobile";
@@ -39,17 +40,20 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
+      suppressHydrationWarning
       className={`${fraunces.variable} ${publicSans.variable} ${newsreader.variable} ${splineMono.variable}`}
     >
       <body className="min-h-dvh">
-        <Masthead />
-        <div className="mx-auto w-full max-w-310 px-4 md:px-6">
-          <IndiceMobile />
-          <div className="flex">
-            <Indice />
-            <main className="min-w-0 flex-1 py-6 md:py-10 md:pl-8">{children}</main>
+        <ThemeProvider>
+          <Masthead />
+          <div className="mx-auto w-full max-w-310 px-4 md:px-6">
+            <IndiceMobile />
+            <div className="flex">
+              <Indice />
+              <main className="min-w-0 flex-1 py-6 md:py-10 md:pl-8">{children}</main>
+            </div>
           </div>
-        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
