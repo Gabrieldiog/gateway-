@@ -48,7 +48,7 @@ export default function CadernoDocs() {
   return (
     <div>
       <CadernoHeader
-        numero="X"
+        numero="XII"
         kicker="Manual"
         titulo="Como chamar o Balcão"
         resumo="Uma URL para cada coisa, todas no mesmo formato. Você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."

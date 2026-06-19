@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePulso } from "@/lib/pulso";
+import { TemaToggle } from "@/components/TemaToggle";
 import { apiGet, caminho } from "@/lib/api";
 import type { FontesOut } from "@/lib/types";
 
@@ -49,11 +50,14 @@ export function Masthead() {
           </span>
           <span className="h-3 w-px bg-line" />
           <PulsoBadge ms={pulso?.ms ?? null} cache={pulso?.cache ?? null} />
+          <span className="h-3 w-px bg-line" />
+          <TemaToggle />
         </div>
 
         {/* versão compacta no mobile */}
         <div className="ml-auto flex items-center gap-3 text-[0.7rem] lg:hidden">
           <PulsoBadge ms={pulso?.ms ?? null} cache={pulso?.cache ?? null} />
+          <TemaToggle />
         </div>
       </div>
       <div className="regua-dupla mx-auto w-full max-w-310" />

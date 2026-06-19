@@ -10,7 +10,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { PontoSerie } from "@/lib/types";
 import { formataData } from "@/lib/api";
 
 interface Ponto {
@@ -37,11 +36,12 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   );
 }
 
+// aceita qualquer ponto com data + valor (PontoSerie do BACEN ou PontoIpea)
 export function SerieChart({
   dados,
   cor = "var(--color-accent-2)",
 }: {
-  dados: PontoSerie[];
+  dados: { data: string | null; valor: number | string | null }[];
   cor?: string;
 }) {
   const pontos: Ponto[] = dados.map((d) => ({

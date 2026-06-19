@@ -134,6 +134,35 @@ export interface IndicadorAgro {
   unidade: string | null;
 }
 
+export interface SerieIpea {
+  fonte: string;
+  codigo: string;
+  nome: string;
+  unidade: string | null;
+  periodicidade: string | null;
+  fonte_dados: string | null;
+  base: string | null;
+  ativa: boolean;
+}
+
+export interface PontoIpea {
+  fonte: string;
+  codigo: string;
+  data: string | null;
+  valor: number | null;
+  territorio: string | null;
+}
+
+export interface DatasetCKAN {
+  fonte: string;
+  id: string;
+  nome: string;
+  titulo: string;
+  organizacao: string | null;
+  atualizado: string | null;
+  recursos: { id: string; nome: string; formato: string | null; datastore: boolean }[];
+}
+
 export interface ResultadoBusca {
   tipo_resultado: string;
   [campo: string]: unknown;

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* next-themes troca a classe da <html>; .dark vira a variante do Tailwind */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-bg: #f4efe6;
   --color-surface: #fbf8f1;
@@ -23,6 +26,24 @@
   color-scheme: light;
 }
 
+/* edição noturna: papel vira tinta. Sobrescreve os mesmos --color-* — as
+   utilities do Tailwind e os var(--color-*) diretos (gráficos) seguem juntos.
+   Vermelho e verde-petróleo levantados pra ter contraste no fundo escuro. */
+.dark {
+  color-scheme: dark;
+  --color-bg: #15130f;
+  --color-surface: #1e1a15;
+  --color-surface-2: #272219;
+  --color-ink: #ece4d4;
+  --color-muted: #9c9384;
+  --color-line: #38322a;
+  --color-accent: #e06a5f;
+  --color-accent-2: #56b3ab;
+  --color-ocre: #e3ad62;
+  --color-ok: #5fae82;
+  --color-erro: #e0726a;
+}
+
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -38,6 +59,13 @@ body {
     radial-gradient(rgba(28, 26, 23, 0.018) 1px, transparent 1px);
   background-size: 22px 22px, 22px 22px;
   background-position: 0 0, 11px 11px;
+}
+
+/* no escuro a granulação inverte: pontos claros pra dar a mesma textura de papel */
+.dark body {
+  background-image:
+    radial-gradient(rgba(236, 228, 212, 0.035) 1px, transparent 1px),
+    radial-gradient(rgba(236, 228, 212, 0.025) 1px, transparent 1px);
 }
 
 /* régua editorial dupla — o motivo que abre cada caderno */
