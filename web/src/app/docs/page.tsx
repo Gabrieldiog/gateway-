@@ -75,6 +75,20 @@ export default function CadernoDocs() {
 
       <Secao
         numero="02"
+        titulo="Campos sob medida"
+        exemplos={[
+          { nota: "só o nome e o partido de cada deputado", url: "localhost:8000/v1/camara/deputados?uf=SP&campos=nome,partido" },
+          { nota: "id e nome dos municípios, nessa ordem", url: "localhost:8000/v1/ibge/municipios?uf=SP&campos=id,nome" },
+        ]}
+      >
+        O <code className="num text-accent">campos=</code> recorta cada item para
+        os campos que você pediu, na ordem que pediu — você molda a resposta.
+        Vale para qualquer fonte; pedir um campo que não existe responde 400 com
+        a lista dos disponíveis.
+      </Secao>
+
+      <Secao
+        numero="03"
         titulo="Busca unificada"
         exemplos={[
           { nota: "dispara nas fontes escolhidas, em paralelo", url: "localhost:8000/v1/buscar?q=silva&fontes=camara,senado" },
@@ -87,7 +101,7 @@ export default function CadernoDocs() {
       </Secao>
 
       <Secao
-        numero="03"
+        numero="04"
         titulo="Recurso cross-fonte"
         exemplos={[
           { nota: "resolve o parlamentar por id ou nome e agrega o gasto", url: "localhost:8000/v1/gastos?deputado=Adriana&uf=SP&ano=2025" },
@@ -99,7 +113,7 @@ export default function CadernoDocs() {
       </Secao>
 
       <Secao
-        numero="04"
+        numero="05"
         titulo="Descoberta"
         exemplos={[
           { nota: "lista conectores, recursos e filtros de cada um", url: "localhost:8000/v1/fontes" },
@@ -140,6 +154,10 @@ export default function CadernoDocs() {
           <li>
             <code className="num text-accent">meta.descartados</code> — quantos
             registros podres foram filtrados sem derrubar o lote.
+          </li>
+          <li>
+            <code className="num text-accent">meta.projecao</code> — quando você
+            usa <code className="num">campos=</code>, lista os campos que pediu.
           </li>
         </ul>
       </section>

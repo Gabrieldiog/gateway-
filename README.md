@@ -58,6 +58,13 @@ curl "localhost:8000/v1/aneel/datasets?q=tarifa"        # busca conjuntos num po
 curl "localhost:8000/v1/aneel/dados/{recurso_id}"       # linhas reais de um recurso (datastore)
 ```
 
+**Campos sob medida** — `?campos=` recorta cada item pros campos que você pediu, na ordem que pediu. Vale pra qualquer fonte; pedir um campo que não existe responde 400 com a lista dos disponíveis:
+
+```bash
+curl "localhost:8000/v1/camara/deputados?uf=SP&campos=nome,partido"
+curl "localhost:8000/v1/ibge/municipios?uf=SP&campos=id,nome"
+```
+
 **Busca unificada** — fan-out paralelo, erro numa fonte não derruba as outras:
 
 ```bash
