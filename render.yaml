@@ -1,0 +1,20 @@
+# Blueprint da Render — backend FastAPI no plano gratuito.
+# No painel: New → Blueprint → conecta este repo → a Render lê este arquivo.
+# O front (Next.js) NÃO vai aqui; ele fica na Netlify e chama esta API via proxy.
+services:
+  - name: balcao-api
+    type: web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: CACHE_TTL
+        value: "600"
+      - key: CACHE_STALE_TTL
+        value: "86400"
+      - key: RATE_LIMIT
+        value: "100/minute"
+      - key: HTTP_TIMEOUT
+        value: "15"
