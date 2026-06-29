@@ -186,6 +186,22 @@ export interface GastosOut {
   por_tipo: Record<string, string>;
 }
 
+export interface VotoHistorico {
+  votacao_id: string;
+  data: string | null;
+  descricao: string;
+  aprovada: boolean | null;
+  voto: string;
+}
+
+export interface VotosDeputadoOut {
+  fonte: string;
+  deputado: Deputado;
+  votacoes_analisadas: number;
+  total: number;
+  votos: VotoHistorico[];
+}
+
 export interface Fonte {
   nome: string;
   base_url: string;

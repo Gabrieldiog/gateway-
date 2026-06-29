@@ -60,6 +60,10 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             if nome is None:
                 return httpx.Response(404, json={"detail": "nao existe"})
             return httpx.Response(200, json=carrega_fixture(nome))
+    # /v1/votos varre N votações; qualquer /votacoes/{id}/votos não mapeada
+    # acima cai no mesmo lote de votos (fan-out do histórico por deputado)
+    if "/votacoes/" in url and url.endswith("/votos"):
+        return httpx.Response(200, json=carrega_fixture("camara_votos"))
     return httpx.Response(500, json={"erro": f"sem fixture pra {url}"})
 
 
