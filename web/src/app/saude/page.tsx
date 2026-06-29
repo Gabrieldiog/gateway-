@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
@@ -106,6 +106,7 @@ export default function CadernoSaude() {
       ) : estabs.length === 0 ? (
         <Vazio>nenhum estabelecimento para esse filtro.</Vazio>
       ) : (
+        <EmTransicao ativo={lista.carregando}>
         <ul className="flex flex-col gap-2">
           {estabs.map((e) => (
             <li key={e.cnes}>
@@ -138,6 +139,7 @@ export default function CadernoSaude() {
             </li>
           ))}
         </ul>
+        </EmTransicao>
       )}
 
       {lista.dados && estabs.length > 0 && (

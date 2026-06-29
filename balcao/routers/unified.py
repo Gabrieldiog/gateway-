@@ -5,7 +5,7 @@ lógica vive em balcao/search.py; aqui ficam só HTTP, cache e schema."""
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
 
-from balcao.search import busca_unificada, gastos_deputado
+from balcao.search import busca_unificada, gastos_deputado, votos_deputado
 
 router = APIRouter(prefix="/v1", tags=["unificado"])
 
@@ -26,6 +26,14 @@ class GastosOut(BaseModel):
     total_documentos: int
     valor_total: str
     por_tipo: dict[str, str]
+
+
+class VotosDeputadoOut(BaseModel):
+    fonte: str = "camara"
+    deputado: dict
+    votacoes_analisadas: int
+    total: int
+    votos: list[dict]
 
 
 @router.get("/buscar", response_model=BuscaOut)
@@ -62,3 +70,27 @@ async def gastos(
     camara = request.app.state.connectors["camara"]
     resultado = await gastos_deputado(camara, deputado, ano, uf)
     return GastosOut(**resultado)
+
+
+@router.get("/votos", response_model=VotosDeputadoOut)
+async def votos(
+    request: Request,
+    deputado: str = Query(description="id ou nome do deputado"),
+    votacoes: int = Query(25, ge=5, le=80, description="quantas votações recentes varrer"),
+    uf: str | None = None,
+) -> VotosDeputadoOut:
+    camara = request.app.state.connectors["camara"]
+
+    # varrer 30 votações = 30 chamadas; cacheia o resultado pra não repetir
+    cache = request.app.state.cache
+    chave = cache.chave("_votos", deputado.lower(), {"v": votacoes, "uf": uf or ""})
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    resultado = await votos_deputado(camara, deputado, votacoes, uf)
+    resposta = VotosDeputadoOut(**resultado)
+    cache.guarda(chave, resposta)
+    return resposta

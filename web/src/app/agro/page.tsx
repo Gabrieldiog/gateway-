@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import type { IndicadorAgro, NormalizedResponse } from "@/lib/types";
@@ -123,7 +123,7 @@ export default function CadernoAgro() {
           ) : dados.length === 0 ? (
             <Vazio>sem dado para essa combinação.</Vazio>
           ) : (
-            <>
+            <EmTransicao ativo={lista.carregando}>
               <div className="mb-6 flex flex-wrap gap-8">
                 <div className="flex flex-col">
                   <span className="kicker mb-1">Total Brasil</span>
@@ -160,7 +160,7 @@ export default function CadernoAgro() {
                   </li>
                 ))}
               </ul>
-            </>
+            </EmTransicao>
           )}
         </div>
       </Card>

@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { BarrasGasto } from "@/components/BarrasGasto";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
@@ -103,7 +103,7 @@ export default function CadernoTesouro() {
           ) : panorama.carregando && !panorama.dados ? (
             <Esqueleto linhas={3} />
           ) : fin ? (
-            <>
+            <EmTransicao ativo={panorama.carregando}>
               <div className="flex flex-wrap gap-8">
                 <Kpi rotulo="Receita · R$ bi" valor={Number(fin.receita_total) / 1e9} formato="decimal" tom="accent-2" />
                 {fin.receita_impostos != null && (
@@ -117,7 +117,7 @@ export default function CadernoTesouro() {
                   habitante.
                 </p>
               )}
-            </>
+            </EmTransicao>
           ) : (
             <Vazio>{aviso ?? "o Tesouro não tem contas desse estado nesse ano."}</Vazio>
           )}
@@ -131,9 +131,11 @@ export default function CadernoTesouro() {
         ) : despesas.carregando && !despesas.dados ? (
           <Esqueleto linhas={6} />
         ) : funcoes.length ? (
-          <Card className="p-5 pl-7">
-            <BarrasGasto porTipo={porFuncao} />
-          </Card>
+          <EmTransicao ativo={despesas.carregando}>
+            <Card className="p-5 pl-7">
+              <BarrasGasto porTipo={porFuncao} />
+            </Card>
+          </EmTransicao>
         ) : (
           <Vazio>sem despesa por função registrada em {ano}.</Vazio>
         )}

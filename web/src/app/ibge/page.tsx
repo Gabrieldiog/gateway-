@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Carimbo } from "@/components/Carimbo";
 import { AzulejoGlifo } from "@/components/Azulejo";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
@@ -113,19 +113,21 @@ function Municipios({ uf }: { uf: string }) {
         </p>
         <Carimbo fonte="IBGE" cache={dados?.meta?.cache as string | undefined} ms={ms} />
       </div>
-      <div className="columns-2 gap-3 sm:columns-3 lg:columns-4">
-        {municipios.map((m) => (
-          <div
-            key={m.id}
-            className="mb-1.5 flex items-baseline justify-between gap-2 break-inside-avoid rounded-md border border-line bg-surface px-3 py-1.5"
-          >
-            <span className="truncate text-sm text-ink" title={m.nome}>
-              {m.nome}
-            </span>
-            <span className="num shrink-0 text-[0.65rem] text-muted">{m.regiao ?? ""}</span>
-          </div>
-        ))}
-      </div>
+      <EmTransicao ativo={carregando}>
+        <div className="columns-2 gap-3 sm:columns-3 lg:columns-4">
+          {municipios.map((m) => (
+            <div
+              key={m.id}
+              className="mb-1.5 flex items-baseline justify-between gap-2 break-inside-avoid rounded-md border border-line bg-surface px-3 py-1.5"
+            >
+              <span className="truncate text-sm text-ink" title={m.nome}>
+                {m.nome}
+              </span>
+              <span className="num shrink-0 text-[0.65rem] text-muted">{m.regiao ?? ""}</span>
+            </div>
+          ))}
+        </div>
+      </EmTransicao>
     </>
   );
 }
