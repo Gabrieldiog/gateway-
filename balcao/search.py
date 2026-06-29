@@ -62,12 +62,25 @@ async def gastos_deputado(
             raise RecursoNaoEncontrado("camara", f"deputado {deputado!r}", ["deputados?nome="])
         achado = lista.dados[0]
 
-    despesas = await camara.fetch(
-        f"deputados/{achado['id']}/despesas", ano=str(ano), itens="100"
-    )
+    # a CEAP rende centenas de documentos por ano; sem paginar, o total sai
+    # truncado em 100. Pagina até acabar, com teto pra não disparar sem limite.
+    documentos: list[dict] = []
+    pagina = 1
+    while True:
+        lote = await camara.fetch(
+            f"deputados/{achado['id']}/despesas",
+            ano=str(ano),
+            itens="100",
+            pagina=str(pagina),
+        )
+        documentos.extend(lote.dados)
+        if not lote.meta.get("tem_proxima") or pagina >= 20:
+            break
+        pagina += 1
+
     total = Decimal("0")
     por_tipo: dict[str, Decimal] = defaultdict(lambda: Decimal("0"))
-    for item in despesas.dados:
+    for item in documentos:
         valor = Decimal(item["valor"])
         total += valor
         por_tipo[item["tipo"]] += valor
@@ -76,7 +89,7 @@ async def gastos_deputado(
         "fonte": "camara",
         "deputado": achado,
         "ano": ano,
-        "total_documentos": len(despesas.dados),
+        "total_documentos": len(documentos),
         "valor_total": str(total),
         "por_tipo": {tipo: str(valor) for tipo, valor in sorted(por_tipo.items())},
     }

@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SerieChart } from "@/components/SerieChart";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoIpea, SerieIpea } from "@/lib/types";
@@ -89,6 +89,7 @@ export default function CadernoIpea() {
           ) : series.length === 0 ? (
             <Vazio>nenhuma série. A busca é pelo início do nome — tente “IPCA”, “PIB”, “Taxa”…</Vazio>
           ) : (
+            <EmTransicao ativo={busca.carregando}>
             <ul className="flex max-h-160 flex-col gap-1 overflow-y-auto pr-1">
               {series.map((s) => {
                 const ativo = sel?.codigo === s.codigo;
@@ -110,6 +111,7 @@ export default function CadernoIpea() {
                 );
               })}
             </ul>
+            </EmTransicao>
           )}
         </div>
 
@@ -154,7 +156,9 @@ export default function CadernoIpea() {
                   <Vazio>série sem pontos numéricos no período.</Vazio>
                 </div>
               ) : (
-                <SerieChart dados={pontos} cor="var(--color-accent-2)" />
+                <EmTransicao ativo={valores.carregando}>
+                  <SerieChart dados={pontos} cor="var(--color-accent-2)" />
+                </EmTransicao>
               )}
             </Card>
           )}

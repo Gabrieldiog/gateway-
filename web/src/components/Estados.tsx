@@ -49,3 +49,27 @@ export function Vazio({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+// quando um filtro muda, o useBalcao segura os dados antigos enquanto rebusca —
+// sem isso a tela parece travada. Aqui o conteúdo velho esmaece e um carimbo
+// "atualizando" aparece, deixando claro que tem coisa acontecendo.
+export function EmTransicao({ ativo, children }: { ativo: boolean; children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      <div
+        className={`transition-opacity duration-200 ${ativo ? "pointer-events-none opacity-45" : "opacity-100"}`}
+        aria-busy={ativo}
+      >
+        {children}
+      </div>
+      {ativo && (
+        <div className="pointer-events-none absolute right-2 top-2 z-10">
+          <span className="num flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-2.5 py-1 text-[0.62rem] uppercase tracking-wider text-muted shadow-sm backdrop-blur-sm">
+            <span className="pulsar inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+            atualizando
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import type { DatasetCKAN, NormalizedResponse } from "@/lib/types";
@@ -95,6 +95,7 @@ export default function CadernoDados() {
           ) : datasets.length === 0 ? (
             <Vazio>nenhum conjunto.</Vazio>
           ) : (
+            <EmTransicao ativo={lista.carregando}>
             <ul className="flex max-h-160 flex-col gap-1 overflow-y-auto pr-1">
               {datasets.map((d) => {
                 const comDado = d.recursos.filter((r) => r.datastore);
@@ -117,6 +118,7 @@ export default function CadernoDados() {
                 );
               })}
             </ul>
+            </EmTransicao>
           )}
         </div>
 
@@ -178,6 +180,7 @@ function TabelaRecurso({
       ) : rows.length === 0 ? (
         <Vazio>recurso sem linhas.</Vazio>
       ) : (
+        <EmTransicao ativo={linhas.carregando}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
@@ -206,6 +209,7 @@ function TabelaRecurso({
             {campos.length > 8 && ` · mostrando 8 de ${campos.length} colunas`}
           </p>
         </div>
+        </EmTransicao>
       )}
     </Card>
   );

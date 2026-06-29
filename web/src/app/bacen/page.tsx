@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SerieChart } from "@/components/SerieChart";
-import { Esqueleto, ErroBox } from "@/components/Estados";
+import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoSerie } from "@/lib/types";
@@ -110,7 +110,9 @@ export default function CadernoBacen() {
               <Esqueleto linhas={6} />
             </div>
           ) : (
-            <SerieChart dados={pontos} cor="var(--color-accent-2)" />
+            <EmTransicao ativo={carregando}>
+              <SerieChart dados={pontos} cor="var(--color-accent-2)" />
+            </EmTransicao>
           )}
         </Card>
       )}
