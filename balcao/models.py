@@ -95,6 +95,20 @@ class VotoDeputado(BaseModel):
     data: date | None = None  # quando o voto foi registrado
 
 
+class VotoSenador(BaseModel):
+    """Um voto de um senador numa votação — o histórico vem inteiro numa
+    chamada só, diferente da Câmara (que é por votação)."""
+
+    fonte: str = "senado"
+    votacao_id: str
+    data: date | None = None
+    voto: str  # Sim, Não, Abstenção; "Votou" (secreta), "Missão"/"Ausente" etc.
+    descricao: str  # o assunto da matéria (ementa)
+    materia: str | None = None  # ex: PLP 189/2019
+    aprovada: bool | None = None
+    secreta: bool = False
+
+
 class Estabelecimento(BaseModel):
     fonte: str = "sus"
     cnes: int

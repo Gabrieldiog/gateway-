@@ -1,0 +1,62 @@
+[
+  {
+    "ano": 2019,
+    "dataSessao": "2023-03-28",
+    "descricaoVotacao": "Votação nominal do Projeto de Lei Complementar nº 189, de 2019, nos termos do Parecer.",
+    "ementa": "Dá nova redação ao § 1º do art. 1º da Lei Complementar nº 94, de 19 de fevereiro de 1998, para incluir o Município de Uruana de Minas na Região Integrada de Desenvolvimento do Distrito Federal e Entorno – RIDE.",
+    "identificacao": "PLP 189/2019",
+    "codigoSessaoVotacao": 6675,
+    "codigoVotacaoSve": 3996,
+    "resultadoVotacao": "A",
+    "votacaoSecreta": "N",
+    "votos": [
+      {
+        "codigoParlamentar": 5672,
+        "siglaVotoParlamentar": "Sim",
+        "nomeParlamentar": "Alan Rick",
+        "siglaPartidoParlamentar": "UNIÃO",
+        "siglaUFParlamentar": "AC"
+      }
+    ]
+  },
+  {
+    "ano": 2023,
+    "dataSessao": "2023-02-08",
+    "descricaoVotacao": "Votação nominal do Projeto de Decreto Legislativo nº 2, de 2023.",
+    "ementa": "Escolhe o Senhor Johnathan Pereira de Jesus para o cargo de Ministro do Tribunal de Contas da União, nos termos do inciso II do § 2º do art. 73 da Constituição Federal.",
+    "identificacao": "PDL 2/2023",
+    "codigoSessaoVotacao": 6674,
+    "codigoVotacaoSve": 3995,
+    "resultadoVotacao": "A",
+    "votacaoSecreta": "S",
+    "votos": [
+      {
+        "codigoParlamentar": 5672,
+        "siglaVotoParlamentar": "Votou",
+        "nomeParlamentar": "Alan Rick",
+        "siglaPartidoParlamentar": "UNIÃO",
+        "siglaUFParlamentar": "AC"
+      }
+    ]
+  },
+  {
+    "ano": 2022,
+    "dataSessao": "2023-05-09",
+    "descricaoVotacao": "Votação nominal das expressões contidas no PL 1.825/2022 (Substitutivo da CD ao PLS 68/2017), destacadas.",
+    "ementa": "Institui a Lei Geral do Esporte; altera as Leis nºs 9.394, de 20 de dezembro de 1996, 13.756, de 12 de dezembro de 2018, 9.696, de 1º de setembro de 1998, 13.019, de 31 de julho de 2014, 9.504, de 30 de setembro de 1997, 7.713, de 22 de dezembro de 1988; e revoga as Leis nºs 8.650, de 20 de abril de 1993, 9.615, de 24 de março de 1998, 10.671, de 15 de maio de 2003, 10.891, de 9 de julho de 2004, 11.438, de 29 de dezembro de 2006, e 12.867, de 10 de outubro de 2013.",
+    "identificacao": "PL 1825/2022 (Substitutivo-CD)",
+    "codigoSessaoVotacao": 6677,
+    "codigoVotacaoSve": 3999,
+    "resultadoVotacao": "A",
+    "votacaoSecreta": "N",
+    "votos": [
+      {
+        "codigoParlamentar": 5672,
+        "siglaVotoParlamentar": "Não",
+        "nomeParlamentar": "Alan Rick",
+        "siglaPartidoParlamentar": "UNIÃO",
+        "siglaUFParlamentar": "AC"
+      }
+    ]
+  }
+]

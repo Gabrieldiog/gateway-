@@ -192,12 +192,15 @@ export interface VotoHistorico {
   descricao: string;
   aprovada: boolean | null;
   voto: string;
+  materia?: string | null; // só no Senado (ex: PLP 189/2019)
+  secreta?: boolean; // só no Senado
 }
 
-export interface VotosDeputadoOut {
+export interface VotosParlamentarOut {
   fonte: string;
-  deputado: Deputado;
-  votacoes_analisadas: number;
+  casa: "camara" | "senado";
+  parlamentar: Deputado; // mesmo shape básico (nome, partido, uf)
+  analisadas: number;
   total: number;
   votos: VotoHistorico[];
 }

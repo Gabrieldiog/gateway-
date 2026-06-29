@@ -143,8 +143,35 @@ async def votos_deputado(
 
     return {
         "fonte": "camara",
-        "deputado": achado,
-        "votacoes_analisadas": len(alvos),
+        "casa": "camara",
+        "parlamentar": achado,
+        "analisadas": len(alvos),
         "total": len(historico),
         "votos": historico,
+    }
+
+
+async def votos_senador(senado: BaseConnector, senador: str) -> dict:
+    """O histórico de voto de um senador. Diferente da Câmara, o Senado
+    entrega tudo numa chamada só (a API nova filtra por parlamentar), então
+    aqui não há fan-out — e o histórico vem completo, não só o recente."""
+    alvo = senador.strip()
+    if alvo.isdigit():
+        detalhe = await senado.fetch(f"senadores/{int(alvo)}")
+        achado = detalhe.dados[0]
+    else:
+        lista = await senado.fetch("senadores")
+        termo = alvo.casefold()
+        achado = next((s for s in lista.dados if termo in s["nome"].casefold()), None)
+        if achado is None:
+            raise RecursoNaoEncontrado("senado", f"senador {senador!r}", ["senadores"])
+
+    votos = await senado.fetch(f"senadores/{achado['id']}/votos")
+    return {
+        "fonte": "senado",
+        "casa": "senado",
+        "parlamentar": achado,
+        "analisadas": votos.total,
+        "total": votos.total,
+        "votos": votos.dados,
     }
