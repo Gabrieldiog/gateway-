@@ -11,7 +11,7 @@ import type {
   NormalizedResponse,
   Votacao,
   VotoDeputado,
-  VotosDeputadoOut,
+  VotosParlamentarOut,
 } from "@/lib/types";
 
 // ordem e cor de cada tipo de voto
@@ -26,7 +26,7 @@ function corVoto(v: string) {
   return COR_VOTO[v] ?? { txt: "text-ink", bar: "bg-ink/70" };
 }
 
-type Modo = "votacao" | "deputado";
+type Modo = "votacao" | "parlamentar";
 
 export default function CadernoVotos() {
   const [modo, setModo] = useState<Modo>("votacao");
@@ -35,13 +35,13 @@ export default function CadernoVotos() {
     <div>
       <CadernoHeader
         numero="VIII"
-        kicker="Câmara dos Deputados"
-        titulo="Como cada deputado votou"
-        resumo="Duas lentes sobre o mesmo plenário: por votação, o voto de todos num projeto; por deputado, como o seu candidato votou nas votações recentes. Votações simbólicas (de viva voz) não registram voto individual."
+        kicker="Congresso Nacional"
+        titulo="Como cada um votou"
+        resumo="Duas lentes sobre o plenário: por votação, o voto de todos num projeto; por parlamentar, como o seu candidato — deputado ou senador — votou. Votações simbólicas (de viva voz) não registram voto individual."
       />
 
       <div className="mb-6 flex w-fit gap-1 rounded-md border border-line bg-surface p-1">
-        {(["votacao", "deputado"] as Modo[]).map((m) => (
+        {(["votacao", "parlamentar"] as Modo[]).map((m) => (
           <button
             key={m}
             onClick={() => setModo(m)}
@@ -50,12 +50,12 @@ export default function CadernoVotos() {
               m === modo ? "bg-accent text-surface" : "text-muted hover:text-ink"
             }`}
           >
-            {m === "votacao" ? "por votação" : "por deputado"}
+            {m === "votacao" ? "por votação" : "por parlamentar"}
           </button>
         ))}
       </div>
 
-      {modo === "votacao" ? <PorVotacao /> : <PorDeputado />}
+      {modo === "votacao" ? <PorVotacao /> : <PorParlamentar />}
     </div>
   );
 }
@@ -102,7 +102,7 @@ function PorVotacao() {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.3fr]">
       {/* lista de votações */}
       <div>
-        <p className="kicker mb-3">Plenário · votações recentes</p>
+        <p className="kicker mb-3">Câmara · Plenário · votações recentes</p>
         {lista.erro ? (
           <ErroBox erro={lista.erro} aoTentar={lista.recarregar} />
         ) : lista.carregando && !lista.dados ? (
@@ -211,16 +211,42 @@ function PorVotacao() {
   );
 }
 
-function PorDeputado() {
+type Casa = "camara" | "senado";
+
+function PorParlamentar() {
+  const [casa, setCasa] = useState<Casa>("camara");
   const [texto, setTexto] = useState("");
   const [q, setQ] = useState("");
-  const consulta = useBalcao<VotosDeputadoOut>(
-    q ? caminho("votos", { deputado: q, votacoes: 25 }) : null,
+  const consulta = useBalcao<VotosParlamentarOut>(
+    q
+      ? caminho("votos", {
+          parlamentar: q,
+          casa,
+          votacoes: casa === "camara" ? 25 : undefined,
+        })
+      : null,
   );
   const res = consulta.dados;
+  const cargo = casa === "camara" ? "deputado" : "senador";
+  const exemplos = casa === "camara" ? "Kim Kataguiri, Tabata" : "Alessandro Vieira, Eduardo Girão";
 
   return (
     <div>
+      <div className="mb-4 flex w-fit gap-1 rounded-md border border-line bg-surface-2/60 p-1">
+        {(["camara", "senado"] as Casa[]).map((c) => (
+          <button
+            key={c}
+            onClick={() => setCasa(c)}
+            aria-pressed={c === casa}
+            className={`num rounded px-3 py-1 text-[0.7rem] uppercase tracking-wider transition-colors ${
+              c === casa ? "bg-accent-2 text-surface" : "text-muted hover:text-ink"
+            }`}
+          >
+            {c === "camara" ? "deputados" : "senadores"}
+          </button>
+        ))}
+      </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -231,7 +257,7 @@ function PorDeputado() {
         <input
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="nome do candidato (ex: Kim Kataguiri, Tabata)"
+          placeholder={`nome do ${cargo} (ex: ${exemplos})`}
           className="w-80 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
         />
         <button className="num rounded-md border border-accent bg-accent px-3 py-1.5 text-xs uppercase tracking-wider text-surface">
@@ -240,26 +266,32 @@ function PorDeputado() {
       </form>
 
       {!q ? (
-        <Vazio>digite o nome de um deputado para ver como ele votou.</Vazio>
+        <Vazio>digite o nome de um {cargo} para ver como ele votou.</Vazio>
       ) : consulta.erro ? (
         <ErroBox erro={consulta.erro} aoTentar={consulta.recarregar} />
       ) : consulta.carregando && !res ? (
         <div>
-          <p className="kicker mb-3 pulsar">varrendo as votações recentes do plenário…</p>
+          <p className="kicker mb-3 pulsar">
+            {casa === "camara"
+              ? "varrendo as votações recentes do plenário…"
+              : "buscando o histórico do senador…"}
+          </p>
           <Esqueleto linhas={6} />
         </div>
       ) : res ? (
         <EmTransicao ativo={consulta.carregando}>
           <div className="mb-4 flex items-end justify-between gap-3">
             <div>
-              <h2 className="font-display text-2xl leading-tight text-ink">{res.deputado.nome}</h2>
+              <h2 className="font-display text-2xl leading-tight text-ink">{res.parlamentar.nome}</h2>
               <p className="num text-xs text-muted">
-                {[res.deputado.partido, res.deputado.uf].filter(Boolean).join(" · ")} · {res.total} de{" "}
-                {res.votacoes_analisadas} votações com voto registrado
+                {[res.parlamentar.partido, res.parlamentar.uf].filter(Boolean).join(" · ")} ·{" "}
+                {res.casa === "senado"
+                  ? `${res.total} votos no mandato`
+                  : `${res.total} de ${res.analisadas} votações com voto registrado`}
               </p>
             </div>
             <Carimbo
-              fonte="CÂMARA"
+              fonte={res.casa === "senado" ? "SENADO" : "CÂMARA"}
               cache={undefined}
               ms={consulta.ms}
               erro={!!consulta.erro}
@@ -268,26 +300,32 @@ function PorDeputado() {
 
           {res.votos.length === 0 ? (
             <Vazio>
-              nenhum voto nominal nas votações recentes — as votações do período foram simbólicas
-              (aprovadas de viva voz, sem registro individual) ou o deputado não estava presente.
+              nenhum voto nominal encontrado — as votações do período foram simbólicas (aprovadas de
+              viva voz, sem registro individual) ou o parlamentar não estava presente.
             </Vazio>
           ) : (
             <ul className="flex flex-col gap-2">
-              {res.votos.map((v) => (
+              {res.votos.slice(0, 60).map((v) => (
                 <li key={v.votacao_id}>
                   <Card className="p-4 pl-7">
                     <div className="flex items-start justify-between gap-4">
-                      <p className="font-editorial text-[1rem] leading-snug text-ink/90">
-                        {v.descricao}
-                      </p>
+                      <div className="min-w-0">
+                        {v.materia && (
+                          <span className="num mb-0.5 block text-xs text-accent-2">{v.materia}</span>
+                        )}
+                        <p className="font-editorial text-[1rem] leading-snug text-ink/90">
+                          {v.descricao}
+                        </p>
+                      </div>
                       <span
-                        className={`num shrink-0 rounded-sm border px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${corVoto(v.voto).txt} border-current/30`}
+                        className={`num shrink-0 rounded-sm border border-current/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${corVoto(v.voto).txt}`}
                       >
                         {v.voto}
                       </span>
                     </div>
                     <p className="num mt-1.5 text-xs text-muted">
                       {formataData(v.data)}
+                      {v.secreta && <span className="text-ocre"> · secreta</span>}
                       {v.aprovada != null && (
                         <span className={v.aprovada ? "text-ok" : "text-accent"}>
                           {" · "}
@@ -302,8 +340,10 @@ function PorDeputado() {
           )}
 
           <p className="mt-5 font-editorial text-sm italic text-muted">
-            Mostra as votações nominais mais recentes do plenário. O histórico completo do ano vive
-            num arquivo de dados abertos da Câmara — está no nosso roteiro trazer ele inteiro.
+            {res.casa === "senado"
+              ? "Histórico completo do mandato, direto da API do Senado."
+              : "Mostra as votações nominais mais recentes do plenário. O histórico completo do ano vive num arquivo de dados abertos da Câmara — está no nosso roteiro trazer ele inteiro."}
+            {res.votos.length > 60 && ` Exibindo 60 de ${res.votos.length}.`}
           </p>
         </EmTransicao>
       ) : null}
