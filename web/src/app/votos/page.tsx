@@ -223,6 +223,7 @@ function PorParlamentar() {
   const [partido, setPartido] = useState("");
   const [texto, setTexto] = useState("");
   const [sel, setSel] = useState<Deputado | null>(null);
+  const [periodo, setPeriodo] = useState("recente"); // "recente" (scan) ou um ano (arquivo)
 
   const recurso = casa === "camara" ? "camara/deputados" : "senado/senadores";
   const lista = useBalcao<NormalizedResponse<Deputado>>(
@@ -244,8 +245,16 @@ function PorParlamentar() {
     setSel((atual) => (atual && parlamentares.some((p) => p.id === atual.id) ? atual : parlamentares[0]));
   }, [parlamentares]);
 
+  const anoSel = casa === "camara" && periodo !== "recente" ? Number(periodo) : undefined;
   const votos = useBalcao<VotosParlamentarOut>(
-    sel ? caminho("votos", { parlamentar: sel.id, casa, votacoes: casa === "camara" ? 25 : undefined }) : null,
+    sel
+      ? caminho("votos", {
+          parlamentar: sel.id,
+          casa,
+          votacoes: casa === "camara" && !anoSel ? 25 : undefined,
+          ano: anoSel,
+        })
+      : null,
   );
   const res = votos.dados;
 
@@ -301,6 +310,25 @@ function PorParlamentar() {
           placeholder="filtrar por nome"
           className="w-44 rounded-md border border-line bg-surface px-3 py-1.5 text-sm text-ink placeholder:text-muted"
         />
+        {casa === "camara" && (
+          <div className="flex items-center gap-1">
+            <span className="num text-xs uppercase tracking-wider text-muted">período</span>
+            {["recente", "2026", "2025", "2024", "2023"].map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriodo(p)}
+                aria-pressed={p === periodo}
+                className={`num rounded px-1.5 py-0.5 text-xs transition-colors ${
+                  p === periodo
+                    ? "text-ink underline decoration-accent decoration-2 underline-offset-4"
+                    : "text-muted"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.4fr]">
@@ -358,9 +386,11 @@ function PorParlamentar() {
           ) : votos.carregando && !res ? (
             <div>
               <p className="kicker mb-3">
-                {casa === "camara"
-                  ? "varrendo as votações recentes do plenário…"
-                  : "buscando o histórico do senador…"}
+                {casa === "senado"
+                  ? "buscando o histórico do senador…"
+                  : anoSel
+                    ? `montando o histórico de ${anoSel}… (alguns segundos na 1ª vez)`
+                    : "varrendo as votações recentes do plenário…"}
               </p>
               <Esqueleto linhas={6} />
             </div>
@@ -373,7 +403,9 @@ function PorParlamentar() {
                     {[res.parlamentar.partido, res.parlamentar.uf].filter(Boolean).join(" · ")} ·{" "}
                     {res.casa === "senado"
                       ? `${res.total} votos no mandato`
-                      : `${res.total} de ${res.analisadas} votações com voto`}
+                      : anoSel
+                        ? `${res.total} votos em ${anoSel}`
+                        : `${res.total} de ${res.analisadas} votações com voto`}
                   </p>
                 </div>
                 <Carimbo
@@ -428,7 +460,9 @@ function PorParlamentar() {
               <p className="mt-5 font-editorial text-sm italic text-muted">
                 {res.casa === "senado"
                   ? "Histórico completo do mandato, direto da API do Senado."
-                  : "Mostra as votações nominais mais recentes do plenário. O histórico completo do ano vive num arquivo de dados abertos da Câmara — está no nosso roteiro trazer ele inteiro."}
+                  : anoSel
+                    ? `Histórico completo de ${anoSel}, do arquivo anual de dados abertos da Câmara.`
+                    : "Mostra as votações nominais mais recentes do plenário. Escolha um ano no período acima para o histórico completo."}
                 {res.votos.length > 80 && ` Exibindo 80 de ${res.votos.length}.`}
               </p>
             </EmTransicao>

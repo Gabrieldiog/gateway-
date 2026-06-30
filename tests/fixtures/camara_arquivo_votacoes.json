@@ -1,0 +1,18 @@
+{
+  "dados": [
+    {
+      "id": "2000-1",
+      "data": "2024-03-10",
+      "descricao": "Aprovada a Emenda nº 7 ao Projeto de Lei 123/2024",
+      "aprovacao": 1,
+      "siglaOrgao": "PLEN"
+    },
+    {
+      "id": "2000-2",
+      "data": "2024-04-20",
+      "descricao": "Rejeitado o Requerimento de urgência",
+      "aprovacao": 0,
+      "siglaOrgao": "PLEN"
+    }
+  ]
+}

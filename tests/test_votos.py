@@ -59,6 +59,21 @@ async def test_votos_por_deputado_cacheia(api):
     assert segunda.json() == primeira.json()
 
 
+async def test_votos_historico_ano_completo(api):
+    # com ?ano=, vem do arquivo anual (histórico inteiro), não do scan recente
+    resp = await api.get("/v1/votos?parlamentar=204528&casa=camara&ano=2024")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    assert corpo["casa"] == "camara"
+    assert corpo["parlamentar"]["nome"]
+    assert corpo["total"] == 2  # o deputado 204528 tem 2 votos no arquivo
+    # juntou a descrição da votação (do outro arquivo)
+    assert any("emenda" in v["descricao"].lower() for v in corpo["votos"])
+    assert {v["voto"] for v in corpo["votos"]} == {"Sim", "Não"}
+    # mais recente primeiro
+    assert corpo["votos"][0]["data"] >= corpo["votos"][-1]["data"]
+
+
 async def test_votos_por_senador(api):
     resp = await api.get("/v1/votos?parlamentar=Alan&casa=senado")
     assert resp.status_code == 200
