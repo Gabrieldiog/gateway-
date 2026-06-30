@@ -4,11 +4,52 @@ async def test_panorama_estado(api):
     corpo = resp.json()
     assert corpo["total"] == 1
     fin = corpo["dados"][0]
+    assert fin["nivel"] == "estado"
+    assert fin["ente"] == "SP"
     assert fin["uf"] == "SP"
     assert fin["receita_total"] == "305164395104.99"
     assert fin["receita_impostos"] == "220013879151.03"
     assert fin["despesa_total"] == "272678508647.89"
     assert fin["populacao"] == 44000000
+
+
+async def test_panorama_uniao(api):
+    resp = await api.get("/v1/tesouro/uniao?ano=2023")
+    assert resp.status_code == 200
+    fin = resp.json()["dados"][0]
+    assert fin["nivel"] == "uniao"
+    assert fin["ente"] == "Brasil"
+    assert fin["uf"] is None
+    assert fin["receita_total"] == "4483657519633.49"
+    assert fin["receita_impostos"] == "931028666487.66"
+    assert fin["despesa_total"] == "4564283084454.05"
+
+
+async def test_panorama_municipio(api):
+    resp = await api.get("/v1/tesouro/municipios/5208707?ano=2023")
+    assert resp.status_code == 200
+    fin = resp.json()["dados"][0]
+    assert fin["nivel"] == "municipio"
+    # o nome sai do campo "instituicao" do próprio DCA, limpo do prefixo e da UF
+    assert fin["ente"] == "Goiânia"
+    assert fin["uf"] == "GO"
+    assert fin["ibge"] == 5208707
+    assert fin["receita_impostos"] == "3043090527.89"
+    assert fin["populacao"] == 1555626
+
+
+async def test_despesa_municipio(api):
+    resp = await api.get("/v1/tesouro/municipios/5208707/despesas?ano=2023")
+    assert resp.status_code == 200
+    dados = resp.json()["dados"]
+    assert dados[0]["ente"] == "Goiânia"
+    assert dados[0]["nivel"] == "municipio"
+    assert [d["funcao"] for d in dados] == ["Saúde", "Educação", "Urbanismo"]
+
+
+async def test_municipio_ibge_invalido_da_400(api):
+    resp = await api.get("/v1/tesouro/municipios/123")
+    assert resp.status_code == 400
 
 
 async def test_despesa_por_funcao_ordenada(api):

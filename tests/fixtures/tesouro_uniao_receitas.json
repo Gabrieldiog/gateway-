@@ -1,0 +1,25 @@
+{
+ "items": [
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "uf": null,
+   "anexo": "DCA-Anexo I-C",
+   "coluna": "Receitas Brutas Realizadas",
+   "cod_conta": "RO1.1.1.0.00.0.0",
+   "conta": "1.1.1.0.00.0.0 - Impostos",
+   "valor": 931028666487.66
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "uf": null,
+   "anexo": "DCA-Anexo I-C",
+   "coluna": "Receitas Brutas Realizadas",
+   "cod_conta": "9.9.9.9.99.9.9",
+   "conta": "TOTAL DAS RECEITAS (III) = (I + II)",
+   "valor": 4483657519633.49
+  }
+ ],
+ "hasMore": false
+}
