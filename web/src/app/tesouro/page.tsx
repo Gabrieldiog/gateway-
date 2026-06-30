@@ -13,7 +13,7 @@ import { caminho, formataBRL } from "@/lib/api";
 import { UFS, CAPITAIS } from "@/lib/ufs";
 import type { Arrecadacao, Municipio, NormalizedResponse } from "@/lib/types";
 
-const ANOS = [2023, 2022, 2021, 2020];
+const ANOS = [2025, 2024, 2023, 2022, 2021, 2020];
 type Nivel = "uniao" | "estado" | "municipio";
 const NIVEIS: [Nivel, string][] = [
   ["uniao", "País"],
@@ -25,7 +25,7 @@ export default function CadernoTesouro() {
   const [nivel, setNivel] = useState<Nivel>("estado");
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS["GO"]);
-  const [ano, setAno] = useState(2023);
+  const [ano, setAno] = useState(2024);
 
   // ao trocar de nível/UF no modo cidade, já aponta pra capital da UF
   function escolheNivel(n: Nivel) {
