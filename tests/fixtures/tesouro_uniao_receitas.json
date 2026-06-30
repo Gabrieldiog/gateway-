@@ -1,25 +1,13 @@
 {
  "items": [
-  {
-   "exercicio": 2023,
-   "instituicao": "Governo Federal",
-   "uf": null,
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "RO1.1.1.0.00.0.0",
-   "conta": "1.1.1.0.00.0.0 - Impostos",
-   "valor": 931028666487.66
-  },
-  {
-   "exercicio": 2023,
-   "instituicao": "Governo Federal",
-   "uf": null,
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "9.9.9.9.99.9.9",
-   "conta": "TOTAL DAS RECEITAS (III) = (I + II)",
-   "valor": 4483657519633.49
-  }
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.0.00.0.0", "conta": "1.1.1.0.00.0.0 - Impostos", "valor": 931028666487.66},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.1.01.0.0", "conta": "1.1.1.1.01.0.0 - Imposto sobre a Importação", "valor": 54287196477.62},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.1.02.0.0", "conta": "1.1.1.1.02.0.0 - Imposto sobre a Exportação", "valor": 4422851830.29},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.2.01.0.0", "conta": "1.1.1.2.01.0.0 - Imposto sobre a Propriedade Territorial Rural", "valor": 3260085568.93},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.3.00.0.0", "conta": "1.1.1.3.00.0.0 - Impostos sobre a Renda e Proventos", "valor": 746283154517.03},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.4.01.0.0", "conta": "1.1.1.4.01.0.0 - Imposto sobre Produtos Industrializados", "valor": 61579590402.56},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.5.00.0.0", "conta": "1.1.1.5.00.0.0 - Impostos sobre Operações de Crédito, Câmbio e Seguro", "valor": 61195787691.23},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "9.9.9.9.99.9.9", "conta": "TOTAL DAS RECEITAS (III) = (I + II)", "valor": 4483657519633.49}
  ],
  "hasMore": false
 }

@@ -1,35 +1,11 @@
 {
  "items": [
-  {
-   "exercicio": 2021,
-   "uf": "SP",
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "1.0.0.0.00.0.0",
-   "conta": "1.0.0.0.00.0.0 - Receitas Correntes",
-   "valor": 272854556289.76,
-   "populacao": 44000000
-  },
-  {
-   "exercicio": 2021,
-   "uf": "SP",
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "RO1.1.1.0.00.0.0",
-   "conta": "1.1.1.0.00.0.0 - Impostos",
-   "valor": 220013879151.03,
-   "populacao": 44000000
-  },
-  {
-   "exercicio": 2021,
-   "uf": "SP",
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "9.9.9.9.99.9.9",
-   "conta": "TOTAL DAS RECEITAS (III) = (I + II)",
-   "valor": 305164395104.99,
-   "populacao": 44000000
-  }
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "1.0.0.0.00.0.0", "conta": "1.0.0.0.00.0.0 - Receitas Correntes", "valor": 272854556289.76, "populacao": 44000000},
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.0.00.0.0", "conta": "1.1.1.0.00.0.0 - Impostos", "valor": 220013879151.03, "populacao": 44000000},
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.4.50.0.0", "conta": "1.1.1.4.50.0.0 - Impostos sobre a Produção e Circulação (ICMS)", "valor": 180000000000.00, "populacao": 44000000},
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.2.51.0.0", "conta": "1.1.1.2.51.0.0 - Imposto sobre a Propriedade de Veículos Automotores", "valor": 25000000000.00, "populacao": 44000000},
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.2.52.0.0", "conta": "1.1.1.2.52.0.0 - Imposto sobre Transmissão Causa Mortis e Doação", "valor": 5000000000.00, "populacao": 44000000},
+  {"exercicio": 2021, "uf": "SP", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "9.9.9.9.99.9.9", "conta": "TOTAL DAS RECEITAS (III) = (I + II)", "valor": 305164395104.99, "populacao": 44000000}
  ],
  "hasMore": false
 }

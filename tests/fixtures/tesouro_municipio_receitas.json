@@ -1,29 +1,11 @@
 {
  "items": [
-  {
-   "exercicio": 2023,
-   "instituicao": "Prefeitura Municipal de Goiânia - GO",
-   "cod_ibge": 5208707,
-   "uf": "GO",
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "RO1.1.1.0.00.0.0",
-   "conta": "1.1.1.0.00.0.0 - Impostos",
-   "valor": 3043090527.89,
-   "populacao": 1555626
-  },
-  {
-   "exercicio": 2023,
-   "instituicao": "Prefeitura Municipal de Goiânia - GO",
-   "cod_ibge": 5208707,
-   "uf": "GO",
-   "anexo": "DCA-Anexo I-C",
-   "coluna": "Receitas Brutas Realizadas",
-   "cod_conta": "9.9.9.9.99.9.9",
-   "conta": "TOTAL DAS RECEITAS (III) = (I + II)",
-   "valor": 8654304660.77,
-   "populacao": 1555626
-  }
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.0.00.0.0", "conta": "1.1.1.0.00.0.0 - Impostos", "valor": 3043090527.89, "populacao": 1555626},
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.2.50.0.0", "conta": "1.1.1.2.50.0.0 - Imposto sobre a Propriedade Predial e Territorial Urbana", "valor": 1090132590.77, "populacao": 1555626},
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.2.53.0.0", "conta": "1.1.1.2.53.0.0 - Impostos sobre Transmissão Inter Vivos", "valor": 292386806.00, "populacao": 1555626},
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.3.00.0.0", "conta": "1.1.1.3.00.0.0 - Impostos sobre a Renda e Proventos", "valor": 477270128.16, "populacao": 1555626},
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.4.51.0.0", "conta": "1.1.1.4.51.0.0 - Impostos sobre Serviços", "valor": 1183301002.96, "populacao": 1555626},
+  {"exercicio": 2023, "instituicao": "Prefeitura Municipal de Goiânia - GO", "cod_ibge": 5208707, "uf": "GO", "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "9.9.9.9.99.9.9", "conta": "TOTAL DAS RECEITAS (III) = (I + II)", "valor": 8654304660.77, "populacao": 1555626}
  ],
  "hasMore": false
 }
