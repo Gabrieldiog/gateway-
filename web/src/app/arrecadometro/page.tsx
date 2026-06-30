@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
+import { SeloFonte } from "@/components/SeloFonte";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useArrecadometro } from "@/hooks/useArrecadometro";
 import { caminho, escalaReais, formataReaisCompacto } from "@/lib/api";
@@ -167,6 +168,8 @@ export default function CadernoArrecadometro() {
       ) : (
         <Vazio>{aviso ?? "sem base de arrecadação pra esse ente."}</Vazio>
       )}
+
+      <SeloFonte fonte={arr.dados?.fonte} />
     </div>
   );
 }

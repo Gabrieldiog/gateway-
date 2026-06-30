@@ -58,6 +58,17 @@ ANO_PADRAO = 2023
 # o SICONFI responde devagar e manda relatórios grandes
 TIMEOUT = 45.0
 
+# de onde o dado vem — vai junto na resposta pra qualquer um conferir a origem
+FONTE = {
+    "nome": "Tesouro Nacional — SICONFI",
+    "url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
+    "nota": (
+        "Arrecadação tributária pelo balanço oficial da União/ente (DCA): impostos + taxas + "
+        "contribuições. A Receita Federal mede o federal com perímetro um pouco maior (~R$ 2,89 tri "
+        "em 2025); o Impostômetro soma todas as esferas (~R$ 3,98 tri)."
+    ),
+}
+
 
 @register
 class TesouroConnector(BaseConnector):
@@ -184,7 +195,7 @@ class TesouroConnector(BaseConnector):
             despesa_total=despesa_total or Decimal(0),
         )
         return NormalizedResponse(
-            fonte=self.name, recurso=recurso, dados=[fin.model_dump(mode="json")], total=1, meta={"ano": ano}
+            fonte=self.name, recurso=recurso, dados=[fin.model_dump(mode="json")], total=1, meta={"ano": ano, "fonte": FONTE}
         )
 
     async def _despesas(self, recurso: str, nivel: str, cod: int, params: dict) -> NormalizedResponse:
@@ -215,7 +226,7 @@ class TesouroConnector(BaseConnector):
 
         funcoes.sort(key=lambda d: Decimal(d["valor"]), reverse=True)
         return NormalizedResponse(
-            fonte=self.name, recurso=recurso, dados=funcoes, total=len(funcoes), meta={"ano": ano}
+            fonte=self.name, recurso=recurso, dados=funcoes, total=len(funcoes), meta={"ano": ano, "fonte": FONTE}
         )
 
     async def _impostos(self, recurso: str, nivel: str, cod: int, params: dict) -> NormalizedResponse:
@@ -264,7 +275,7 @@ class TesouroConnector(BaseConnector):
         impostos.sort(key=lambda d: Decimal(d["valor"]), reverse=True)
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=impostos, total=len(impostos),
-            meta={"ano": ano, "total_impostos": str(total), "populacao": ident["populacao"]},
+            meta={"ano": ano, "total_impostos": str(total), "populacao": ident["populacao"], "fonte": FONTE},
         )
 
     @staticmethod

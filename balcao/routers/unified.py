@@ -51,6 +51,7 @@ class ArrecadacaoOut(BaseModel):
     total_impostos: str | None = None
     impostos: list[dict]  # quanto veio de cada imposto
     despesas: list[dict]  # pra onde foi, por função
+    fonte: dict = Field(default_factory=dict)  # de onde o dado vem (verificável)
     meta: dict = Field(default_factory=dict)
 
 

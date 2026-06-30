@@ -156,6 +156,12 @@ export interface Imposto {
   valor: string;
 }
 
+export interface FonteDado {
+  nome: string;
+  url: string;
+  nota: string;
+}
+
 // resposta da rota unificada /v1/arrecadacao
 export interface Arrecadacao {
   ente: FinancaEnte;
@@ -163,6 +169,7 @@ export interface Arrecadacao {
   total_impostos: string | null;
   impostos: Imposto[];
   despesas: DespesaFuncao[];
+  fonte?: FonteDado;
   meta: Record<string, unknown>;
 }
 
