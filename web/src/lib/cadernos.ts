@@ -34,7 +34,7 @@ export const GRUPOS: Grupo[] = [
     nome: "Território",
     cadernos: [
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
-      { num: "VI", nome: "Tesouro", sub: "contas dos estados", href: "/tesouro" },
+      { num: "VI", nome: "Tesouro", sub: "arrecadação: país, estados, cidades", href: "/tesouro" },
     ],
   },
   {

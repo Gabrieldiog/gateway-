@@ -154,6 +154,21 @@ class DespesaFuncao(BaseModel):
     valor: Decimal
 
 
+class Imposto(BaseModel):
+    """Quanto um ente arrecadou de um imposto específico. A sigla é derivada
+    do código de natureza da receita do SICONFI (padrão nacional da STN)."""
+
+    fonte: str = "tesouro"
+    nivel: str  # uniao, estado ou municipio
+    ente: str
+    uf: str | None = None
+    ibge: int | None = None
+    ano: int
+    sigla: str  # IPTU, ISS, ICMS, IPVA, IR, IPI, II, IE, IOF, ITR, ITBI, ITCMD
+    nome: str
+    valor: Decimal
+
+
 class IndicadorAgro(BaseModel):
     fonte: str = "sidra"
     localidade: str  # nome do estado ou município

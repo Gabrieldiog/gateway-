@@ -5,7 +5,13 @@ lógica vive em balcao/search.py; aqui ficam só HTTP, cache e schema."""
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
 
-from balcao.search import busca_unificada, gastos_deputado, votos_deputado, votos_senador
+from balcao.search import (
+    arrecadacao_ente,
+    busca_unificada,
+    gastos_deputado,
+    votos_deputado,
+    votos_senador,
+)
 
 router = APIRouter(prefix="/v1", tags=["unificado"])
 
@@ -37,6 +43,15 @@ class VotosParlamentarOut(BaseModel):
     votos: list[dict]
 
 
+class ArrecadacaoOut(BaseModel):
+    ente: dict  # o panorama: nivel, nome, uf, receita, impostos, despesa
+    ano: int
+    total_impostos: str | None = None
+    impostos: list[dict]  # quanto veio de cada imposto
+    despesas: list[dict]  # pra onde foi, por função
+    meta: dict = Field(default_factory=dict)
+
+
 @router.get("/buscar", response_model=BuscaOut)
 async def buscar(
     request: Request,
@@ -58,6 +73,29 @@ async def buscar(
     resposta = BuscaOut(**resultado)
     if not resultado["erros"]:
         cache.guarda(chave, resposta)
+    return resposta
+
+
+@router.get("/arrecadacao", response_model=ArrecadacaoOut)
+async def arrecadacao(
+    request: Request,
+    ente: str = Query(description="brasil, uma UF (GO), um código IBGE (5208707) ou o nome da cidade"),
+    ano: int = Query(2023, ge=2013, description="ano do balanço; 2023 é o mais completo"),
+    uf: str | None = Query(None, description="desempata quando o nome da cidade existe em vários estados"),
+) -> ArrecadacaoOut:
+    # dado anual e estável: cacheia o pacote inteiro com folga
+    cache = request.app.state.cache
+    chave = cache.chave("_arrecadacao", ente.lower(), {"ano": ano, "uf": (uf or "").upper()})
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    conectores = request.app.state.connectors
+    resultado = await arrecadacao_ente(conectores["tesouro"], conectores["ibge"], ente, ano, uf)
+    resposta = ArrecadacaoOut(**resultado)
+    cache.guarda(chave, resposta)
     return resposta
 
 

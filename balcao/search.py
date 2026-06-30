@@ -3,12 +3,21 @@ gastos. Reusado pelo router HTTP e pelo MCP server — o mesmo miolo
 respondendo por duas portas."""
 
 import asyncio
+import unicodedata
 from collections import defaultdict
 from decimal import Decimal
 
 from balcao.connectors.base import BaseConnector
-from balcao.exceptions import BalcaoError, FonteNaoEncontrada, RecursoNaoEncontrado
+from balcao.exceptions import (
+    BalcaoError,
+    FonteNaoEncontrada,
+    ParametroInvalido,
+    RecursoNaoEncontrado,
+)
 from balcao.normalize import normaliza_uf
+
+# como o cliente pode chamar a União
+UNIAO_APELIDOS = {"brasil", "uniao", "união", "pais", "país", "federal", "governo federal", "br"}
 
 
 async def busca_unificada(
@@ -174,4 +183,81 @@ async def votos_senador(senado: BaseConnector, senador: str) -> dict:
         "analisadas": votos.total,
         "total": votos.total,
         "votos": votos.dados,
+    }
+
+
+def _sem_acento(texto: str) -> str:
+    nfkd = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in nfkd if not unicodedata.combining(c)).casefold().strip()
+
+
+async def _municipio_por_nome(ibge: BaseConnector, nome: str, uf: str | None) -> int:
+    """Resolve o código IBGE de um município pelo nome. Se o mesmo nome existe
+    em vários estados (e é comum), pede a UF pra desambiguar."""
+    sigla = normaliza_uf(uf) if uf else None
+    lista = await ibge.fetch("municipios", **({"uf": sigla} if sigla else {}))
+    alvo = _sem_acento(nome)
+    exatos = [m for m in lista.dados if _sem_acento(m["nome"]) == alvo]
+    candidatos = exatos or [m for m in lista.dados if alvo in _sem_acento(m["nome"])]
+    if not candidatos:
+        raise RecursoNaoEncontrado("ibge", f"município {nome!r}", ["municipios?uf="])
+    if len(candidatos) > 1 and not sigla:
+        ufs = sorted({m["uf"] for m in candidatos if m.get("uf")})
+        raise ParametroInvalido(
+            f"arrecadacao?ente={nome}", ["uf"], [f"{nome} existe em {', '.join(ufs)} — informe a uf"]
+        )
+    return candidatos[0]["id"]
+
+
+async def _resolve_ente(
+    ibge: BaseConnector, ente: str, uf: str | None
+) -> tuple[str, str]:
+    """Descobre o nível do ente e o recurso-base do Tesouro a consultar.
+    Aceita 'brasil', uma sigla de UF, um código IBGE ou um nome de cidade."""
+    termo = ente.strip()
+    if _sem_acento(termo) in UNIAO_APELIDOS:
+        return "uniao", "uniao"
+    if termo.isdigit():
+        return "municipio", f"municipios/{termo}"
+    sigla = normaliza_uf(termo)
+    if sigla:
+        return "estado", f"estados/{sigla}"
+    cod = await _municipio_por_nome(ibge, termo, uf)
+    return "municipio", f"municipios/{cod}"
+
+
+async def arrecadacao_ente(
+    tesouro: BaseConnector, ibge: BaseConnector, ente: str, ano: int, uf: str | None = None
+) -> dict:
+    """O pacote de arrecadação de um ente: panorama + quebra por imposto +
+    despesa por função, numa chamada só. Resolve 'brasil'/UF/código/nome e
+    dispara as três consultas em paralelo."""
+    nivel, base = await _resolve_ente(ibge, ente, uf)
+
+    panorama, impostos, despesas = await asyncio.gather(
+        tesouro.fetch(base, ano=str(ano)),
+        tesouro.fetch(f"{base}/impostos", ano=str(ano)),
+        tesouro.fetch(f"{base}/despesas", ano=str(ano)),
+        return_exceptions=True,
+    )
+    if isinstance(panorama, BaseException):
+        raise panorama
+    if not panorama.dados:
+        return {
+            "ente": {"nivel": nivel, "ente": ente, "ano": ano},
+            "ano": ano,
+            "total_impostos": None,
+            "impostos": [],
+            "despesas": [],
+            "meta": {"aviso": panorama.meta.get("aviso", "o Tesouro não tem contas desse ente nesse ano")},
+        }
+    imp = None if isinstance(impostos, BaseException) else impostos
+    desp = None if isinstance(despesas, BaseException) else despesas
+    return {
+        "ente": panorama.dados[0],
+        "ano": ano,
+        "total_impostos": imp.meta.get("total_impostos") if imp else None,
+        "impostos": imp.dados if imp else [],
+        "despesas": desp.dados if desp else [],
+        "meta": {},
     }

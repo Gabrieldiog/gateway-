@@ -6,8 +6,28 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import DespesaFuncao, FinancaEnte
+from balcao.models import DespesaFuncao, FinancaEnte, Imposto
 from balcao.normalize import normaliza_uf
+
+# código de natureza da receita (padrão STN) -> (sigla, nome) de cada imposto.
+# os códigos não colidem entre níveis: IPTU/.50 é municipal, IPVA/.51 é estadual.
+# confirmado contra o DCA real de União, SP, GO e municípios (2023).
+IMPOSTOS = {
+    "1.1.1.1.01.0.0": ("II", "Imposto de Importação"),
+    "1.1.1.1.02.0.0": ("IE", "Imposto de Exportação"),
+    "1.1.1.2.01.0.0": ("ITR", "Imposto Territorial Rural"),
+    "1.1.1.2.50.0.0": ("IPTU", "Imposto Predial e Territorial Urbano"),
+    "1.1.1.2.51.0.0": ("IPVA", "Imposto sobre a Propriedade de Veículos"),
+    "1.1.1.2.52.0.0": ("ITCMD", "Imposto sobre Transmissão Causa Mortis e Doação"),
+    "1.1.1.2.53.0.0": ("ITBI", "Imposto sobre Transmissão de Bens Imóveis"),
+    "1.1.1.3.00.0.0": ("IR", "Imposto de Renda"),
+    "1.1.1.4.01.0.0": ("IPI", "Imposto sobre Produtos Industrializados"),
+    "1.1.1.4.50.0.0": ("ICMS", "Imposto sobre Circulação de Mercadorias e Serviços"),
+    "1.1.1.4.51.0.0": ("ISS", "Imposto sobre Serviços"),
+    "1.1.1.5.00.0.0": ("IOF", "Imposto sobre Operações Financeiras"),
+}
+# rótulo que a fonte prega no começo do código ("RO1.1.1..." -> "1.1.1...")
+ROTULO = re.compile(r"^[A-Za-z]+")
 
 # código IBGE de 2 dígitos de cada ente estadual (constitucional, não muda)
 UF_IBGE = {
@@ -36,10 +56,13 @@ class TesouroConnector(BaseConnector):
     description = "Tesouro Nacional (SICONFI): receita, arrecadação de impostos e despesa por função da União, estados e municípios"
     resources = {
         "uniao": "receita total, quanto vem de impostos e despesa total da União num ano",
+        "uniao/impostos": "quanto a União arrecadou de cada imposto (IR, IPI, IOF, II...)",
         "uniao/despesas": "despesa por função da União — onde o governo federal gasta",
         "estados/{uf}": "receita total, quanto vem de impostos e despesa total do estado num ano",
+        "estados/{uf}/impostos": "quanto o estado arrecadou de cada imposto (ICMS, IPVA, ITCMD...)",
         "estados/{uf}/despesas": "despesa por função — onde o estado gasta (saúde, educação, segurança...)",
         "municipios/{ibge}": "receita total, impostos e despesa total de um município (código IBGE de 7 dígitos)",
+        "municipios/{ibge}/impostos": "quanto o município arrecadou de cada imposto (ISS, IPTU, ITBI...)",
         "municipios/{ibge}/despesas": "despesa por função de um município",
     }
 
@@ -48,14 +71,20 @@ class TesouroConnector(BaseConnector):
         match partes:
             case ["uniao"]:
                 return await self._panorama(recurso, "uniao", UNIAO_ID, params)
+            case ["uniao", "impostos"]:
+                return await self._impostos(recurso, "uniao", UNIAO_ID, params)
             case ["uniao", "despesas"]:
                 return await self._despesas(recurso, "uniao", UNIAO_ID, params)
             case ["estados", uf]:
                 return await self._panorama(recurso, "estado", self._cod_uf(recurso, uf), params)
+            case ["estados", uf, "impostos"]:
+                return await self._impostos(recurso, "estado", self._cod_uf(recurso, uf), params)
             case ["estados", uf, "despesas"]:
                 return await self._despesas(recurso, "estado", self._cod_uf(recurso, uf), params)
             case ["municipios", ibge]:
                 return await self._panorama(recurso, "municipio", self._cod_ibge(recurso, ibge), params)
+            case ["municipios", ibge, "impostos"]:
+                return await self._impostos(recurso, "municipio", self._cod_ibge(recurso, ibge), params)
             case ["municipios", ibge, "despesas"]:
                 return await self._despesas(recurso, "municipio", self._cod_ibge(recurso, ibge), params)
             case _:
@@ -167,6 +196,55 @@ class TesouroConnector(BaseConnector):
         funcoes.sort(key=lambda d: Decimal(d["valor"]), reverse=True)
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=funcoes, total=len(funcoes), meta={"ano": ano}
+        )
+
+    async def _impostos(self, recurso: str, nivel: str, cod: int, params: dict) -> NormalizedResponse:
+        ano = self._ano(recurso, params)
+        receitas = await self._dca("DCA-Anexo I-C", ano, cod)
+        total = self._valor(receitas, "Receitas Brutas Realizadas", cod_conta="1.1.1.0.00.0.0")
+        if total is None:
+            return NormalizedResponse(
+                fonte=self.name, recurso=recurso, dados=[], total=0,
+                meta={"ano": ano, "aviso": "o Tesouro não tem contas desse ente nesse ano"},
+            )
+
+        ident = self._identidade(nivel, cod, receitas)
+        impostos: list[dict] = []
+        somado = Decimal(0)
+        for i in receitas:
+            if "Realizadas" not in (i.get("coluna") or ""):
+                continue
+            chave = ROTULO.sub("", (i.get("cod_conta") or "")).strip()
+            info = IMPOSTOS.get(chave)
+            if info is None:
+                continue
+            try:
+                valor = Decimal(str(i.get("valor") or "0"))
+            except InvalidOperation:
+                continue
+            if valor <= 0:
+                continue
+            sigla, nome = info
+            impostos.append(
+                Imposto(**ident, ano=ano, sigla=sigla, nome=nome, valor=valor).model_dump(mode="json")
+            )
+            somado += valor
+
+        # o que sobrou do total e não caiu num imposto nomeado vira "Outros",
+        # pra soma fechar com o total. ignora sobra ínfima (ruído de float ou a
+        # linha residual de "outros impostos", < 0,1% do total)
+        resto = total - somado
+        if resto > total * Decimal("0.001"):
+            impostos.append(
+                Imposto(**ident, ano=ano, sigla="OUTROS", nome="Outros impostos", valor=resto).model_dump(
+                    mode="json"
+                )
+            )
+
+        impostos.sort(key=lambda d: Decimal(d["valor"]), reverse=True)
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=impostos, total=len(impostos),
+            meta={"ano": ano, "total_impostos": str(total)},
         )
 
     @staticmethod

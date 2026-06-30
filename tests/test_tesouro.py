@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+
 async def test_panorama_estado(api):
     resp = await api.get("/v1/tesouro/estados/SP?ano=2021")
     assert resp.status_code == 200
@@ -52,9 +55,44 @@ async def test_municipio_ibge_invalido_da_400(api):
     assert resp.status_code == 400
 
 
-async def test_despesa_por_funcao_ordenada(api):
-    from decimal import Decimal
+async def test_impostos_uniao(api):
+    resp = await api.get("/v1/tesouro/uniao/impostos?ano=2023")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    siglas = [d["sigla"] for d in corpo["dados"]]
+    assert siglas[0] == "IR"  # o maior imposto federal
+    assert set(siglas) >= {"IR", "IPI", "IOF", "II", "IE", "ITR"}
+    assert "OUTROS" not in siglas  # a soma já fecha sem sobra
+    assert corpo["dados"][0]["nivel"] == "uniao"
+    assert corpo["dados"][0]["ente"] == "Brasil"
+    assert corpo["meta"]["total_impostos"] == "931028666487.66"
 
+
+async def test_impostos_municipio(api):
+    resp = await api.get("/v1/tesouro/municipios/5208707/impostos?ano=2023")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    impostos = {d["sigla"]: Decimal(d["valor"]) for d in corpo["dados"]}
+    assert set(impostos) == {"ISS", "IPTU", "ITBI", "IR"}
+    assert impostos["ISS"] > impostos["IPTU"]
+    assert corpo["dados"][0]["ente"] == "Goiânia"
+    # a quebra fecha com o total de impostos do ente
+    assert sum(impostos.values()) == Decimal(corpo["meta"]["total_impostos"])
+
+
+async def test_impostos_estado_com_residual(api):
+    resp = await api.get("/v1/tesouro/estados/SP/impostos?ano=2021")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    impostos = {d["sigla"]: Decimal(d["valor"]) for d in corpo["dados"]}
+    assert impostos["ICMS"] == Decimal("180000000000.00")
+    assert "IPVA" in impostos and "ITCMD" in impostos
+    # o que não caiu num imposto nomeado vira "Outros" pra soma sempre fechar
+    assert "OUTROS" in impostos
+    assert sum(impostos.values()) == Decimal(corpo["meta"]["total_impostos"])
+
+
+async def test_despesa_por_funcao_ordenada(api):
     resp = await api.get("/v1/tesouro/estados/SP/despesas?ano=2021")
     assert resp.status_code == 200
     dados = resp.json()["dados"]

@@ -54,9 +54,9 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         receita = "I-C" in url
         if ente == "1":
             fixture = "tesouro_uniao_receitas" if receita else "tesouro_uniao_despesas"
-        elif ente == "5208707":
+        elif len(ente) == 7:  # código IBGE de município
             fixture = "tesouro_municipio_receitas" if receita else "tesouro_municipio_despesas"
-        else:
+        else:  # ente de 2 dígitos = estado
             fixture = "tesouro_receitas" if receita else "tesouro_despesas"
         return httpx.Response(200, json=carrega_fixture(fixture))
     # Senado (API nova de votação por parlamentar): histórico de um senador
