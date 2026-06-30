@@ -42,6 +42,17 @@ export function formataBRL(valor: string | number): string {
   return Number.isFinite(n) ? brl.format(n) : "—";
 }
 
+// reais em escala curta pra ranking: "R$ 244,1 bi", "R$ 51 mi"
+export function formataReaisCompacto(valor: string | number): string {
+  const n = typeof valor === "string" ? Number(valor) : valor;
+  if (!Number.isFinite(n)) return "—";
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return `R$ ${(n / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} bi`;
+  if (abs >= 1e6) return `R$ ${(n / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mi`;
+  if (abs >= 1e3) return `R$ ${(n / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+  return formataBRL(n);
+}
+
 export function formataData(iso: string | null): string {
   if (!iso) return "—";
   const [a, m, d] = iso.split("-");

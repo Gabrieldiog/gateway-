@@ -151,6 +151,25 @@ export interface Arrecadacao {
   meta: Record<string, unknown>;
 }
 
+export interface LinhaRanking {
+  ente: string;
+  uf: string;
+  nivel: string;
+  populacao: number | null;
+  total_impostos: string;
+  valor: string;
+}
+
+// resposta de /v1/arrecadacao/ranking
+export interface Ranking {
+  nivel: string; // estado | capital
+  ano: number;
+  imposto: string | null;
+  por: string; // total | per_capita
+  total_entes: number;
+  ranking: LinhaRanking[];
+}
+
 export interface IndicadorAgro {
   fonte: string;
   localidade: string;
