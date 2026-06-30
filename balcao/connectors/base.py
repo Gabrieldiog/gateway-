@@ -27,6 +27,8 @@ class BaseConnector(ABC):
     description: ClassVar[str] = ""
     resources: ClassVar[dict[str, str]] = {}
     suporta_busca: ClassVar[bool] = False
+    # fontes em tempo real (cotações) não cacheiam: o valor muda a cada minuto
+    cacheavel: ClassVar[bool] = True
 
     def __init__(
         self,

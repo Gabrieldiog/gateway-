@@ -68,6 +68,21 @@ class PontoSerie(BaseModel):
     valor: Decimal
 
 
+class Cotacao(BaseModel):
+    """Cotação de câmbio/cripto quase em tempo real (preço de mercado)."""
+
+    fonte: str = "cotacoes"
+    par: str  # "USD/BRL"
+    moeda: str  # "USD"
+    nome: str | None = None
+    compra: Decimal  # bid
+    venda: Decimal | None = None  # ask
+    variacao_pct: float | None = None  # variação no dia, em %
+    maxima: Decimal | None = None
+    minima: Decimal | None = None
+    atualizado: str | None = None  # quando a fonte registrou (data/hora)
+
+
 class Estado(BaseModel):
     fonte: str = "ibge"
     id: int
