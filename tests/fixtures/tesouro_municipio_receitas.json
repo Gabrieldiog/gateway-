@@ -1,0 +1,29 @@
+{
+ "items": [
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-C",
+   "coluna": "Receitas Brutas Realizadas",
+   "cod_conta": "RO1.1.1.0.00.0.0",
+   "conta": "1.1.1.0.00.0.0 - Impostos",
+   "valor": 3043090527.89,
+   "populacao": 1555626
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-C",
+   "coluna": "Receitas Brutas Realizadas",
+   "cod_conta": "9.9.9.9.99.9.9",
+   "conta": "TOTAL DAS RECEITAS (III) = (I + II)",
+   "valor": 8654304660.77,
+   "populacao": 1555626
+  }
+ ],
+ "hasMore": false
+}

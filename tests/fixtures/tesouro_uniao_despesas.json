@@ -1,0 +1,37 @@
+{
+ "items": [
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "Despesas Exceto Intraorçamentárias",
+   "valor": 4564283084454.05
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "28 - Encargos Especiais",
+   "valor": 1500000000000.0
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "09 - Previdência Social",
+   "valor": 900000000000.0
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Governo Federal",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "10 - Saúde",
+   "valor": 180000000000.0
+  }
+ ],
+ "hasMore": false
+}

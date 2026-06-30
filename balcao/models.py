@@ -127,9 +127,15 @@ class Estabelecimento(BaseModel):
     longitude: float | None = None
 
 
-class FinancaEstado(BaseModel):
+class FinancaEnte(BaseModel):
+    """Panorama fiscal de um ente — União, estado ou município. A mesma fonte
+    (SICONFI) responde pros três níveis, só muda o código IBGE consultado."""
+
     fonte: str = "tesouro"
-    uf: str
+    nivel: str  # uniao, estado ou municipio
+    ente: str  # "Brasil", "SP", "Goiânia" — nome legível do ente
+    uf: str | None = None  # None na União
+    ibge: int | None = None  # código IBGE do ente
     ano: int
     populacao: int | None = None
     receita_total: Decimal
@@ -139,7 +145,10 @@ class FinancaEstado(BaseModel):
 
 class DespesaFuncao(BaseModel):
     fonte: str = "tesouro"
-    uf: str
+    nivel: str  # uniao, estado ou municipio
+    ente: str
+    uf: str | None = None
+    ibge: int | None = None
     ano: int
     funcao: str  # saúde, educação, segurança...
     valor: Decimal

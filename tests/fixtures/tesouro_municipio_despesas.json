@@ -1,0 +1,49 @@
+{
+ "items": [
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "Despesas Exceto Intraorçamentárias",
+   "valor": 7861736852.97,
+   "populacao": 1555626
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "10 - Saúde",
+   "valor": 2200000000.0,
+   "populacao": 1555626
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "12 - Educação",
+   "valor": 1800000000.0,
+   "populacao": 1555626
+  },
+  {
+   "exercicio": 2023,
+   "instituicao": "Prefeitura Municipal de Goiânia - GO",
+   "cod_ibge": 5208707,
+   "uf": "GO",
+   "anexo": "DCA-Anexo I-E",
+   "coluna": "Despesas Empenhadas",
+   "conta": "15 - Urbanismo",
+   "valor": 900000000.0,
+   "populacao": 1555626
+  }
+ ],
+ "hasMore": false
+}

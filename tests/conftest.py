@@ -3,6 +3,7 @@ com as fixturas gravadas em tests/fixtures, entao nenhum teste abre socket."""
 
 import json
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import httpx
 import pytest
@@ -46,9 +47,17 @@ def carrega_fixture(nome: str) -> dict | list:
 
 def responde_fake(request: httpx.Request) -> httpx.Response:
     url = str(request.url)
-    # Tesouro/SICONFI: mesmo path /dca, distingue pelo anexo na query
+    # Tesouro/SICONFI: mesmo path /dca, distingue pelo ente (id_ente) e pelo anexo
     if "siconfi/tt/dca" in url:
-        fixture = "tesouro_receitas" if "I-C" in url else "tesouro_despesas"
+        q = parse_qs(urlparse(url).query)
+        ente = q.get("id_ente", [""])[0]
+        receita = "I-C" in url
+        if ente == "1":
+            fixture = "tesouro_uniao_receitas" if receita else "tesouro_uniao_despesas"
+        elif ente == "5208707":
+            fixture = "tesouro_municipio_receitas" if receita else "tesouro_municipio_despesas"
+        else:
+            fixture = "tesouro_receitas" if receita else "tesouro_despesas"
         return httpx.Response(200, json=carrega_fixture(fixture))
     # Senado (API nova de votação por parlamentar): histórico de um senador
     if "/dadosabertos/votacao" in url:
