@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
@@ -7,7 +8,10 @@ import { Carimbo } from "@/components/Carimbo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
+import { UFS } from "@/lib/ufs";
+import { PARTIDOS } from "@/lib/partidos";
 import type {
+  Deputado,
   NormalizedResponse,
   Votacao,
   VotoDeputado,
@@ -215,138 +219,222 @@ type Casa = "camara" | "senado";
 
 function PorParlamentar() {
   const [casa, setCasa] = useState<Casa>("camara");
+  const [uf, setUf] = useState("GO"); // predefinido pra já mostrar gente sem digitar
+  const [partido, setPartido] = useState("");
   const [texto, setTexto] = useState("");
-  const [q, setQ] = useState("");
-  const consulta = useBalcao<VotosParlamentarOut>(
-    q
-      ? caminho("votos", {
-          parlamentar: q,
-          casa,
-          votacoes: casa === "camara" ? 25 : undefined,
-        })
-      : null,
+  const [sel, setSel] = useState<Deputado | null>(null);
+
+  const recurso = casa === "camara" ? "camara/deputados" : "senado/senadores";
+  const lista = useBalcao<NormalizedResponse<Deputado>>(
+    caminho(recurso, { uf, partido: partido || undefined, itens: casa === "camara" ? 60 : undefined }),
   );
-  const res = consulta.dados;
+  const todos = lista.dados?.dados ?? [];
+  const parlamentares = texto
+    ? todos.filter((p) => p.nome.toLowerCase().includes(texto.toLowerCase()))
+    : todos;
   const cargo = casa === "camara" ? "deputado" : "senador";
-  const exemplos = casa === "camara" ? "Kim Kataguiri, Tabata" : "Alessandro Vieira, Eduardo Girão";
+  const cargoP = casa === "camara" ? "deputados" : "senadores";
+
+  // mantém uma seleção válida conforme a lista muda
+  useEffect(() => {
+    if (!parlamentares.length) {
+      setSel(null);
+      return;
+    }
+    setSel((atual) => (atual && parlamentares.some((p) => p.id === atual.id) ? atual : parlamentares[0]));
+  }, [parlamentares]);
+
+  const votos = useBalcao<VotosParlamentarOut>(
+    sel ? caminho("votos", { parlamentar: sel.id, casa, votacoes: casa === "camara" ? 25 : undefined }) : null,
+  );
+  const res = votos.dados;
 
   return (
     <div>
-      <div className="mb-4 flex w-fit gap-1 rounded-md border border-line bg-surface-2/60 p-1">
-        {(["camara", "senado"] as Casa[]).map((c) => (
-          <button
-            key={c}
-            onClick={() => setCasa(c)}
-            aria-pressed={c === casa}
-            className={`num rounded px-3 py-1 text-[0.7rem] uppercase tracking-wider transition-colors ${
-              c === casa ? "bg-accent-2 text-surface" : "text-muted hover:text-ink"
-            }`}
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <div className="flex gap-1 rounded-md border border-line bg-surface-2/60 p-1">
+          {(["camara", "senado"] as Casa[]).map((c) => (
+            <button
+              key={c}
+              onClick={() => setCasa(c)}
+              aria-pressed={c === casa}
+              className={`num rounded px-3 py-1 text-[0.7rem] uppercase tracking-wider transition-colors ${
+                c === casa ? "bg-accent-2 text-surface" : "text-muted hover:text-ink"
+              }`}
+            >
+              {c === "camara" ? "deputados" : "senadores"}
+            </button>
+          ))}
+        </div>
+        <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
+          UF
+          <select
+            value={uf}
+            onChange={(e) => setUf(e.target.value)}
+            className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
           >
-            {c === "camara" ? "deputados" : "senadores"}
-          </button>
-        ))}
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setQ(texto.trim());
-        }}
-        className="mb-5 flex flex-wrap items-center gap-2"
-      >
+            {UFS.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
+          Partido
+          <select
+            value={PARTIDOS.includes(partido) ? partido : ""}
+            onChange={(e) => setPartido(e.target.value)}
+            className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
+          >
+            <option value="">todos</option>
+            {PARTIDOS.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </label>
         <input
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder={`nome do ${cargo} (ex: ${exemplos})`}
-          className="w-80 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
+          placeholder="filtrar por nome"
+          className="w-44 rounded-md border border-line bg-surface px-3 py-1.5 text-sm text-ink placeholder:text-muted"
         />
-        <button className="num rounded-md border border-accent bg-accent px-3 py-1.5 text-xs uppercase tracking-wider text-surface">
-          ver votos
-        </button>
-      </form>
+      </div>
 
-      {!q ? (
-        <Vazio>digite o nome de um {cargo} para ver como ele votou.</Vazio>
-      ) : consulta.erro ? (
-        <ErroBox erro={consulta.erro} aoTentar={consulta.recarregar} />
-      ) : consulta.carregando && !res ? (
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.4fr]">
+        {/* lista de parlamentares da UF */}
         <div>
-          <p className="kicker mb-3 pulsar">
-            {casa === "camara"
-              ? "varrendo as votações recentes do plenário…"
-              : "buscando o histórico do senador…"}
+          <p className="kicker mb-3">
+            {lista.carregando && !lista.dados ? "consultando…" : `${parlamentares.length} ${cargoP} · ${uf}`}
           </p>
-          <Esqueleto linhas={6} />
-        </div>
-      ) : res ? (
-        <EmTransicao ativo={consulta.carregando}>
-          <div className="mb-4 flex items-end justify-between gap-3">
-            <div>
-              <h2 className="font-display text-2xl leading-tight text-ink">{res.parlamentar.nome}</h2>
-              <p className="num text-xs text-muted">
-                {[res.parlamentar.partido, res.parlamentar.uf].filter(Boolean).join(" · ")} ·{" "}
-                {res.casa === "senado"
-                  ? `${res.total} votos no mandato`
-                  : `${res.total} de ${res.analisadas} votações com voto registrado`}
-              </p>
-            </div>
-            <Carimbo
-              fonte={res.casa === "senado" ? "SENADO" : "CÂMARA"}
-              cache={undefined}
-              ms={consulta.ms}
-              erro={!!consulta.erro}
-            />
-          </div>
-
-          {res.votos.length === 0 ? (
-            <Vazio>
-              nenhum voto nominal encontrado — as votações do período foram simbólicas (aprovadas de
-              viva voz, sem registro individual) ou o parlamentar não estava presente.
-            </Vazio>
+          {lista.erro ? (
+            <ErroBox erro={lista.erro} aoTentar={lista.recarregar} />
+          ) : lista.carregando && !lista.dados ? (
+            <Esqueleto linhas={6} />
+          ) : parlamentares.length === 0 ? (
+            <Vazio>nenhum {cargo} nesse filtro.</Vazio>
           ) : (
-            <ul className="flex flex-col gap-2">
-              {res.votos.slice(0, 60).map((v) => (
-                <li key={v.votacao_id}>
-                  <Card className="p-4 pl-7">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        {v.materia && (
-                          <span className="num mb-0.5 block text-xs text-accent-2">{v.materia}</span>
-                        )}
-                        <p className="font-editorial text-[1rem] leading-snug text-ink/90">
-                          {v.descricao}
-                        </p>
-                      </div>
-                      <span
-                        className={`num shrink-0 rounded-sm border border-current/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${corVoto(v.voto).txt}`}
+            <EmTransicao ativo={lista.carregando}>
+              <ul className="flex max-h-160 flex-col gap-1 overflow-y-auto pr-1">
+                {parlamentares.map((p) => {
+                  const ativo = sel?.id === p.id;
+                  return (
+                    <li key={p.id}>
+                      <button
+                        onClick={() => setSel(p)}
+                        className={`flex w-full items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors ${
+                          ativo ? "border-accent/40 bg-surface" : "border-transparent hover:bg-surface/70"
+                        }`}
                       >
-                        {v.voto}
-                      </span>
-                    </div>
-                    <p className="num mt-1.5 text-xs text-muted">
-                      {formataData(v.data)}
-                      {v.secreta && <span className="text-ocre"> · secreta</span>}
-                      {v.aprovada != null && (
-                        <span className={v.aprovada ? "text-ok" : "text-accent"}>
-                          {" · "}
-                          {v.aprovada ? "aprovada" : "rejeitada"}
+                        <span className="h-10 w-8 shrink-0 overflow-hidden rounded-sm border border-line bg-surface-2">
+                          {p.foto && (
+                            <img src={p.foto} alt="" loading="lazy" className="h-full w-full object-cover" />
+                          )}
                         </span>
-                      )}
-                    </p>
-                  </Card>
-                </li>
-              ))}
-            </ul>
+                        <span className="min-w-0">
+                          <span className="block truncate text-ink">{p.nome}</span>
+                          <span className="num text-xs text-muted">
+                            {[p.partido, p.uf].filter(Boolean).join(" · ")}
+                          </span>
+                        </span>
+                        {ativo && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </EmTransicao>
           )}
+        </div>
 
-          <p className="mt-5 font-editorial text-sm italic text-muted">
-            {res.casa === "senado"
-              ? "Histórico completo do mandato, direto da API do Senado."
-              : "Mostra as votações nominais mais recentes do plenário. O histórico completo do ano vive num arquivo de dados abertos da Câmara — está no nosso roteiro trazer ele inteiro."}
-            {res.votos.length > 60 && ` Exibindo 60 de ${res.votos.length}.`}
-          </p>
-        </EmTransicao>
-      ) : null}
+        {/* votos do parlamentar selecionado */}
+        <div>
+          {!sel ? (
+            <Vazio>escolha um {cargo}.</Vazio>
+          ) : votos.erro ? (
+            <ErroBox erro={votos.erro} aoTentar={votos.recarregar} />
+          ) : votos.carregando && !res ? (
+            <div>
+              <p className="kicker mb-3">
+                {casa === "camara"
+                  ? "varrendo as votações recentes do plenário…"
+                  : "buscando o histórico do senador…"}
+              </p>
+              <Esqueleto linhas={6} />
+            </div>
+          ) : res ? (
+            <EmTransicao ativo={votos.carregando}>
+              <div className="mb-4 flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-2xl leading-tight text-ink">{res.parlamentar.nome}</h2>
+                  <p className="num text-xs text-muted">
+                    {[res.parlamentar.partido, res.parlamentar.uf].filter(Boolean).join(" · ")} ·{" "}
+                    {res.casa === "senado"
+                      ? `${res.total} votos no mandato`
+                      : `${res.total} de ${res.analisadas} votações com voto`}
+                  </p>
+                </div>
+                <Carimbo
+                  fonte={res.casa === "senado" ? "SENADO" : "CÂMARA"}
+                  cache={undefined}
+                  ms={votos.ms}
+                  erro={!!votos.erro}
+                />
+              </div>
+
+              {res.votos.length === 0 ? (
+                <Vazio>
+                  nenhum voto nominal recente — as votações do período foram simbólicas (de viva voz,
+                  sem registro individual) ou o parlamentar não estava presente.
+                </Vazio>
+              ) : (
+                <ul className="flex max-h-160 flex-col gap-2 overflow-y-auto pr-1">
+                  {res.votos.slice(0, 80).map((v) => (
+                    <li key={v.votacao_id}>
+                      <Card className="p-4 pl-7">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            {v.materia && (
+                              <span className="num mb-0.5 block text-xs text-accent-2">{v.materia}</span>
+                            )}
+                            <p className="font-editorial text-[1rem] leading-snug text-ink/90">
+                              {v.descricao}
+                            </p>
+                          </div>
+                          <span
+                            className={`num shrink-0 rounded-sm border border-current/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${corVoto(v.voto).txt}`}
+                          >
+                            {v.voto}
+                          </span>
+                        </div>
+                        <p className="num mt-1.5 text-xs text-muted">
+                          {formataData(v.data)}
+                          {v.secreta && <span className="text-ocre"> · secreta</span>}
+                          {v.aprovada != null && (
+                            <span className={v.aprovada ? "text-ok" : "text-accent"}>
+                              {" · "}
+                              {v.aprovada ? "aprovada" : "rejeitada"}
+                            </span>
+                          )}
+                        </p>
+                      </Card>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <p className="mt-5 font-editorial text-sm italic text-muted">
+                {res.casa === "senado"
+                  ? "Histórico completo do mandato, direto da API do Senado."
+                  : "Mostra as votações nominais mais recentes do plenário. O histórico completo do ano vive num arquivo de dados abertos da Câmara — está no nosso roteiro trazer ele inteiro."}
+                {res.votos.length > 80 && ` Exibindo 80 de ${res.votos.length}.`}
+              </p>
+            </EmTransicao>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
