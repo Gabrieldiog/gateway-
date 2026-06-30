@@ -1,5 +1,7 @@
 {
  "items": [
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.0.0.00.0.0", "conta": "1.1.0.0.00.0.0 - Impostos, Taxas e Contribuições de Melhoria", "valor": 940000000000.00},
+  {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.2.0.0.00.0.0", "conta": "1.2.0.0.00.0.0 - Contribuições", "valor": 1221000000000.00},
   {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.0.00.0.0", "conta": "1.1.1.0.00.0.0 - Impostos", "valor": 931028666487.66},
   {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.1.01.0.0", "conta": "1.1.1.1.01.0.0 - Imposto sobre a Importação", "valor": 54287196477.62},
   {"exercicio": 2023, "instituicao": "Governo Federal", "uf": null, "anexo": "DCA-Anexo I-C", "coluna": "Receitas Brutas Realizadas", "cod_conta": "RO1.1.1.1.02.0.0", "conta": "1.1.1.1.02.0.0 - Imposto sobre a Exportação", "valor": 4422851830.29},
