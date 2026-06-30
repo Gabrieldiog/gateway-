@@ -105,9 +105,12 @@ export interface Estabelecimento {
   longitude: number | null;
 }
 
-export interface FinancaEstado {
+export interface FinancaEnte {
   fonte: string;
-  uf: string;
+  nivel: string; // uniao | estado | municipio
+  ente: string; // "Brasil", "SP", "Goiânia"
+  uf: string | null;
+  ibge: number | null;
   ano: number;
   populacao: number | null;
   receita_total: string;
@@ -117,10 +120,35 @@ export interface FinancaEstado {
 
 export interface DespesaFuncao {
   fonte: string;
-  uf: string;
+  nivel: string;
+  ente: string;
+  uf: string | null;
+  ibge: number | null;
   ano: number;
   funcao: string;
   valor: string;
+}
+
+export interface Imposto {
+  fonte: string;
+  nivel: string;
+  ente: string;
+  uf: string | null;
+  ibge: number | null;
+  ano: number;
+  sigla: string; // ISS, IPTU, ICMS, IPVA, IR, IPI, II, IE, IOF, ITR, ITBI, ITCMD, OUTROS
+  nome: string;
+  valor: string;
+}
+
+// resposta da rota unificada /v1/arrecadacao
+export interface Arrecadacao {
+  ente: FinancaEnte;
+  ano: number;
+  total_impostos: string | null;
+  impostos: Imposto[];
+  despesas: DespesaFuncao[];
+  meta: Record<string, unknown>;
 }
 
 export interface IndicadorAgro {
