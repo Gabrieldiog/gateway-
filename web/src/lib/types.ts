@@ -51,6 +51,19 @@ export interface PontoSerie {
   valor: string;
 }
 
+export interface Cotacao {
+  fonte: string;
+  par: string; // "USD/BRL"
+  moeda: string; // "USD"
+  nome: string | null;
+  compra: string;
+  venda: string | null;
+  variacao_pct: number | null;
+  maxima: string | null;
+  minima: string | null;
+  atualizado: string | null;
+}
+
 export interface Estado {
   fonte: string;
   id: number;

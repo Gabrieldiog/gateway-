@@ -59,6 +59,9 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         else:  # ente de 2 dígitos = estado
             fixture = "tesouro_receitas" if receita else "tesouro_despesas"
         return httpx.Response(200, json=carrega_fixture(fixture))
+    # AwesomeAPI (cotações em tempo real): /json/last/USD-BRL,EUR-BRL,...
+    if "awesomeapi.com.br/json/last/" in url:
+        return httpx.Response(200, json=carrega_fixture("cotacoes_last"))
     # Senado (API nova de votação por parlamentar): histórico de um senador
     if "/dadosabertos/votacao" in url:
         return httpx.Response(200, json=carrega_fixture("senado_votos"))
