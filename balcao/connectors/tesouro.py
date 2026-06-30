@@ -37,6 +37,16 @@ UF_IBGE = {
     "SC": 42, "RS": 43, "MS": 50, "MT": 51, "GO": 52, "DF": 53,
 }
 
+# código IBGE de 7 dígitos da capital de cada UF — base do ranking de cidades
+CAPITAIS = {
+    "AC": 1200401, "AL": 2704302, "AM": 1302603, "AP": 1600303, "BA": 2927408,
+    "CE": 2304400, "DF": 5300108, "ES": 3205309, "GO": 5208707, "MA": 2111300,
+    "MG": 3106200, "MS": 5002704, "MT": 5103403, "PA": 1501402, "PB": 2507507,
+    "PE": 2611606, "PI": 2211001, "PR": 4106902, "RJ": 3304557, "RN": 2408102,
+    "RO": 1100205, "RR": 1400100, "RS": 4314902, "SC": 4205407, "SE": 2800308,
+    "SP": 3550308, "TO": 1721000,
+}
+
 # no SICONFI a União é o ente de id 1
 UNIAO_ID = 1
 # linha de função de 1º nível no DCA: "10 - Saúde" (subfunção vem como "10.301 - ...")
@@ -244,7 +254,7 @@ class TesouroConnector(BaseConnector):
         impostos.sort(key=lambda d: Decimal(d["valor"]), reverse=True)
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=impostos, total=len(impostos),
-            meta={"ano": ano, "total_impostos": str(total)},
+            meta={"ano": ano, "total_impostos": str(total), "populacao": ident["populacao"]},
         )
 
     @staticmethod

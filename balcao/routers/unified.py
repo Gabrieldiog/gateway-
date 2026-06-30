@@ -9,6 +9,7 @@ from balcao.search import (
     arrecadacao_ente,
     busca_unificada,
     gastos_deputado,
+    ranking_arrecadacao,
     votos_deputado,
     votos_senador,
 )
@@ -50,6 +51,15 @@ class ArrecadacaoOut(BaseModel):
     impostos: list[dict]  # quanto veio de cada imposto
     despesas: list[dict]  # pra onde foi, por função
     meta: dict = Field(default_factory=dict)
+
+
+class RankingOut(BaseModel):
+    nivel: str  # estado | capital
+    ano: int
+    imposto: str | None = None  # sigla quando o ranking é por um imposto só
+    por: str  # total | per_capita
+    total_entes: int
+    ranking: list[dict]
 
 
 @router.get("/buscar", response_model=BuscaOut)
@@ -95,6 +105,33 @@ async def arrecadacao(
     conectores = request.app.state.connectors
     resultado = await arrecadacao_ente(conectores["tesouro"], conectores["ibge"], ente, ano, uf)
     resposta = ArrecadacaoOut(**resultado)
+    cache.guarda(chave, resposta)
+    return resposta
+
+
+@router.get("/arrecadacao/ranking", response_model=RankingOut)
+async def arrecadacao_ranking(
+    request: Request,
+    nivel: str = Query("estado", pattern="^(estado|capital)$", description="estado (27) ou capital (27)"),
+    ano: int = Query(2023, ge=2013),
+    imposto: str | None = Query(None, description="sigla pra ranquear por um imposto só (ICMS, ISS, IPTU...)"),
+    por: str = Query("total", pattern="^(total|per_capita)$", description="total arrecadado ou por habitante"),
+    limit: int = Query(27, ge=1, le=27),
+) -> RankingOut:
+    # varre 27 entes; dado anual e estável, então cacheia o ranking inteiro
+    cache = request.app.state.cache
+    chave = cache.chave(
+        "_ranking", nivel, {"ano": ano, "imposto": (imposto or "").upper(), "por": por, "limit": limit}
+    )
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    tesouro = request.app.state.connectors["tesouro"]
+    resultado = await ranking_arrecadacao(tesouro, nivel, ano, imposto, por, limit)
+    resposta = RankingOut(**resultado)
     cache.guarda(chave, resposta)
     return resposta
 

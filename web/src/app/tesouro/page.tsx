@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { BarrasGasto } from "@/components/BarrasGasto";
 import { BarrasImposto } from "@/components/BarrasImposto";
+import { RankingArrecadacao } from "@/components/RankingArrecadacao";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL } from "@/lib/api";
@@ -22,6 +23,7 @@ const NIVEIS: [Nivel, string][] = [
 ];
 
 export default function CadernoTesouro() {
+  const [modo, setModo] = useState<"consulta" | "ranking">("consulta");
   const [nivel, setNivel] = useState<Nivel>("estado");
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS["GO"]);
@@ -70,6 +72,48 @@ export default function CadernoTesouro() {
         resumo="Quanto a União, cada estado e cada cidade arrecadam em impostos — e pra onde esse dinheiro vai. Direto da Declaração de Contas Anuais. Valores realizados do balanço; 2023 é o ano mais completo. O SICONFI é lento: a primeira consulta de cada ente pode demorar."
       />
 
+      <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+          {(
+            [
+              ["consulta", "Consulta"],
+              ["ranking", "Ranking"],
+            ] as ["consulta" | "ranking", string][]
+          ).map(([v, label]) => (
+            <button
+              key={v}
+              onClick={() => setModo(v)}
+              aria-pressed={modo === v}
+              className={`num rounded px-3 py-1 text-xs uppercase tracking-wider transition-colors ${
+                modo === v ? "bg-accent/15 font-semibold text-accent" : "text-muted hover:text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-1">
+          {ANOS.map((a) => (
+            <button
+              key={a}
+              onClick={() => setAno(a)}
+              aria-pressed={a === ano}
+              className={`num rounded px-1.5 py-0.5 text-xs transition-colors ${
+                a === ano
+                  ? "text-ink underline decoration-accent decoration-2 underline-offset-4"
+                  : "text-muted"
+              }`}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {modo === "ranking" ? (
+        <RankingArrecadacao ano={ano} />
+      ) : (
+        <>
       <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
         <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
           {NIVEIS.map(([v, label]) => (
@@ -125,22 +169,6 @@ export default function CadernoTesouro() {
           </label>
         )}
 
-        <div className="flex gap-1">
-          {ANOS.map((a) => (
-            <button
-              key={a}
-              onClick={() => setAno(a)}
-              aria-pressed={a === ano}
-              className={`num rounded px-1.5 py-0.5 text-xs transition-colors ${
-                a === ano
-                  ? "text-ink underline decoration-accent decoration-2 underline-offset-4"
-                  : "text-muted"
-              }`}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
       </div>
 
       <Card className="p-5 pt-6">
@@ -220,6 +248,8 @@ export default function CadernoTesouro() {
           )}
         </section>
       </div>
+        </>
+      )}
     </div>
   );
 }

@@ -8,6 +8,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from balcao.connectors.base import BaseConnector
+from balcao.connectors.tesouro import CAPITAIS, UF_IBGE
 from balcao.exceptions import (
     BalcaoError,
     FonteNaoEncontrada,
@@ -260,4 +261,68 @@ async def arrecadacao_ente(
         "impostos": imp.dados if imp else [],
         "despesas": desp.dados if desp else [],
         "meta": {},
+    }
+
+
+async def ranking_arrecadacao(
+    tesouro: BaseConnector,
+    nivel: str,
+    ano: int,
+    imposto: str | None = None,
+    por: str = "total",
+    limit: int = 27,
+) -> dict:
+    """Ranqueia entes por arrecadação. Como o SICONFI só responde um ente por
+    vez, isso só fecha em conjuntos pequenos: os 27 estados (cobertura total)
+    ou as 27 capitais (uma amostra das maiores cidades). Varre em paralelo,
+    com teto de concorrência pra não martelar a fonte."""
+    if nivel == "estado":
+        alvos = [(uf, f"estados/{uf}") for uf in UF_IBGE]
+    elif nivel == "capital":
+        alvos = [(uf, f"municipios/{cod}") for uf, cod in CAPITAIS.items()]
+    else:
+        raise ParametroInvalido("arrecadacao/ranking", [f"nivel={nivel}"], ["estado", "capital"])
+
+    sigla = imposto.upper() if imposto else None
+    porta = asyncio.Semaphore(10)
+
+    async def puxa(uf: str, base: str):
+        async with porta:
+            try:
+                return uf, await tesouro.fetch(f"{base}/impostos", ano=str(ano))
+            except BalcaoError:
+                return uf, None
+
+    respostas = await asyncio.gather(*(puxa(uf, base) for uf, base in alvos))
+
+    linhas: list[dict] = []
+    for uf, resp in respostas:
+        if resp is None or not resp.dados:
+            continue
+        pop = resp.meta.get("populacao")
+        total = Decimal(str(resp.meta.get("total_impostos") or "0"))
+        if sigla:
+            bruto = next((Decimal(i["valor"]) for i in resp.dados if i["sigla"] == sigla), Decimal(0))
+        else:
+            bruto = total
+        valor = bruto / pop if (por == "per_capita" and pop) else bruto
+        linhas.append(
+            {
+                "ente": resp.dados[0].get("ente", uf),
+                "uf": uf,
+                "nivel": nivel,
+                "populacao": pop,
+                "total_impostos": str(total),
+                "valor": str(valor),
+            }
+        )
+
+    linhas.sort(key=lambda r: Decimal(r["valor"]), reverse=True)
+    return {
+        "nivel": nivel,
+        "ano": ano,
+        "imposto": sigla,
+        "por": por,
+        "total_entes": len(linhas),
+        "ranking": linhas[:limit],
     }
