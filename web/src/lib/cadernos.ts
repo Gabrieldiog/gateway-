@@ -26,6 +26,7 @@ export const GRUPOS: Grupo[] = [
   {
     nome: "Economia",
     cadernos: [
+      { num: "XII", nome: "Pulso", sub: "câmbio ao vivo", href: "/pulso" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },
       { num: "X", nome: "IPEADATA", sub: "séries da economia", href: "/ipeadata" },
     ],
