@@ -42,6 +42,26 @@ export function formataBRL(valor: string | number): string {
   return Number.isFinite(n) ? brl.format(n) : "—";
 }
 
+// escolhe a unidade certa pro valor: a União vem em trilhões, um estado em
+// bilhões, uma cidadezinha em milhões. Devolve o número já na escala + a sigla.
+export function escalaReais(valor: string | number): { valor: number; unidade: string } {
+  const n = typeof valor === "string" ? Number(valor) : valor;
+  if (!Number.isFinite(n)) return { valor: 0, unidade: "" };
+  const abs = Math.abs(n);
+  if (abs >= 1e12) return { valor: n / 1e12, unidade: "tri" };
+  if (abs >= 1e9) return { valor: n / 1e9, unidade: "bi" };
+  if (abs >= 1e6) return { valor: n / 1e6, unidade: "mi" };
+  if (abs >= 1e3) return { valor: n / 1e3, unidade: "mil" };
+  return { valor: n, unidade: "" };
+}
+
+// reais em escala curta numa string só: "R$ 5,87 tri", "R$ 361 bi", "R$ 8,5 mi"
+export function formataReaisCompacto(valor: string | number): string {
+  const { valor: v, unidade } = escalaReais(valor);
+  if (!unidade) return formataBRL(v);
+  return `R$ ${v.toLocaleString("pt-BR", { maximumFractionDigits: v < 100 ? 2 : 0 })} ${unidade}`;
+}
+
 export function formataData(iso: string | null): string {
   if (!iso) return "—";
   const [a, m, d] = iso.split("-");

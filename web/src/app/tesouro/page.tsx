@@ -9,9 +9,23 @@ import { BarrasGasto } from "@/components/BarrasGasto";
 import { BarrasImposto } from "@/components/BarrasImposto";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
-import { caminho, formataBRL } from "@/lib/api";
+import { caminho, escalaReais, formataBRL } from "@/lib/api";
 import { UFS, CAPITAIS } from "@/lib/ufs";
 import type { Arrecadacao, Municipio, NormalizedResponse } from "@/lib/types";
+
+// número-herói em reais com a unidade certa (tri/bi/mi) na escala
+function KpiReais({
+  rotulo,
+  valor,
+  tom,
+}: {
+  rotulo: string;
+  valor: number;
+  tom?: "ink" | "accent" | "accent-2";
+}) {
+  const { valor: v, unidade } = escalaReais(valor);
+  return <Kpi rotulo={`${rotulo} · R$`} valor={v} formato="decimal" sufixo={unidade} tom={tom} />;
+}
 
 const ANOS = [2025, 2024, 2023, 2022, 2021, 2020];
 type Nivel = "uniao" | "estado" | "municipio";
@@ -170,18 +184,26 @@ export default function CadernoTesouro() {
             <Esqueleto linhas={3} />
           ) : fin ? (
             <EmTransicao ativo={arr.carregando}>
-              <div className="flex flex-wrap gap-8">
-                <Kpi rotulo="Receita · R$ bi" valor={Number(fin.receita_total) / 1e9} formato="decimal" tom="accent-2" />
-                {fin.receita_impostos != null && (
-                  <Kpi rotulo="Impostos · R$ bi" valor={Number(fin.receita_impostos) / 1e9} formato="decimal" tom="accent" />
+              <div className="flex flex-wrap gap-x-8 gap-y-5">
+                {fin.arrecadacao_total != null && (
+                  <KpiReais rotulo="Arrecadação" valor={Number(fin.arrecadacao_total)} tom="accent-2" />
                 )}
-                <Kpi rotulo="Despesa · R$ bi" valor={Number(fin.despesa_total) / 1e9} formato="decimal" tom="ink" />
+                {fin.receita_impostos != null && (
+                  <KpiReais rotulo="Impostos" valor={Number(fin.receita_impostos)} tom="accent" />
+                )}
+                {fin.receita_contribuicoes != null && (
+                  <KpiReais rotulo="Contribuições" valor={Number(fin.receita_contribuicoes)} tom="ink" />
+                )}
+                <KpiReais rotulo="Despesa" valor={Number(fin.despesa_total)} tom="ink" />
               </div>
-              {impostoPorHab != null && (
-                <p className="mt-5 font-editorial text-[1.02rem] italic text-ink/70">
-                  ≈ {formataBRL(impostoPorHab)} arrecadados em impostos por habitante.
-                </p>
-              )}
+              <p className="mt-5 max-w-[60ch] font-editorial text-[1.02rem] italic text-ink/70">
+                <strong className="font-semibold not-italic">Arrecadação</strong> = impostos +
+                contribuições (INSS, COFINS…) — é o número das manchetes.{" "}
+                <strong className="font-semibold not-italic">Impostos</strong> é só a fatia de
+                impostos (IR, ICMS, ISS…).
+                {impostoPorHab != null &&
+                  ` ≈ ${formataBRL(impostoPorHab)} de impostos por habitante.`}
+              </p>
             </EmTransicao>
           ) : (
             <Vazio>{aviso ?? "o Tesouro não tem contas desse ente nesse ano."}</Vazio>
@@ -212,7 +234,7 @@ export default function CadernoTesouro() {
           ) : despesas.length ? (
             <EmTransicao ativo={arr.carregando}>
               <Card className="p-5 pl-7">
-                <BarrasGasto porTipo={porFuncao} />
+                <BarrasGasto porTipo={porFuncao} compacto />
               </Card>
             </EmTransicao>
           ) : (

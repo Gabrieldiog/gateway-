@@ -127,7 +127,9 @@ export interface FinancaEnte {
   ano: number;
   populacao: number | null;
   receita_total: string;
-  receita_impostos: string | null;
+  receita_impostos: string | null; // só impostos
+  receita_contribuicoes: string | null; // INSS, COFINS, PIS...
+  arrecadacao_total: string | null; // impostos + taxas + contribuições
   despesa_total: string;
 }
 
