@@ -8,7 +8,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from balcao.connectors.base import BaseConnector
-from balcao.connectors.tesouro import CAPITAIS, UF_IBGE
+from balcao.connectors.tesouro import CAPITAIS, FONTE as FONTE_TESOURO, UF_IBGE
 from balcao.exceptions import (
     BalcaoError,
     FonteNaoEncontrada,
@@ -250,6 +250,7 @@ async def arrecadacao_ente(
             "total_impostos": None,
             "impostos": [],
             "despesas": [],
+            "fonte": FONTE_TESOURO,
             "meta": {"aviso": panorama.meta.get("aviso", "o Tesouro não tem contas desse ente nesse ano")},
         }
     imp = None if isinstance(impostos, BaseException) else impostos
@@ -260,6 +261,7 @@ async def arrecadacao_ente(
         "total_impostos": imp.meta.get("total_impostos") if imp else None,
         "impostos": imp.dados if imp else [],
         "despesas": desp.dados if desp else [],
+        "fonte": FONTE_TESOURO,
         "meta": {},
     }
 
