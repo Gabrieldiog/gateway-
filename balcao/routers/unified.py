@@ -11,6 +11,7 @@ from balcao.search import (
     gastos_deputado,
     ranking_arrecadacao,
     votos_deputado,
+    votos_deputado_ano,
     votos_senador,
 )
 
@@ -154,11 +155,12 @@ async def votos(
     parlamentar: str = Query(description="id ou nome do parlamentar"),
     casa: str = Query("camara", pattern="^(camara|senado)$", description="camara ou senado"),
     votacoes: int = Query(25, ge=5, le=80, description="Câmara: quantas votações recentes varrer"),
+    ano: int | None = Query(None, ge=2008, description="Câmara: histórico completo de um ano (arquivo)"),
 ) -> VotosParlamentarOut:
-    # Câmara varre N votações (caro) e o Senado faz uma chamada só; ambos
-    # cacheiam o resultado pra não repetir o trabalho.
+    # Câmara varre N votações (caro) ou lê o ano inteiro do arquivo; o Senado
+    # faz uma chamada só. Tudo cacheia o resultado pra não repetir o trabalho.
     cache = request.app.state.cache
-    chave = cache.chave("_votos", f"{casa}:{parlamentar.lower()}", {"v": votacoes})
+    chave = cache.chave("_votos", f"{casa}:{parlamentar.lower()}", {"v": votacoes, "ano": ano or 0})
     guardada = cache.pega(chave)
     if guardada is not None:
         request.state.cache = "hit"
@@ -168,6 +170,9 @@ async def votos(
     if casa == "senado":
         senado = request.app.state.connectors["senado"]
         resultado = await votos_senador(senado, parlamentar)
+    elif ano is not None:
+        camara = request.app.state.connectors["camara"]
+        resultado = await votos_deputado_ano(camara, parlamentar, ano, request.app.state.arquivo_votos)
     else:
         camara = request.app.state.connectors["camara"]
         resultado = await votos_deputado(camara, parlamentar, votacoes)

@@ -1,0 +1,22 @@
+{
+  "dados": [
+    {
+      "idVotacao": "2000-1",
+      "dataHoraVoto": "2024-03-10T15:00:00",
+      "voto": "Sim",
+      "deputado_": { "id": "204528", "nome": "Adriana Ventura", "siglaPartido": "NOVO", "siglaUf": "SP" }
+    },
+    {
+      "idVotacao": "2000-2",
+      "dataHoraVoto": "2024-04-20T16:00:00",
+      "voto": "Não",
+      "deputado_": { "id": "204528", "nome": "Adriana Ventura", "siglaPartido": "NOVO", "siglaUf": "SP" }
+    },
+    {
+      "idVotacao": "2000-1",
+      "dataHoraVoto": "2024-03-10T15:00:00",
+      "voto": "Não",
+      "deputado_": { "id": "999999", "nome": "Outro Deputado", "siglaPartido": "X", "siglaUf": "RJ" }
+    }
+  ]
+}

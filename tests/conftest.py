@@ -9,6 +9,7 @@ import httpx
 import pytest
 from httpx import ASGITransport, MockTransport
 
+from balcao.arquivos import ArquivoVotos
 from balcao.cache import CacheRespostas
 from balcao.connectors.base import connector_classes
 from balcao.main import create_app
@@ -62,6 +63,11 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # AwesomeAPI (cotações em tempo real): /json/last/USD-BRL,EUR-BRL,...
     if "awesomeapi.com.br/json/last/" in url:
         return httpx.Response(200, json=carrega_fixture("cotacoes_last"))
+    # Câmara — arquivos anuais (histórico completo de votos por deputado)
+    if "/arquivos/votacoesVotos/" in url:
+        return httpx.Response(200, json=carrega_fixture("camara_arquivo_votos"))
+    if "/arquivos/votacoes/" in url:
+        return httpx.Response(200, json=carrega_fixture("camara_arquivo_votacoes"))
     # Senado (API nova de votação por parlamentar): histórico de um senador
     if "/dadosabertos/votacao" in url:
         return httpx.Response(200, json=carrega_fixture("senado_votos"))
@@ -91,6 +97,7 @@ def monta_app():
     app.state.connectors = {
         nome: cls(cliente_fake) for nome, cls in connector_classes().items()
     }
+    app.state.arquivo_votos = ArquivoVotos(cliente_fake)
     return app, cliente_fake
 
 
