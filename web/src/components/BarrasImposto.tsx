@@ -1,4 +1,4 @@
-import { formataBRL } from "@/lib/api";
+import { formataReaisCompacto } from "@/lib/api";
 import type { Imposto } from "@/lib/types";
 
 // quebra da arrecadação por imposto: a sigla em destaque (mono, caixa alta),
@@ -23,7 +23,7 @@ export function BarrasImposto({ impostos }: { impostos: Imposto[] }) {
               {it.sigla === "OUTROS" ? "outros" : it.sigla}
             </span>
             <span className={`num shrink-0 text-sm ${i === 0 ? "text-accent" : "text-ink"}`}>
-              {formataBRL(Number(it.valor))}
+              {formataReaisCompacto(Number(it.valor))}
             </span>
           </div>
           <div className="h-2 overflow-hidden rounded-sm bg-surface-2">

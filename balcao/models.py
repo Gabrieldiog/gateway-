@@ -154,7 +154,11 @@ class FinancaEnte(BaseModel):
     ano: int
     populacao: int | None = None
     receita_total: Decimal
-    receita_impostos: Decimal | None = None  # quanto vem de impostos
+    receita_impostos: Decimal | None = None  # só impostos (IR, ICMS, ISS...)
+    receita_contribuicoes: Decimal | None = None  # INSS, COFINS, PIS, CSLL...
+    # arrecadação tributária = impostos + taxas + contribuições; é o número que
+    # bate com o "arrecadação total" das manchetes (impostos sozinho é menor)
+    arrecadacao_total: Decimal | None = None
     despesa_total: Decimal
 
 

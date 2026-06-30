@@ -27,6 +27,8 @@ export const GRUPOS: Grupo[] = [
     nome: "Economia",
     cadernos: [
       { num: "XII", nome: "Pulso", sub: "câmbio ao vivo", href: "/pulso" },
+      { num: "VI", nome: "Impostos", sub: "arrecadação · país, estados, cidades", href: "/tesouro" },
+      { num: "XIII", nome: "Arrecadômetro", sub: "quanto o Brasil já arrecadou", href: "/arrecadometro" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },
       { num: "X", nome: "IPEADATA", sub: "séries da economia", href: "/ipeadata" },
     ],
@@ -35,7 +37,6 @@ export const GRUPOS: Grupo[] = [
     nome: "Território",
     cadernos: [
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
-      { num: "VI", nome: "Tesouro", sub: "arrecadação: país, estados, cidades", href: "/tesouro" },
     ],
   },
   {

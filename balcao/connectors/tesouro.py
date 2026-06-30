@@ -157,6 +157,10 @@ class TesouroConnector(BaseConnector):
 
         receita_total = self._valor(receitas, "Receitas Brutas Realizadas", conta="TOTAL DAS RECEITAS")
         impostos = self._valor(receitas, "Receitas Brutas Realizadas", cod_conta="1.1.1.0.00.0.0")
+        # 1.1 = impostos+taxas+melhoria, 1.2 = contribuições; juntos dão a
+        # arrecadação tributária (o "arrecadação total" das manchetes)
+        imp_taxas = self._valor(receitas, "Receitas Brutas Realizadas", cod_conta="1.1.0.0.00.0.0")
+        contribuicoes = self._valor(receitas, "Receitas Brutas Realizadas", cod_conta="1.2.0.0.00.0.0")
         despesa_total = self._valor(despesas, "Despesas Empenhadas", conta="Despesas Exceto Intra")
 
         if receita_total is None and despesa_total is None:
@@ -165,12 +169,18 @@ class TesouroConnector(BaseConnector):
                 meta={"ano": ano, "aviso": "o Tesouro não tem contas desse ente nesse ano"},
             )
 
+        arrecadacao = None
+        if imp_taxas is not None or contribuicoes is not None:
+            arrecadacao = (imp_taxas or Decimal(0)) + (contribuicoes or Decimal(0))
+
         ident = self._identidade(nivel, cod, receitas + despesas)
         fin = FinancaEnte(
             **ident,
             ano=ano,
             receita_total=receita_total or Decimal(0),
             receita_impostos=impostos,
+            receita_contribuicoes=contribuicoes,
+            arrecadacao_total=arrecadacao,
             despesa_total=despesa_total or Decimal(0),
         )
         return NormalizedResponse(
