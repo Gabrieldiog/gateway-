@@ -82,6 +82,24 @@ class IndicadorEconomico(BaseModel):
     valor: Decimal
 
 
+class ExpectativaMercado(BaseModel):
+    """O que o mercado espera para um indicador num ano de referência — a
+    projeção do Boletim Focus (BACEN), na coleta (semana) mais recente. É o
+    olhar pra frente que o /serie do BACEN, retrospectivo, não dá."""
+
+    fonte: str = "focus"
+    indicador: str  # IPCA, Selic, Câmbio, PIB Total, IGP-M
+    referencia: str  # ano-alvo da projeção, ex "2026"
+    unidade: str  # "%" ou "R$" (câmbio)
+    data: date | None = None  # data da coleta (o Focus é semanal)
+    mediana: float | None = None
+    media: float | None = None
+    minimo: float | None = None
+    maximo: float | None = None
+    desvio_padrao: float | None = None
+    respondentes: int | None = None
+
+
 class Cotacao(BaseModel):
     """Cotação de câmbio/cripto quase em tempo real (preço de mercado)."""
 
