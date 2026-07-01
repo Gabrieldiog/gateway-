@@ -54,6 +54,15 @@ async def test_arrecadacao_cacheia(api):
     assert segunda.json() == primeira.json()
 
 
+async def test_arrecadacao_cita_a_fonte(api):
+    # a resposta diz de onde o dado vem, pra ser verificável
+    resp = await api.get("/v1/arrecadacao?ente=brasil&ano=2023")
+    fonte = resp.json()["fonte"]
+    assert "Tesouro" in fonte["nome"]
+    assert fonte["url"].startswith("https://")
+    assert "Receita Federal" in fonte["nota"]
+
+
 # --- /v1/arrecadacao/ranking: varre os 27 estados ou as 27 capitais ---
 
 

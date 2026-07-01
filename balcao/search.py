@@ -8,7 +8,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from balcao.connectors.base import BaseConnector
-from balcao.connectors.tesouro import CAPITAIS, UF_IBGE
+from balcao.connectors.tesouro import CAPITAIS, FONTE as FONTE_TESOURO, UF_IBGE
 from balcao.exceptions import (
     BalcaoError,
     FonteNaoEncontrada,
@@ -161,6 +161,37 @@ async def votos_deputado(
     }
 
 
+async def votos_deputado_ano(camara: BaseConnector, deputado: str, ano: int, arquivo) -> dict:
+    """O histórico COMPLETO de um deputado num ano, do arquivo anual da Câmara
+    (centenas de votos, não só a sessão recente). Resolve a pessoa, pega o
+    índice do ano (montado uma vez) e junta cada voto com a descrição da votação."""
+    achado = await _resolve_deputado(camara, deputado)
+    idx = await arquivo.indice(ano)
+    brutos = idx.por_deputado.get(achado["id"], [])
+
+    historico = []
+    for vb in brutos:
+        info = idx.por_votacao.get(vb["votacao_id"], {})
+        historico.append(
+            {
+                "votacao_id": vb["votacao_id"],
+                "data": vb["data"] or info.get("data"),
+                "descricao": info.get("descricao") or f"Votação {vb['votacao_id']}",
+                "aprovada": info.get("aprovada"),
+                "voto": vb["voto"],
+            }
+        )
+    historico.sort(key=lambda v: v["data"] or "", reverse=True)
+    return {
+        "fonte": "camara",
+        "casa": "camara",
+        "parlamentar": achado,
+        "analisadas": len(brutos),
+        "total": len(historico),
+        "votos": historico,
+    }
+
+
 async def votos_senador(senado: BaseConnector, senador: str) -> dict:
     """O histórico de voto de um senador. Diferente da Câmara, o Senado
     entrega tudo numa chamada só (a API nova filtra por parlamentar), então
@@ -250,6 +281,7 @@ async def arrecadacao_ente(
             "total_impostos": None,
             "impostos": [],
             "despesas": [],
+            "fonte": FONTE_TESOURO,
             "meta": {"aviso": panorama.meta.get("aviso", "o Tesouro não tem contas desse ente nesse ano")},
         }
     imp = None if isinstance(impostos, BaseException) else impostos
@@ -260,6 +292,7 @@ async def arrecadacao_ente(
         "total_impostos": imp.meta.get("total_impostos") if imp else None,
         "impostos": imp.dados if imp else [],
         "despesas": desp.dados if desp else [],
+        "fonte": FONTE_TESOURO,
         "meta": {},
     }
 

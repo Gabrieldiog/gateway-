@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { BarrasGasto } from "@/components/BarrasGasto";
+import { SeloFonte } from "@/components/SeloFonte";
 import { BarrasImposto } from "@/components/BarrasImposto";
 import { RankingArrecadacao } from "@/components/RankingArrecadacao";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -270,6 +271,8 @@ export default function CadernoTesouro() {
           )}
         </section>
       </div>
+
+          <SeloFonte fonte={dados?.fonte} />
         </>
       )}
     </div>

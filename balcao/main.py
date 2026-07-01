@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIASGIMiddleware
 
 from balcao import connectors  # noqa: F401  o import registra as fontes
+from balcao.arquivos import ArquivoVotos
 from balcao.cache import CacheRespostas
 from balcao.config import get_settings
 from balcao.connectors.base import connector_classes
@@ -34,6 +35,8 @@ async def lifespan(app: FastAPI):
         )
         for name, cls in connector_classes().items()
     }
+    # índice file-backed dos votos anuais da Câmara (histórico completo)
+    app.state.arquivo_votos = ArquivoVotos(client)
     yield
     await client.aclose()
 
