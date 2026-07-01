@@ -2,8 +2,9 @@
 com as fixturas gravadas em tests/fixtures, entao nenhum teste abre socket."""
 
 import json
+import re
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 import httpx
 import pytest
@@ -63,6 +64,23 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # AwesomeAPI (cotações em tempo real): /json/last/USD-BRL,EUR-BRL,...
     if "awesomeapi.com.br/json/last/" in url:
         return httpx.Response(200, json=carrega_fixture("cotacoes_last"))
+    # Boletim Focus (Olinda/OData): devolve um registro sintético com o
+    # indicador pedido no $filter, pra o painel poder testar as 5 séries
+    if "servico/Expectativas" in url:
+        alvo = re.search(r"Indicador eq '([^']+)'", unquote(url))
+        return httpx.Response(200, json={"value": [{
+            "Indicador": alvo.group(1) if alvo else "IPCA",
+            "IndicadorDetalhe": None,
+            "Data": "2026-06-26",
+            "DataReferencia": "2026",
+            "Media": 5.31,
+            "Mediana": 5.33,
+            "DesvioPadrao": 0.23,
+            "Minimo": 4.3,
+            "Maximo": 5.86,
+            "numeroRespondentes": 148,
+            "baseCalculo": 0,
+        }]})
     # Câmara — arquivos anuais (histórico completo de votos por deputado)
     if "/arquivos/votacoesVotos/" in url:
         return httpx.Response(200, json=carrega_fixture("camara_arquivo_votos"))
