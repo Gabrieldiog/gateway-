@@ -81,6 +81,9 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             "numeroRespondentes": 148,
             "baseCalculo": 0,
         }]})
+    # ONS — geração do SIN quase em tempo real (balanço energético do dia)
+    if "tr.ons.org.br/Content/Get/BalancoEnergetico" in url:
+        return httpx.Response(200, json=carrega_fixture("ons_balanco"))
     # Câmara — arquivos anuais (histórico completo de votos por deputado)
     if "/arquivos/votacoesVotos/" in url:
         return httpx.Response(200, json=carrega_fixture("camara_arquivo_votos"))
