@@ -85,6 +85,15 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # acima cai no mesmo lote de votos (fan-out do histórico por deputado)
     if "/votacoes/" in url and url.endswith("/votos"):
         return httpx.Response(200, json=carrega_fixture("camara_votos"))
+    # a 195 (índice diário da poupança) responde {"erro":{}} com HTTP 200 no
+    # ultimos/1 — reproduz o quirk real pra provar que o conector não estoura
+    if "api.bcb.gov.br/dados/serie/bcdata.sgs.195/" in url:
+        return httpx.Response(200, json={"erro": {}})
+    # BACEN SGS: a série 432 tem fixture própria (bacen_selic) no lote acima;
+    # qualquer outra série (bcdata.sgs.{codigo}) serve pontos genéricos — o
+    # painel de inflação puxa ~8 séries de uma vez
+    if "api.bcb.gov.br/dados/serie/bcdata.sgs." in url:
+        return httpx.Response(200, json=carrega_fixture("bacen_serie"))
     return httpx.Response(500, json={"erro": f"sem fixture pra {url}"})
 
 
