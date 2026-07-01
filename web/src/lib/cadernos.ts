@@ -27,6 +27,7 @@ export const GRUPOS: Grupo[] = [
     nome: "Economia",
     cadernos: [
       { num: "XII", nome: "Pulso", sub: "câmbio ao vivo", href: "/pulso" },
+      { num: "XIV", nome: "Custo de Vida", sub: "inflação e o que o mercado espera", href: "/custo-de-vida" },
       { num: "VI", nome: "Impostos", sub: "arrecadação · país, estados, cidades", href: "/tesouro" },
       { num: "XIII", nome: "Arrecadômetro", sub: "quanto o Brasil já arrecadou", href: "/arrecadometro" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },

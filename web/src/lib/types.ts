@@ -64,6 +64,32 @@ export interface Cotacao {
   atualizado: string | null;
 }
 
+// uma linha do painel /v1/bacen/inflacao — o valor mais recente de cada série
+export interface IndicadorEconomico {
+  fonte: string;
+  chave: string; // ipca, ipca12m, igpm, selic, dolar...
+  serie: number;
+  nome: string; // "IPCA (12 meses)"
+  unidade: string; // "% no mês", "% ao ano", "% ao dia", "R$"
+  data: string | null;
+  valor: string;
+}
+
+// uma linha do painel /v1/focus/painel — o que o mercado espera pra um ano
+export interface ExpectativaMercado {
+  fonte: string;
+  indicador: string; // IPCA, Selic, Câmbio, PIB Total, IGP-M
+  referencia: string; // ano-alvo, "2026"
+  unidade: string; // "%" ou "R$"
+  data: string | null; // data da coleta (semanal)
+  mediana: number | null;
+  media: number | null;
+  minimo: number | null;
+  maximo: number | null;
+  desvio_padrao: number | null;
+  respondentes: number | null;
+}
+
 export interface Estado {
   fonte: string;
   id: number;
