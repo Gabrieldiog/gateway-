@@ -68,6 +68,20 @@ class PontoSerie(BaseModel):
     valor: Decimal
 
 
+class IndicadorEconomico(BaseModel):
+    """Uma linha do painel de custo de vida: o valor mais recente de uma série
+    do BACEN, já com rótulo e unidade prontos pra exibir (o /serie cru só dá o
+    número, aqui vem 'IPCA (12 meses) = 4,72 % ao ano')."""
+
+    fonte: str = "bacen"
+    chave: str  # ipca, igpm, selic, dolar...
+    serie: int  # código da série no SGS
+    nome: str  # rótulo legível
+    unidade: str  # "% no mês", "% ao ano", "% ao dia", "R$"
+    data: date | None = None
+    valor: Decimal
+
+
 class Cotacao(BaseModel):
     """Cotação de câmbio/cripto quase em tempo real (preço de mercado)."""
 
