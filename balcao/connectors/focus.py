@@ -29,6 +29,16 @@ PAINEL = ("ipca", "selic", "cambio", "pib", "igpm")
 
 PARAMS = {"ano"}
 
+FONTE = {
+    "nome": "Banco Central — Boletim Focus",
+    "url": "https://www.bcb.gov.br/publicacoes/focus",
+    "nota": (
+        "Projeção mediana de mais de cem instituições financeiras, coletada e "
+        "divulgada toda semana pelo Banco Central. Expectativa de mercado, não "
+        "previsão oficial."
+    ),
+}
+
 
 @register
 class FocusConnector(BaseConnector):
@@ -69,7 +79,7 @@ class FocusConnector(BaseConnector):
         nome, unidade = INDICADORES[slug]
         registro = await self._consulta(nome, ano)
         itens = [self._norm(registro, nome, unidade).model_dump(mode="json")] if registro else []
-        meta = {"indicador": nome, "ano": ano}
+        meta = {"indicador": nome, "ano": ano, "fonte": FONTE}
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )
@@ -85,7 +95,7 @@ class FocusConnector(BaseConnector):
 
         resultados = await asyncio.gather(*(um(slug) for slug in PAINEL))
         itens = [r for r in resultados if r is not None]
-        meta: dict = {"painel": "expectativas do mercado"}
+        meta: dict = {"painel": "expectativas do mercado", "fonte": FONTE}
         if ano:
             meta["ano"] = ano
         faltando = [INDICADORES[s][0] for s, r in zip(PAINEL, resultados) if r is None]

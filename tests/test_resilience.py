@@ -104,6 +104,22 @@ async def test_fonte_caida_serve_do_cache_stale():
     await cliente_fake.aclose()
 
 
+async def test_upstream_200_com_html_vira_erro_upstream():
+    # portal do governo em manutencao responde 200 com HTML; sem a guarda o
+    # resp.json() estourava sem tratamento e o gateway devolvia 500 cru
+    from balcao.connectors.ckan import AneelConnector
+
+    cliente = httpx.AsyncClient(
+        transport=MockTransport(
+            lambda r: httpx.Response(200, text="<html>em manutencao</html>")
+        )
+    )
+    conector = AneelConnector(cliente, retry_tentativas=1)
+    with pytest.raises(ErroUpstream):
+        await conector.fetch("datasets")
+    await cliente.aclose()
+
+
 async def test_fonte_caida_sem_stale_da_erro_limpo(api):
     # o conftest nao tem fixture pra esse caminho, entao o upstream da 500
     resp = await api.get("/v1/senado/senadores/9999")
