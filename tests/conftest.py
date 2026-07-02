@@ -99,6 +99,31 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # ComexStat — consulta por POST; o corpo diz a dimensão pedida
+    if "api-comexstat.mdic.gov.br/general" in url:
+        corpo = json.loads(request.content or b"{}")
+        flow = corpo.get("flow", "export")
+        if corpo.get("monthDetail"):
+            fator = 1 if flow == "export" else 2
+            lista = [
+                {"year": "2026", "monthNumber": "05", "metricFOB": str(31904049589 // fator)},
+                {"year": "2026", "monthNumber": "04", "metricFOB": str(34211323941 // fator)},
+            ]
+        elif "country" in corpo.get("details", []):
+            lista = [
+                {"year": "2026", "country": "China", "metricFOB": "46263322664", "metricKG": "1000"},
+                {"year": "2026", "country": "Estados Unidos", "metricFOB": "14011988576", "metricKG": "500"},
+            ]
+        elif "state" in corpo.get("details", []):
+            lista = [
+                {"year": "2026", "state": "São Paulo", "metricFOB": "28171881259", "metricKG": "900"},
+                {"year": "2026", "state": "Rio de Janeiro", "metricFOB": "22055659374", "metricKG": "800"},
+            ]
+        else:
+            lista = [
+                {"year": "2026", "chapterCode": "27", "chapter": "Combustíveis minerais", "metricFOB": "27242313613", "metricKG": "700"},
+            ]
+        return httpx.Response(200, json={"data": {"list": lista}, "success": True, "message": None})
     # InfoDengue — semanas epidemiológicas de um município
     if "info.dengue.mat.br/api/alertcity" in url:
         return httpx.Response(200, json=carrega_fixture("infodengue_alertas"))

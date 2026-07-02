@@ -49,10 +49,13 @@ class BaseConnector(ABC):
         seta suporta_busca = True e implementa."""
         raise NotImplementedError
 
-    async def _get(
+    async def _request(
         self,
+        metodo: str,
         path: str,
+        *,
         params: dict | None = None,
+        json: Any = None,
         timeout: float | None = None,
         headers: dict | None = None,
     ) -> httpx.Response:
@@ -67,7 +70,9 @@ class BaseConnector(ABC):
         try:
             async for tentativa in com_retry(self.retry_tentativas):
                 with tentativa:
-                    resp = await self.client.get(f"{self.base_url}{path}", params=params, **extra)
+                    resp = await self.client.request(
+                        metodo, f"{self.base_url}{path}", params=params, json=json, **extra
+                    )
                     resp.raise_for_status()
         except httpx.HTTPStatusError as exc:
             # 4xx e pedido errado, nao fonte doente; so 5xx conta pro breaker
@@ -81,14 +86,7 @@ class BaseConnector(ABC):
         assert resp is not None
         return resp
 
-    async def get_json(
-        self,
-        path: str,
-        params: dict | None = None,
-        timeout: float | None = None,
-        headers: dict | None = None,
-    ) -> Any:
-        resp = await self._get(path, params, timeout, headers)
+    def _parse_json(self, resp: httpx.Response) -> Any:
         try:
             return resp.json()
         except ValueError as exc:
@@ -97,12 +95,33 @@ class BaseConnector(ABC):
             self.breaker.registra_falha()
             raise ErroUpstream(self.name) from exc
 
+    async def get_json(
+        self,
+        path: str,
+        params: dict | None = None,
+        timeout: float | None = None,
+        headers: dict | None = None,
+    ) -> Any:
+        resp = await self._request("GET", path, params=params, timeout=timeout, headers=headers)
+        return self._parse_json(resp)
+
+    async def post_json(
+        self,
+        path: str,
+        corpo: Any,
+        timeout: float | None = None,
+        headers: dict | None = None,
+    ) -> Any:
+        # fontes de consulta-por-POST (ComexStat): mesmo retry/breaker do GET
+        resp = await self._request("POST", path, json=corpo, timeout=timeout, headers=headers)
+        return self._parse_json(resp)
+
     async def get_text(
         self, path: str, params: dict | None = None, timeout: float | None = None
     ) -> str:
         # igual ao get_json, mas devolve o corpo cru — pra fontes que servem
         # CSV/arquivo (INPE, e futuramente ANP, Tesouro Direto, TSE)
-        resp = await self._get(path, params, timeout)
+        resp = await self._request("GET", path, params=params, timeout=timeout)
         return resp.text
 
 

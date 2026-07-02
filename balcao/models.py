@@ -218,6 +218,30 @@ class ContratoPublico(BaseModel):
     vigencia_fim: date | None = None
 
 
+class BalancaMensal(BaseModel):
+    """Um mês da balança comercial: quanto o Brasil exportou, importou e o
+    saldo, em dólares FOB."""
+
+    fonte: str = "comex"
+    mes: str  # "2026-05"
+    exportacoes: Decimal  # US$ FOB
+    importacoes: Decimal
+    saldo: Decimal
+
+
+class LinhaComercio(BaseModel):
+    """Uma linha de ranking do comércio exterior — por país, UF ou produto —
+    num fluxo (exportação ou importação) e período."""
+
+    fonte: str = "comex"
+    fluxo: str  # exportacao | importacao
+    dimensao: str  # pais | uf | produto
+    nome: str  # China, São Paulo, "Combustíveis minerais..."
+    codigo: str | None = None  # código do capítulo NCM, quando produto
+    valor_fob: Decimal  # US$
+    peso_kg: Decimal | None = None
+
+
 class AlertaDengue(BaseModel):
     """Uma semana epidemiológica de um município no InfoDengue: casos
     notificados, a estimativa corrigida (nowcast) e o nível de alerta do
