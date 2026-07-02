@@ -99,6 +99,9 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # InfoDengue — semanas epidemiológicas de um município
+    if "info.dengue.mat.br/api/alertcity" in url:
+        return httpx.Response(200, json=carrega_fixture("infodengue_alertas"))
     # brapi (B3) — exige Bearer; devolve um ativo sintético com o símbolo pedido
     if "brapi.dev/api/v2/stocks/quote" in url:
         if not request.headers.get("authorization", "").startswith("Bearer "):
