@@ -32,6 +32,35 @@ async def test_ranking_por_uf_e_produto(api):
     assert "Combustíveis" in produto["nome"]
 
 
+async def test_solucos_do_mdic_sao_retentados():
+    # o MDIC responde 200 com success=false de vez em quando; sem a nova
+    # tentativa, o primeiro acesso com cache frio virava 502 na cara
+    import httpx
+    from httpx import MockTransport
+
+    from balcao.connectors.comex import ComexConnector
+
+    contagem = {"chamadas": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        contagem["chamadas"] += 1
+        if contagem["chamadas"] == 1:
+            return httpx.Response(200, json={"success": False, "data": None})
+        return httpx.Response(
+            200,
+            json={"success": True, "data": {"list": [
+                {"year": "2026", "country": "China", "metricFOB": "1", "metricKG": "1"}
+            ]}},
+        )
+
+    cliente = httpx.AsyncClient(transport=MockTransport(handler))
+    conector = ComexConnector(cliente, retry_tentativas=1)
+    resposta = await conector.fetch("ranking/pais")
+    assert resposta.total == 1
+    assert contagem["chamadas"] == 2
+    await cliente.aclose()
+
+
 async def test_fluxo_invalido_da_400(api):
     resp = await api.get("/v1/comex/ranking/pais?fluxo=contrabando")
     assert resp.status_code == 400

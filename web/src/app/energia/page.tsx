@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
+import { BadgeAoVivo } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -144,6 +145,12 @@ export default function CadernoEnergia() {
   const fonte = energia.dados?.meta?.fonte as FonteDado | undefined;
   const instante = (energia.dados?.meta?.instante as string | undefined) ?? sin?.instante;
 
+  // transparência do ao-vivo: a hora de cada resposta nova, visível no selo
+  const [atualizadoEm, setAtualizadoEm] = useState<number | null>(null);
+  useEffect(() => {
+    if (energia.dados) setAtualizadoEm(Date.now());
+  }, [energia.dados]);
+
   return (
     <div>
       <CadernoHeader
@@ -153,14 +160,11 @@ export default function CadernoEnergia() {
         resumo="Quanto o Brasil está gerando de energia neste minuto, e de onde ela vem. O Sistema Interligado Nacional atualiza a cada minuto — a página acompanha e o número desliza pro novo valor. Dado real do ONS, não estimativa."
       />
 
-      <div className="mb-5 flex items-center gap-2">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
-        </span>
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <BadgeAoVivo atualizadoEm={atualizadoEm} />
         <span className="num text-xs uppercase tracking-wider text-muted">
-          ao vivo · atualiza a cada 30s
-          {instante && <span className="text-ink"> · leitura das {horaDe(instante)}</span>}
+          a cada 30s, sozinho
+          {instante && <span className="text-ink"> · leitura do ONS das {horaDe(instante)}</span>}
         </span>
       </div>
 
