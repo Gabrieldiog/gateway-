@@ -20,6 +20,13 @@ async def test_fonte_desconhecida_da_404_com_fontes_disponiveis(api):
     assert "camara" in resp.json()["detalhes"]["fontes_disponiveis"]
 
 
+async def test_cabecalhos_de_seguranca(api):
+    resp = await api.get("/health")
+    assert resp.headers["x-content-type-options"] == "nosniff"
+    assert resp.headers["x-frame-options"] == "DENY"
+    assert resp.headers["referrer-policy"] == "no-referrer"
+
+
 async def test_segunda_chamada_vem_do_cache(api):
     primeira = await api.get("/v1/ibge/estados")
     assert "cache" not in primeira.json()["meta"]

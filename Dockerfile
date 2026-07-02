@@ -12,4 +12,5 @@ RUN useradd --create-home balcao
 USER balcao
 
 EXPOSE 8000
-CMD ["uvicorn", "balcao.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# forma shell de propósito: plataformas como o Render injetam $PORT
+CMD uvicorn balcao.main:app --host 0.0.0.0 --port ${PORT:-8000}
