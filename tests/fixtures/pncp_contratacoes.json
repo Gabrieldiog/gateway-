@@ -1,0 +1,25 @@
+{
+ "data": [
+  {
+   "numeroControlePNCP": "80881915000192-1-000041/2026",
+   "anoCompra": 2026,
+   "orgaoEntidade": {"cnpj": "80881915000192", "razaoSocial": "MUNICIPIO DE LINDOESTE", "poderId": "N", "esferaId": "M"},
+   "unidadeOrgao": {"ufNome": "Paraná", "ufSigla": "PR", "municipioNome": "Lindoeste", "codigoIbge": "4113452", "nomeUnidade": "Prefeitura Municipal de Lindoeste", "codigoUnidade": "2"},
+   "modalidadeId": 6,
+   "modalidadeNome": "Pregão - Eletrônico",
+   "objetoCompra": "CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA DISPONIBILIZAR CIRURGIÃO DENTISTA",
+   "valorTotalEstimado": 127296.0,
+   "valorTotalHomologado": null,
+   "situacaoCompraNome": "Divulgada no PNCP",
+   "dataPublicacaoPncp": "2026-06-20T00:00:03",
+   "dataAberturaProposta": "2026-06-22T08:00:01",
+   "dataEncerramentoProposta": "2026-07-07T13:00:01",
+   "processo": "PR36/2026"
+  }
+ ],
+ "totalRegistros": 10041,
+ "totalPaginas": 1005,
+ "numeroPagina": 1,
+ "paginasRestantes": 1004,
+ "empty": false
+}
