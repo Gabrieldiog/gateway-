@@ -7,7 +7,7 @@ import { Esqueleto, ErroBox } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useTicker } from "@/hooks/useTicker";
 import { caminho } from "@/lib/api";
-import type { Cotacao, NormalizedResponse } from "@/lib/types";
+import type { Acao, Cotacao, NormalizedResponse } from "@/lib/types";
 
 const PARES = "USD-BRL,EUR-BRL,GBP-BRL,XAU-BRL,BTC-BRL,ETH-BRL,SOL-BRL";
 const INTERVALO = 20000; // 20s
@@ -21,6 +21,9 @@ const GRUPOS: { titulo: string; nota?: string; pares: string[] }[] = [
 
 // rótulo amigável quando a sigla do par não se explica sozinha
 const APELIDOS: Record<string, string> = { "XAU/BRL": "OURO" };
+
+// a bolsa vem por outra fonte (b3), com ~15 min de atraso no plano gratuito
+const TICKERS_B3 = "ibov,PETR4,VALE3,ITUB4";
 
 function formataPreco(v: number): string {
   if (v >= 1000) return v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
@@ -74,16 +77,49 @@ function TickerCotacao({ c }: { c: Cotacao }) {
   );
 }
 
+function CardAcao({ a }: { a: Acao }) {
+  const indice = a.moeda == null;
+  const preco = Number(a.preco);
+  const variacao = a.variacao_pct ?? 0;
+  const positiva = variacao >= 0;
+  return (
+    <Card className="p-5">
+      <div className="flex items-baseline justify-between">
+        <span className="num text-sm font-semibold uppercase tracking-wider text-ink">{a.ticker}</span>
+        <span className={`num text-xs ${positiva ? "text-emerald-500" : "text-rose-500"}`}>
+          {positiva ? "▲" : "▼"} {Math.abs(variacao).toFixed(2)}%
+        </span>
+      </div>
+      <p className="num mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+        {indice
+          ? preco.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
+          : `R$ ${preco.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+        {indice && <span className="ml-1.5 align-baseline text-base text-muted">pts</span>}
+      </p>
+      <p className="mt-1.5 truncate text-xs text-muted" title={a.nome ?? ""}>
+        {a.nome}
+      </p>
+    </Card>
+  );
+}
+
 export default function CadernoPulso() {
   const cot = useBalcao<NormalizedResponse<Cotacao>>(caminho(`cotacoes/last/${PARES}`));
+  const bolsa = useBalcao<NormalizedResponse<Acao>>(caminho(`b3/acoes/${TICKERS_B3}`));
   const cotacoes = cot.dados?.dados ?? [];
+  const acoes = bolsa.dados?.dados ?? [];
   const { recarregar } = cot;
+  const recarregarBolsa = bolsa.recarregar;
 
-  // polling: refaz a cada 20s pra o número mudar sozinho quando o mercado mexe
+  // polling: refaz a cada 20s pra o número mudar sozinho quando o mercado mexe.
+  // a bolsa entra no mesmo ciclo — o cache do gateway segura o upstream
   useEffect(() => {
-    const id = setInterval(() => recarregar(), INTERVALO);
+    const id = setInterval(() => {
+      recarregar();
+      recarregarBolsa();
+    }, INTERVALO);
     return () => clearInterval(id);
-  }, [recarregar]);
+  }, [recarregar, recarregarBolsa]);
 
   return (
     <div>
@@ -127,6 +163,22 @@ export default function CadernoPulso() {
               </section>
             );
           })}
+
+          {acoes.length > 0 && (
+            <section>
+              <p className="kicker mb-3">
+                Bolsa
+                <span className="ml-2 normal-case tracking-normal text-muted">
+                  · B3, com ~15 min de atraso
+                </span>
+              </p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {acoes.map((a) => (
+                  <CardAcao key={a.ticker} a={a} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
 

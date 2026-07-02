@@ -99,6 +99,27 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # brapi (B3) — exige Bearer; devolve um ativo sintético com o símbolo pedido
+    if "brapi.dev/api/v2/stocks/quote" in url:
+        if not request.headers.get("authorization", "").startswith("Bearer "):
+            return httpx.Response(401, json={"error": True, "message": "Token de autenticação não fornecido"})
+        simbolo = parse_qs(urlparse(url).query).get("symbols", [""])[0]
+        return httpx.Response(200, json={"results": [{
+            "requestedSymbol": simbolo,
+            "symbol": simbolo,
+            "data": {
+                "shortName": simbolo,
+                "longName": f"Empresa {simbolo}",
+                "currency": "BRL",
+                "regularMarketPrice": 171688.61 if simbolo == "^BVSP" else 37.83,
+                "regularMarketChangePercent": -0.2,
+                "regularMarketOpen": 37.5,
+                "regularMarketDayHigh": 37.84,
+                "regularMarketDayLow": 37.4,
+                "regularMarketPreviousClose": 37.73,
+                "regularMarketTime": "2026-07-02T12:21:41.000Z",
+            },
+        }]})
     # PNCP — consulta pública de licitações e contratos
     if "pncp.gov.br/api/consulta" in url:
         if "/contratacoes/publicacao" in url:
