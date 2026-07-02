@@ -2,9 +2,15 @@
 com as fixturas gravadas em tests/fixtures, entao nenhum teste abre socket."""
 
 import json
+import os
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
+
+# fontes com chave (Transparencia, brapi) leem o token das settings; aqui vai
+# um de mentira pra suite rodar identica em qualquer maquina, com ou sem .env
+os.environ["TRANSPARENCIA_API_KEY"] = "chave-de-teste"
+os.environ["BRAPI_TOKEN"] = "token-de-teste"
 
 import httpx
 import pytest
@@ -81,6 +87,18 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             "numeroRespondentes": 148,
             "baseCalculo": 0,
         }]})
+    # Portal da Transparencia — exige o header chave-api-dados; sem ele, 401
+    if "api.portaldatransparencia.gov.br" in url:
+        if not request.headers.get("chave-api-dados"):
+            return httpx.Response(401, json={"Erro na API": "Chave de API não informada!"})
+        if "/emendas" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_emendas"))
+        if "/ceis" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_ceis"))
+        if "/cnep" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
+        if "novo-bolsa-familia-por-municipio" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
     # ONS — geração do SIN quase em tempo real (balanço energético do dia)
     if "tr.ons.org.br/Content/Get/BalancoEnergetico" in url:
         return httpx.Response(200, json=carrega_fixture("ons_balanco"))

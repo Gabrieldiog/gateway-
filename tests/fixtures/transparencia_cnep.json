@@ -1,0 +1,13 @@
+[
+ {
+  "id": 2,
+  "dataInicioSancao": "01/03/2024",
+  "dataFimSancao": "01/03/2026",
+  "sancionado": {"nome": "EMPRESA EXEMPLO LTDA", "codigoFormatado": "12.345.678/0001-90"},
+  "pessoa": {"nome": "EMPRESA EXEMPLO LTDA", "cnpjFormatado": "12.345.678/0001-90", "tipo": "J"},
+  "tipoSancao": {"descricaoResumida": "Multa - Lei Anticorrupção", "descricaoPortal": "Multa"},
+  "orgaoSancionador": {"nome": "Controladoria-Geral da União", "siglaUf": "DF", "poder": "Executivo", "esfera": "FEDERAL"},
+  "fonteSancao": {"nomeExibicao": "CGU"},
+  "numeroProcesso": "456/2024"
+ }
+]

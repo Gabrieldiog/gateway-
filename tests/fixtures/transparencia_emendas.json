@@ -1,0 +1,36 @@
+[
+ {
+  "codigoEmenda": "202542900005",
+  "ano": 2025,
+  "tipoEmenda": "Emenda Individual - Transferências com Finalidade Definida",
+  "autor": "RODRIGO DA ZAELI",
+  "nomeAutor": "RODRIGO DA ZAELI",
+  "numeroEmenda": "0005",
+  "localidadeDoGasto": "CUIABÁ - MT",
+  "funcao": "Desporto e lazer",
+  "subfuncao": "Desporto comunitário",
+  "valorEmpenhado": "8.000,00",
+  "valorLiquidado": "8.000,00",
+  "valorPago": "8.000,00",
+  "valorRestoInscrito": "0,00",
+  "valorRestoCancelado": "0,00",
+  "valorRestoPago": "0,00"
+ },
+ {
+  "codigoEmenda": "202538030001",
+  "ano": 2025,
+  "tipoEmenda": "Emenda de Bancada",
+  "autor": "BANCADA DE GOIAS",
+  "nomeAutor": "BANCADA DE GOIAS",
+  "numeroEmenda": "0001",
+  "localidadeDoGasto": "GOIÁS (UF)",
+  "funcao": "Saúde",
+  "subfuncao": "Assistência hospitalar",
+  "valorEmpenhado": "1.500.000,50",
+  "valorLiquidado": "750.000,25",
+  "valorPago": "0,00",
+  "valorRestoInscrito": "0,00",
+  "valorRestoCancelado": "0,00",
+  "valorRestoPago": "0,00"
+ }
+]

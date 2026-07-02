@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     retry_tentativas: int = 3
     breaker_falhas: int = 5
     breaker_cooldown: float = 30.0
+    # chaves de fontes que exigem cadastro (gratis); vazio = fonte desativada
+    transparencia_api_key: str = ""
+    brapi_token: str = ""
 
 
 @lru_cache
