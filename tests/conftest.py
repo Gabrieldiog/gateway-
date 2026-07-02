@@ -99,6 +99,11 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # Tesouro Direto — CSV de 14 MB sem ordem cronológica (fixture encolhida)
+    if "tesourotransparente.gov.br" in url and "precotaxatesourodireto" in url:
+        return httpx.Response(
+            200, text=(FIXTURES / "tesourodireto.csv").read_text(encoding="utf-8")
+        )
     # ComexStat — consulta por POST; o corpo diz a dimensão pedida
     if "api-comexstat.mdic.gov.br/general" in url:
         corpo = json.loads(request.content or b"{}")
