@@ -9,8 +9,18 @@ import { useTicker } from "@/hooks/useTicker";
 import { caminho } from "@/lib/api";
 import type { Cotacao, NormalizedResponse } from "@/lib/types";
 
-const PARES = "USD-BRL,EUR-BRL,GBP-BRL,BTC-BRL";
+const PARES = "USD-BRL,EUR-BRL,GBP-BRL,XAU-BRL,BTC-BRL,ETH-BRL,SOL-BRL";
 const INTERVALO = 20000; // 20s
+
+// o telão em seções: moedas, ouro e cripto (a ordem dentro de cada uma importa)
+const GRUPOS: { titulo: string; nota?: string; pares: string[] }[] = [
+  { titulo: "Moedas", pares: ["USD/BRL", "EUR/BRL", "GBP/BRL"] },
+  { titulo: "Ouro", nota: "cotação da onça troy (31,1 g)", pares: ["XAU/BRL"] },
+  { titulo: "Cripto", pares: ["BTC/BRL", "ETH/BRL", "SOL/BRL"] },
+];
+
+// rótulo amigável quando a sigla do par não se explica sozinha
+const APELIDOS: Record<string, string> = { "XAU/BRL": "OURO" };
 
 function formataPreco(v: number): string {
   if (v >= 1000) return v.toLocaleString("pt-BR", { maximumFractionDigits: 0 });
@@ -45,7 +55,9 @@ function TickerCotacao({ c }: { c: Cotacao }) {
   return (
     <Card className="p-5">
       <div className="flex items-baseline justify-between">
-        <span className="num text-sm font-semibold uppercase tracking-wider text-ink">{c.par}</span>
+        <span className="num text-sm font-semibold uppercase tracking-wider text-ink">
+          {APELIDOS[c.par] ?? c.par}
+        </span>
         <span className={`num text-xs ${positiva ? "text-emerald-500" : "text-rose-500"}`}>
           {positiva ? "▲" : "▼"} {Math.abs(variacao).toFixed(2)}%
         </span>
@@ -79,7 +91,7 @@ export default function CadernoPulso() {
         numero="XII"
         kicker="AwesomeAPI · mercado"
         titulo="Pulso do Brasil"
-        resumo="Câmbio e cripto quase em tempo real, pelo preço de mercado. A página se atualiza sozinha a cada 20 segundos — quando o mercado mexe, o número desliza pro novo valor. Dado vivo, não a foto de ontem."
+        resumo="Câmbio, ouro e cripto quase em tempo real, pelo preço de mercado. A página se atualiza sozinha a cada 20 segundos — quando o mercado mexe, o número desliza pro novo valor. Dado vivo, não a foto de ontem."
       />
 
       <div className="mb-5 flex items-center gap-2">
@@ -95,10 +107,26 @@ export default function CadernoPulso() {
       ) : !cotacoes.length ? (
         <Esqueleto linhas={4} />
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {cotacoes.map((c) => (
-            <TickerCotacao key={c.par} c={c} />
-          ))}
+        <div className="flex flex-col gap-7">
+          {GRUPOS.map((g) => {
+            const doGrupo = g.pares
+              .map((par) => cotacoes.find((c) => c.par === par))
+              .filter((c): c is Cotacao => Boolean(c));
+            if (!doGrupo.length) return null;
+            return (
+              <section key={g.titulo}>
+                <p className="kicker mb-3">
+                  {g.titulo}
+                  {g.nota && <span className="ml-2 normal-case tracking-normal text-muted">· {g.nota}</span>}
+                </p>
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {doGrupo.map((c) => (
+                    <TickerCotacao key={c.par} c={c} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
 
