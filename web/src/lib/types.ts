@@ -153,6 +153,41 @@ export interface BeneficioSocial {
   valor: string;
 }
 
+// uma contratação divulgada no PNCP (/v1/pncp/licitacoes)
+export interface Licitacao {
+  fonte: string;
+  numero_controle: string;
+  ano: number;
+  orgao: string;
+  cnpj_orgao: string | null;
+  esfera: string | null;
+  municipio: string | null;
+  uf: string | null;
+  modalidade: string | null;
+  objeto: string;
+  valor_estimado: string | null;
+  situacao: string | null;
+  publicada_em: string | null;
+  propostas_ate: string | null;
+}
+
+// um contrato assinado no PNCP (/v1/pncp/contratos)
+export interface ContratoPublico {
+  fonte: string;
+  numero_controle: string;
+  ano: number;
+  orgao: string;
+  municipio: string | null;
+  uf: string | null;
+  fornecedor: string;
+  fornecedor_doc: string | null;
+  objeto: string;
+  valor: string | null;
+  assinado_em: string | null;
+  vigencia_inicio: string | null;
+  vigencia_fim: string | null;
+}
+
 // preço agregado de um combustível (/v1/anp/precos) — média das coletas
 export interface PrecoCombustivel {
   fonte: string;
