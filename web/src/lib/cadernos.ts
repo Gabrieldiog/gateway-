@@ -43,6 +43,7 @@ export const GRUPOS: Grupo[] = [
   {
     nome: "Infraestrutura",
     cadernos: [
+      { num: "XV", nome: "Energia", sub: "geração do país ao vivo", href: "/energia" },
       { num: "XI", nome: "Dados Abertos", sub: "energia, transporte (CKAN)", href: "/dados" },
     ],
   },

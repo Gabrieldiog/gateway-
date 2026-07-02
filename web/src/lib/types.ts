@@ -98,6 +98,21 @@ export interface Estado {
   regiao: string | null;
 }
 
+// foto da geração do SIN num instante (/v1/ons/geracao) — MW por fonte
+export interface GeracaoEnergia {
+  fonte: string;
+  instante: string;
+  regiao: string; // SIN ou o subsistema
+  geracao_total: number;
+  hidraulica: number;
+  termica: number;
+  eolica: number;
+  solar: number;
+  nuclear: number;
+  carga: number | null;
+  renovavel_pct: number | null;
+}
+
 export interface Municipio {
   fonte: string;
   id: number;
