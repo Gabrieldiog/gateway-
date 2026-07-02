@@ -16,6 +16,7 @@ from dataclasses import dataclass
 import httpx
 import ijson
 
+from balcao.exceptions import ErroUpstream
 from balcao.normalize import limpa_texto
 
 
@@ -80,10 +81,17 @@ class ArquivoVotos:
     async def _baixa_e_monta(self, ano: int) -> IndiceAno:
         votos_url = f"{self.BASE}/votacoesVotos/json/votacoesVotos-{ano}.json"
         votacoes_url = f"{self.BASE}/votacoes/json/votacoes-{ano}.json"
-        rv, rc = await asyncio.gather(
-            self.client.get(votos_url, timeout=httpx.Timeout(120.0)),
-            self.client.get(votacoes_url, timeout=httpx.Timeout(60.0)),
-        )
-        rv.raise_for_status()
-        rc.raise_for_status()
-        return await asyncio.to_thread(_monta, rv.content, rc.content, ano)
+        # falha no download ou arquivo corrompido vira erro upstream limpo (502),
+        # não um 500 cru estourando do ijson
+        try:
+            rv, rc = await asyncio.gather(
+                self.client.get(votos_url, timeout=httpx.Timeout(120.0)),
+                self.client.get(votacoes_url, timeout=httpx.Timeout(60.0)),
+            )
+            rv.raise_for_status()
+            rc.raise_for_status()
+            return await asyncio.to_thread(_monta, rv.content, rc.content, ano)
+        except httpx.HTTPStatusError as exc:
+            raise ErroUpstream("camara", exc.response.status_code) from exc
+        except (httpx.HTTPError, ijson.JSONError) as exc:
+            raise ErroUpstream("camara") from exc

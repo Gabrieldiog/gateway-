@@ -78,7 +78,13 @@ class BaseConnector(ABC):
         self, path: str, params: dict | None = None, timeout: float | None = None
     ) -> Any:
         resp = await self._get(path, params, timeout)
-        return resp.json()
+        try:
+            return resp.json()
+        except ValueError as exc:
+            # 200 com corpo que nao e JSON (pagina de manutencao, HTML de erro):
+            # fonte doente — vira 502 limpo em vez de 500 cru
+            self.breaker.registra_falha()
+            raise ErroUpstream(self.name) from exc
 
     async def get_text(
         self, path: str, params: dict | None = None, timeout: float | None = None

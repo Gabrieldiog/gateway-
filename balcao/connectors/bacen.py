@@ -40,6 +40,15 @@ INDICADORES = {
 # o painel "custo de vida": os indicadores que pesam no bolso, na ordem de exibição
 PAINEL = ("ipca12m", "ipca", "igpm", "inpc", "selic", "cdi", "poupanca", "dolar")
 
+FONTE = {
+    "nome": "Banco Central — Sistema Gerenciador de Séries (SGS)",
+    "url": "https://www3.bcb.gov.br/sgspub/",
+    "nota": (
+        "IPCA, INPC e IGP-M são os índices oficiais de inflação; Selic, CDI e "
+        "poupança medem o preço do dinheiro. Valor mais recente publicado pelo BC."
+    ),
+}
+
 PARAMS_SERIE = {"data_inicio", "data_fim", "ultimos"}
 
 
@@ -107,7 +116,7 @@ class BacenConnector(BaseConnector):
 
         resultados = await asyncio.gather(*(ultimo(chave) for chave in PAINEL))
         itens = [r for r in resultados if r is not None]
-        meta: dict = {"painel": "custo de vida"}
+        meta: dict = {"painel": "custo de vida", "fonte": FONTE}
         faltando = [c for c, r in zip(PAINEL, resultados) if r is None]
         if faltando:
             meta["indisponiveis"] = faltando

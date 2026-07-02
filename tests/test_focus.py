@@ -21,6 +21,8 @@ async def test_focus_painel_junta_os_indicadores(api):
     assert resp.status_code == 200
     corpo = resp.json()
     assert corpo["meta"]["painel"] == "expectativas do mercado"
+    # selo de procedência: a resposta diz de onde o dado vem
+    assert corpo["meta"]["fonte"]["nome"].startswith("Banco Central")
     indicadores = {d["indicador"] for d in corpo["dados"]}
     assert {"IPCA", "Selic", "Câmbio", "PIB Total", "IGP-M"} <= indicadores
 

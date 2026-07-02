@@ -13,6 +13,8 @@ async def test_bacen_painel_inflacao(api):
     assert resp.status_code == 200
     corpo = resp.json()
     assert corpo["meta"]["painel"] == "custo de vida"
+    # selo de procedência: a resposta diz de onde o dado vem
+    assert corpo["meta"]["fonte"]["nome"].startswith("Banco Central")
     chaves = {ind["chave"] for ind in corpo["dados"]}
     # o painel junta os indicadores que pesam no bolso numa chamada só
     assert {"ipca12m", "igpm", "selic", "dolar"} <= chaves
