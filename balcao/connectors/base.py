@@ -117,11 +117,15 @@ class BaseConnector(ABC):
         return self._parse_json(resp)
 
     async def get_text(
-        self, path: str, params: dict | None = None, timeout: float | None = None
+        self,
+        path: str,
+        params: dict | None = None,
+        timeout: float | None = None,
+        headers: dict | None = None,
     ) -> str:
         # igual ao get_json, mas devolve o corpo cru — pra fontes que servem
-        # CSV/arquivo (INPE, e futuramente ANP, Tesouro Direto, TSE)
-        resp = await self._request("GET", path, params=params, timeout=timeout)
+        # CSV/arquivo (INPE, ANP, Tesouro Direto, TSE)
+        resp = await self._request("GET", path, params=params, timeout=timeout, headers=headers)
         return resp.text
 
 
