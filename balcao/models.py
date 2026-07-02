@@ -115,6 +115,19 @@ class Cotacao(BaseModel):
     atualizado: str | None = None  # quando a fonte registrou (data/hora)
 
 
+class Queimada(BaseModel):
+    """Focos de incêndio agregados por estado ou bioma num dia. Vem do INPE
+    (Programa Queimadas), que detecta os focos por satélite e atualiza o
+    arquivo do dia ao longo das horas."""
+
+    fonte: str = "inpe"
+    data: date
+    nivel: str  # estado, bioma ou municipio
+    nome: str  # "MATO GROSSO", "Cerrado"...
+    focos: int  # quantos focos detectados
+    frp_total: float | None = None  # soma da potência radiativa do fogo (MW)
+
+
 class GeracaoEnergia(BaseModel):
     """Foto da geração de energia num instante — potência por fonte, carga e o
     percentual renovável. Vem do ONS quase em tempo real (atualiza a cada

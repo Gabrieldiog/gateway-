@@ -49,9 +49,9 @@ class BaseConnector(ABC):
         seta suporta_busca = True e implementa."""
         raise NotImplementedError
 
-    async def get_json(
+    async def _get(
         self, path: str, params: dict | None = None, timeout: float | None = None
-    ) -> Any:
+    ) -> httpx.Response:
         if self.breaker.aberto:
             raise ErroUpstream(self.name, circuito_aberto=True)
         # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar
@@ -71,7 +71,22 @@ class BaseConnector(ABC):
             self.breaker.registra_falha()
             raise ErroUpstream(self.name) from exc
         self.breaker.registra_sucesso()
+        assert resp is not None
+        return resp
+
+    async def get_json(
+        self, path: str, params: dict | None = None, timeout: float | None = None
+    ) -> Any:
+        resp = await self._get(path, params, timeout)
         return resp.json()
+
+    async def get_text(
+        self, path: str, params: dict | None = None, timeout: float | None = None
+    ) -> str:
+        # igual ao get_json, mas devolve o corpo cru — pra fontes que servem
+        # CSV/arquivo (INPE, e futuramente ANP, Tesouro Direto, TSE)
+        resp = await self._get(path, params, timeout)
+        return resp.text
 
 
 _registry: dict[str, type[BaseConnector]] = {}

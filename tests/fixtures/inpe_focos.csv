@@ -1,0 +1,6 @@
+id,lat,lon,data_hora_gmt,satelite,municipio,estado,pais,municipio_id,estado_id,pais_id,numero_dias_sem_chuva,precipitacao,risco_fogo,bioma,frp
+aaa,-8.5,-48.0,2026-07-01 00:00:00,GOES-19,ITAPIRATINS,MATO GROSSO,Brasil,1710904,51,33,,,,Cerrado,55.9
+bbb,-9.1,-55.2,2026-07-01 01:00:00,GOES-19,SINOP,MATO GROSSO,Brasil,5107909,51,33,,,,Amazônia,40.0
+ccc,-10.2,-48.3,2026-07-01 02:00:00,GOES-19,PALMAS,TOCANTINS,Brasil,1721000,17,33,,,,Cerrado,30.0
+ddd,-12.7,-44.5,2026-07-01 03:00:00,GOES-19,BAIANÓPOLIS,BAHIA,Brasil,2902500,29,33,,,,Caatinga,20.0
+eee,-11.9,-43.8,2026-07-01 04:00:00,GOES-19,BARREIRAS,BAHIA,Brasil,2903201,29,33,,,,Cerrado,10.0
