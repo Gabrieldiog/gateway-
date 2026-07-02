@@ -33,7 +33,7 @@ async def test_buscar_serie_economica_pelo_apelido(api):
 
 
 async def test_buscar_fonte_desconhecida_da_404(api):
-    resp = await api.get("/v1/buscar?q=teste&fontes=tse")
+    resp = await api.get("/v1/buscar?q=teste&fontes=nasa")
     assert resp.status_code == 404
 
 

@@ -1,13 +1,15 @@
+from datetime import date
 from typing import Any
 
 from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import Senador, VotoSenador
+from balcao.models import Materia, Senador, VotoSenador
 from balcao.normalize import limpa_texto, normaliza_uf, para_data
 
 PARAMS_SENADORES = {"uf", "partido"}
+PARAMS_MATERIAS = {"tipo", "ano", "tramitando", "limit"}
 
 # o Senado abrevia o voto; aqui viram rótulos legíveis (e absenteísmos explícitos)
 MAP_VOTO_SENADO = {
@@ -29,12 +31,13 @@ MAP_VOTO_SENADO = {
 class SenadoConnector(BaseConnector):
     name = "senado"
     base_url = "https://legis.senado.leg.br/dadosabertos"
-    description = "Senado Federal: senadores em exercício"
+    description = "Senado Federal: senadores em exercício e matérias em tramitação"
     suporta_busca = True
     resources = {
         "senadores": f"senadores em exercício; filtros: {', '.join(sorted(PARAMS_SENADORES))}",
         "senadores/{id}": "detalhe de um senador",
         "senadores/{id}/votos": "histórico de votos de um senador (matéria, voto, resultado)",
+        "materias": f"matérias legislativas (API nova de processos); filtros: {', '.join(sorted(PARAMS_MATERIAS))}",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -42,6 +45,8 @@ class SenadoConnector(BaseConnector):
         match partes:
             case ["senadores"]:
                 return await self._senadores(recurso, params)
+            case ["materias"]:
+                return await self._materias(recurso, params)
             case ["senadores", sen_id, "votos"] if sen_id.isdigit():
                 return await self._votos_senador(recurso, int(sen_id))
             case ["senadores", sen_id] if sen_id.isdigit():
@@ -93,6 +98,64 @@ class SenadoConnector(BaseConnector):
         meta = {"descartados": descartados} if descartados else {}
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _materias(self, recurso: str, params: dict) -> NormalizedResponse:
+        # a API antiga de matérias foi desativada em fev/2026; esta é a
+        # substituta oficial (/processo), que fala JSON de verdade
+        invalidos = sorted(set(params) - PARAMS_MATERIAS)
+        if invalidos:
+            raise ParametroInvalido(recurso, invalidos, sorted(PARAMS_MATERIAS))
+        tipo = str(params.get("tipo", "PL")).strip().upper()
+        ano = str(params.get("ano", date.today().year))
+        if not ano.isdigit():
+            raise ParametroInvalido(recurso, ["ano"], sorted(PARAMS_MATERIAS))
+        tramitando = str(params.get("tramitando", "")).strip().lower()
+        if tramitando not in ("", "sim", "nao", "não"):
+            raise ParametroInvalido(recurso, ["tramitando"], ["sim", "nao"])
+        limit = params.get("limit", 50)
+        if not str(limit).isdigit() or not (1 <= int(limit) <= 200):
+            raise ParametroInvalido(recurso, ["limit"], ["1..200"])
+
+        bruto = await self.get_json("/processo", params={"sigla": tipo, "ano": int(ano)})
+
+        itens, descartados = [], 0
+        for p in bruto if isinstance(bruto, list) else []:
+            try:
+                materia = self._norm_materia(p)
+            except (ValidationError, KeyError, TypeError):
+                descartados += 1
+                continue
+            if tramitando and materia.tramitando != (tramitando == "sim"):
+                continue
+            itens.append(materia.model_dump(mode="json"))
+        # o que se mexeu mais recentemente vem primeiro
+        itens.sort(key=lambda m: m.get("atualizada_em") or "", reverse=True)
+        itens = itens[: int(limit)]
+
+        meta: dict = {"tipo": tipo, "ano": int(ano)}
+        if descartados:
+            meta["descartados"] = descartados
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    @staticmethod
+    def _norm_materia(p: dict) -> Materia:
+        situacao = p.get("situacaoAtual")
+        if isinstance(situacao, dict):
+            situacao = situacao.get("descricao") or situacao.get("nome")
+        return Materia(
+            id=int(p["id"]),
+            identificacao=limpa_texto(p.get("identificacao")),
+            ementa=limpa_texto(p.get("ementa")),
+            autor=limpa_texto(p.get("autoria")) or None,
+            apresentada_em=para_data(p.get("dataApresentacao")),
+            situacao=limpa_texto(str(situacao)) or None if situacao else None,
+            situacao_em=para_data(p.get("dataSituacaoAtual")),
+            atualizada_em=para_data(p.get("dataUltimaAtualizacao")),
+            tramitando=str(p.get("tramitando", "")).strip().lower() == "sim",
+            url=p.get("urlDocumento") or None,
         )
 
     async def _senador_detalhe(self, recurso: str, sen_id: int) -> NormalizedResponse:

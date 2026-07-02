@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     # chaves de fontes que exigem cadastro (gratis); vazio = fonte desativada
     transparencia_api_key: str = ""
     brapi_token: str = ""
+    # a do DataJud e PUBLICA (o CNJ publica na wiki e rotaciona de tempos em tempos)
+    datajud_api_key: str = ""
 
 
 @lru_cache

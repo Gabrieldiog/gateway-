@@ -1,0 +1,12 @@
+{
+ "hits": {"total": {"value": 5000000, "relation": "eq"}, "hits": []},
+ "aggregations": {
+  "classes": {
+   "buckets": [
+    {"key": "Execução Fiscal", "doc_count": 847454},
+    {"key": "Procedimento Comum Cível", "doc_count": 685014},
+    {"key": "Procedimento do Juizado Especial Cível", "doc_count": 648207}
+   ]
+  }
+ }
+}
