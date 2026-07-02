@@ -218,6 +218,36 @@ class ContratoPublico(BaseModel):
     vigencia_fim: date | None = None
 
 
+class Processo(BaseModel):
+    """A capa de um processo judicial no DataJud: classe, assuntos, órgão e o
+    último andamento. Só metadados públicos — partes e conteúdo não vêm
+    (segredo de justiça e LGPD)."""
+
+    fonte: str = "datajud"
+    tribunal: str
+    numero: str
+    classe: str | None = None
+    assuntos: list[str] = []
+    orgao: str | None = None
+    municipio_ibge: int | None = None
+    grau: str | None = None
+    ajuizado_em: date | None = None
+    ultima_atualizacao: date | None = None
+    movimentos: int = 0
+    ultimo_movimento: str | None = None
+    ultimo_movimento_em: date | None = None
+
+
+class ClasseProcessual(BaseModel):
+    """Quantos processos de uma classe existem num tribunal — o retrato do
+    que mais se processa."""
+
+    fonte: str = "datajud"
+    tribunal: str
+    classe: str
+    processos: int
+
+
 class PrecoCombustivel(BaseModel):
     """Preço médio de um combustível num estado ou município, agregado das
     coletas da ANP nos postos das últimas quatro semanas."""

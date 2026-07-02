@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 # um de mentira pra suite rodar identica em qualquer maquina, com ou sem .env
 os.environ["TRANSPARENCIA_API_KEY"] = "chave-de-teste"
 os.environ["BRAPI_TOKEN"] = "token-de-teste"
+os.environ["DATAJUD_API_KEY"] = "chave-publica-de-teste"
 
 import httpx
 import pytest
@@ -114,6 +115,14 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200, text=(FIXTURES / "tesourodireto.csv").read_text(encoding="utf-8")
         )
+    # DataJud (CNJ) — Elasticsearch por tribunal; agregação vs busca pelo corpo
+    if "api-publica.datajud.cnj.jus.br" in url:
+        if not request.headers.get("authorization", "").startswith("APIKey "):
+            return httpx.Response(401, json={"error": "missing api key"})
+        corpo = json.loads(request.content or b"{}")
+        if "aggs" in corpo:
+            return httpx.Response(200, json=carrega_fixture("datajud_resumo"))
+        return httpx.Response(200, json=carrega_fixture("datajud_processos"))
     # ComexStat — consulta por POST; o corpo diz a dimensão pedida
     if "api-comexstat.mdic.gov.br/general" in url:
         corpo = json.loads(request.content or b"{}")

@@ -1,0 +1,27 @@
+{
+ "hits": {
+  "total": {"value": 1, "relation": "eq"},
+  "hits": [
+   {
+    "_index": "api_publica_tjgo",
+    "_source": {
+     "numeroProcesso": "50587031920218090051",
+     "tribunal": "TJGO",
+     "grau": "G1",
+     "classe": {"codigo": 15160, "nome": "Cumprimento de Sentença de Ações Coletivas"},
+     "assuntos": [{"codigo": 10433, "nome": "Obrigação de Fazer / Não Fazer"}],
+     "orgaoJulgador": {"codigo": 89848, "nome": "8ª Vara da Fazenda Pública Estadual", "codigoMunicipioIBGE": 5208707},
+     "dataAjuizamento": "2021-08-11T00:00:00.000Z",
+     "dataHoraUltimaAtualizacao": "2026-06-20T04:10:00.000Z",
+     "sistema": {"codigo": 1, "nome": "Projudi"},
+     "formato": {"codigo": 1, "nome": "Eletrônico"},
+     "nivelSigilo": 0,
+     "movimentos": [
+      {"codigo": 26, "nome": "Distribuição", "dataHora": "2021-08-11T10:00:00.000Z"},
+      {"codigo": 123, "nome": "Conclusão para despacho", "dataHora": "2026-06-19T09:30:00.000Z"}
+     ]
+    }
+   }
+  ]
+ }
+}
