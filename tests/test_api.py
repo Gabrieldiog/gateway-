@@ -9,7 +9,7 @@ async def test_fontes_lista_os_conectores(api):
     assert resp.status_code == 200
     corpo = resp.json()
     nomes = {f["nome"] for f in corpo["fontes"]}
-    assert nomes == {"camara", "senado", "bacen", "focus", "ibge", "sus", "tesouro", "sidra", "aneel", "mme", "antt", "ipeadata", "cotacoes", "ons", "inpe", "transparencia", "pncp", "b3", "infodengue"}
+    assert nomes == {"camara", "senado", "bacen", "focus", "ibge", "sus", "tesouro", "sidra", "aneel", "mme", "antt", "ipeadata", "cotacoes", "ons", "inpe", "transparencia", "pncp", "b3", "infodengue", "comex"}
     camara = next(f for f in corpo["fontes"] if f["nome"] == "camara")
     assert "deputados" in camara["recursos"]
 
