@@ -98,6 +98,16 @@ export interface Estado {
   regiao: string | null;
 }
 
+// focos de incêndio agregados por estado/bioma (/v1/inpe/queimadas)
+export interface Queimada {
+  fonte: string;
+  data: string;
+  nivel: string; // estado | bioma | municipio
+  nome: string;
+  focos: number;
+  frp_total: number | null;
+}
+
 // foto da geração do SIN num instante (/v1/ons/geracao) — MW por fonte
 export interface GeracaoEnergia {
   fonte: string;
