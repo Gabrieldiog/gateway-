@@ -4,6 +4,7 @@ com as fixturas gravadas em tests/fixtures, entao nenhum teste abre socket."""
 import json
 import os
 import re
+import tempfile
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -192,6 +193,12 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # Senado (API nova de votação por parlamentar): histórico de um senador
     if "/dadosabertos/votacao" in url:
         return httpx.Response(200, json=carrega_fixture("senado_votos"))
+    # Senado (API nova de processos): matérias legislativas
+    if "/dadosabertos/processo" in url:
+        return httpx.Response(200, json=carrega_fixture("senado_processos"))
+    # TSE — ZIP da prestação de contas (o conector baixa por streaming)
+    if "cdn.tse.jus.br" in url and "prestacao_de_contas" in url:
+        return httpx.Response(200, content=(FIXTURES / "tse_doacoes.zip").read_bytes())
     # CKAN (ANEEL, MME, ANTT): mesma API em hosts diferentes, distingue pela ação
     if "/api/3/action/package_search" in url:
         return httpx.Response(200, json=carrega_fixture("ckan_datasets"))
@@ -228,6 +235,9 @@ def monta_app():
         nome: cls(cliente_fake) for nome, cls in connector_classes().items()
     }
     app.state.arquivo_votos = ArquivoVotos(cliente_fake)
+    # o cache em disco do TSE vai pra uma pasta so desta suite, pra nao
+    # colidir com um zip real baixado fora dos testes
+    app.state.connectors["tse"].pasta = Path(tempfile.mkdtemp(prefix="balcao-tse-teste-"))
     return app, cliente_fake
 
 
