@@ -1,5 +1,6 @@
 import { CadernoHeader } from "@/components/Caderno";
 import { AzulejoGlifo } from "@/components/Azulejo";
+import { Configurador } from "@/components/Configurador";
 
 // uma linha de exemplo: curl + url com o path em tinta e a query em destaque
 function Linha({ nota, url }: { nota?: string; url: string }) {
@@ -48,11 +49,19 @@ export default function CadernoDocs() {
   return (
     <div>
       <CadernoHeader
-        numero="XII"
-        kicker="Manual"
+        numero="XXV"
+        kicker="Desenvolvedores"
         titulo="Como chamar o Balcão"
-        resumo="Uma URL para cada coisa, todas no mesmo formato. Você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."
+        resumo="Tudo que o jornal mostra sai desta API — e ela é sua também. Uma URL para cada coisa, todas no mesmo formato: você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."
       />
+
+      <section className="mb-2 rounded-lg border border-line bg-surface p-6">
+        <p className="kicker mb-4 flex items-center gap-2">
+          <AzulejoGlifo size={14} className="text-accent-2/60" />
+          Você configura, a API entrega
+        </p>
+        <Configurador />
+      </section>
 
       <Secao
         numero="01"
