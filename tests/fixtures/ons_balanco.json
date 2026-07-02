@@ -1,0 +1,23 @@
+[
+ {
+  "Data": "2026-07-01T20:47:00-03:00",
+  "sudesteECentroOeste": { "geracao": { "total": 25900, "hidraulica": 19900, "termica": 5000, "eolica": 200, "solar": 0, "nuclear": 2000, "itaipu60Hz": 5900 }, "cargaVerificada": 39900 },
+  "sul": { "geracao": { "total": 10700, "hidraulica": 8990, "termica": 1490, "eolica": 220, "solar": 0, "nuclear": 0 }, "cargaVerificada": 10900 },
+  "nordeste": { "geracao": { "total": 23300, "hidraulica": 3990, "termica": 390, "eolica": 18900, "solar": 0, "nuclear": 0 }, "cargaVerificada": 12900 },
+  "norte": { "geracao": { "total": 6540, "hidraulica": 3890, "termica": 2500, "eolica": 150, "solar": 0, "nuclear": 0 }, "cargaVerificada": 8900 }
+ },
+ {
+  "Data": "2026-07-01T20:48:00-03:00",
+  "sudesteECentroOeste": { "geracao": { "total": 26000, "hidraulica": 20000, "termica": 5000, "eolica": 200, "solar": 0, "nuclear": 2000, "itaipu50HzBrasil": 0, "itaipu60Hz": 6000 }, "cargaVerificada": 40000 },
+  "sul": { "geracao": { "total": 10731, "hidraulica": 9000, "termica": 1500, "eolica": 230, "solar": 1, "nuclear": 0 }, "cargaVerificada": 11000 },
+  "nordeste": { "geracao": { "total": 23401, "hidraulica": 4000, "termica": 400, "eolica": 19000, "solar": 1, "nuclear": 0 }, "cargaVerificada": 13000 },
+  "norte": { "geracao": { "total": 6550, "hidraulica": 3900, "termica": 2500, "eolica": 150, "solar": 0, "nuclear": 0 }, "cargaVerificada": 9000 }
+ },
+ {
+  "Data": "2026-07-01T20:49:00-03:00",
+  "sudesteECentroOeste": { "geracao": { "total": 0, "hidraulica": 0, "termica": 0, "eolica": 0, "solar": 0, "nuclear": 0 }, "cargaVerificada": 0 },
+  "sul": { "geracao": { "total": 0, "hidraulica": 0, "termica": 0, "eolica": 0, "solar": 0, "nuclear": 0 }, "cargaVerificada": 0 },
+  "nordeste": { "geracao": { "total": 0, "hidraulica": 0, "termica": 0, "eolica": 0, "solar": 0, "nuclear": 0 }, "cargaVerificada": 0 },
+  "norte": { "geracao": { "total": 0, "hidraulica": 0, "termica": 0, "eolica": 0, "solar": 0, "nuclear": 0 }, "cargaVerificada": 0 }
+ }
+]

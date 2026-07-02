@@ -115,6 +115,24 @@ class Cotacao(BaseModel):
     atualizado: str | None = None  # quando a fonte registrou (data/hora)
 
 
+class GeracaoEnergia(BaseModel):
+    """Foto da geração de energia num instante — potência por fonte, carga e o
+    percentual renovável. Vem do ONS quase em tempo real (atualiza a cada
+    minuto). `regiao` é "SIN" (o Brasil todo) ou um subsistema."""
+
+    fonte: str = "ons"
+    instante: str  # ISO do dado, ex "2026-07-01T20:48:00-03:00"
+    regiao: str  # SIN, Sudeste/Centro-Oeste, Sul, Nordeste, Norte
+    geracao_total: float  # MW
+    hidraulica: float
+    termica: float
+    eolica: float
+    solar: float
+    nuclear: float
+    carga: float | None = None  # demanda verificada (MW)
+    renovavel_pct: float | None = None  # (hidráulica + eólica + solar) / total
+
+
 class Estado(BaseModel):
     fonte: str = "ibge"
     id: int
