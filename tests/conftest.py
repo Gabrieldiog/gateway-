@@ -99,6 +99,12 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # PNCP — consulta pública de licitações e contratos
+    if "pncp.gov.br/api/consulta" in url:
+        if "/contratacoes/publicacao" in url:
+            return httpx.Response(200, json=carrega_fixture("pncp_contratacoes"))
+        if "/contratos" in url:
+            return httpx.Response(200, json=carrega_fixture("pncp_contratos"))
     # ONS — geração do SIN quase em tempo real (balanço energético do dia)
     if "tr.ons.org.br/Content/Get/BalancoEnergetico" in url:
         return httpx.Response(200, json=carrega_fixture("ons_balanco"))

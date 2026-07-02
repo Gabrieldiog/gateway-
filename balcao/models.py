@@ -162,6 +162,45 @@ class BeneficioSocial(BaseModel):
     valor: Decimal
 
 
+class Licitacao(BaseModel):
+    """Uma contratação pública divulgada no PNCP: o que um órgão quer comprar,
+    por qual modalidade e por quanto (estimado)."""
+
+    fonte: str = "pncp"
+    numero_controle: str  # id nacional da compra no PNCP
+    ano: int
+    orgao: str
+    cnpj_orgao: str | None = None
+    esfera: str | None = None  # federal, estadual, municipal
+    municipio: str | None = None
+    uf: str | None = None
+    modalidade: str | None = None  # Pregão - Eletrônico, Dispensa...
+    objeto: str
+    valor_estimado: Decimal | None = None
+    situacao: str | None = None
+    publicada_em: date | None = None
+    propostas_ate: date | None = None  # até quando aceita proposta
+
+
+class ContratoPublico(BaseModel):
+    """Um contrato assinado e publicado no PNCP: quem contratou, quem fornece
+    e por quanto."""
+
+    fonte: str = "pncp"
+    numero_controle: str
+    ano: int
+    orgao: str
+    municipio: str | None = None
+    uf: str | None = None
+    fornecedor: str
+    fornecedor_doc: str | None = None  # CNPJ/CPF, só dígitos
+    objeto: str
+    valor: Decimal | None = None  # valor global do contrato
+    assinado_em: date | None = None
+    vigencia_inicio: date | None = None
+    vigencia_fim: date | None = None
+
+
 class Queimada(BaseModel):
     """Focos de incêndio agregados por estado ou bioma num dia. Vem do INPE
     (Programa Queimadas), que detecta os focos por satélite e atualiza o

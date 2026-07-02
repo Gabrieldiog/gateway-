@@ -1,0 +1,26 @@
+{
+ "data": [
+  {
+   "numeroControlePNCP": "83551549000100-2-000103/2026",
+   "anoContrato": 2026,
+   "orgaoEntidade": {"cnpj": "83551549000100", "razaoSocial": "BALNEARIO CAMBORIU PREFEITURA", "poderId": "N", "esferaId": "M"},
+   "unidadeOrgao": {"ufNome": "Santa Catarina", "ufSigla": "SC", "municipioNome": "Balneário Camboriú", "codigoIbge": "4202008"},
+   "nomeRazaoSocialFornecedor": "PR COMÉRCIO DE ARTIGOS PARA BEBÊS LTDA",
+   "niFornecedor": "59196088000101",
+   "tipoPessoa": "PJ",
+   "objetoContrato": "CONTRATAÇÃO DE EMPRESA PARA AQUISIÇÃO DE TROCADOR INFANTIL",
+   "valorGlobal": 1070.0,
+   "valorInicial": 1070.0,
+   "dataAssinatura": "2026-06-24",
+   "dataVigenciaInicio": "2026-06-24",
+   "dataVigenciaFim": "2026-07-15",
+   "dataPublicacaoPncp": "2026-06-25T00:00:12",
+   "numeroContratoEmpenho": "217"
+  }
+ ],
+ "totalRegistros": 29009,
+ "totalPaginas": 2901,
+ "numeroPagina": 1,
+ "paginasRestantes": 2900,
+ "empty": false
+}
