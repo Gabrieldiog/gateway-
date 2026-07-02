@@ -22,6 +22,7 @@ export const GRUPOS: Grupo[] = [
       { num: "III", nome: "Senado", sub: "senadores", href: "/senado" },
       { num: "VIII", nome: "Votos", sub: "como cada deputado votou", href: "/votos" },
       { num: "XVII", nome: "Dinheiro Público", sub: "emendas, sanções e Bolsa Família", href: "/dinheiro" },
+      { num: "XVIII", nome: "Em Pauta", sub: "o que a Câmara votou e movimentou", href: "/pauta" },
     ],
   },
   {
