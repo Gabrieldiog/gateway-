@@ -1,0 +1,28 @@
+[
+ {
+  "id": 1, "SE": 202624, "data_iniSE": 1781395200000,
+  "casos_est": 1607.5, "casos_est_min": 1500, "casos_est_max": 1700,
+  "casos": 341, "casprov": 320,
+  "p_rt1": 0.42, "p_inc100k": 113.64576, "Rt": 0.9935255,
+  "nivel": 4, "nivel_inc": 2,
+  "municipio_nome": "Goiânia", "pop": 1414483,
+  "receptivo": 1, "transmissao": 1,
+  "tempmin": 15.2, "tempmed": 21.0, "tempmax": 28.9,
+  "umidmin": 30.1, "umidmed": 55.0, "umidmax": 80.2,
+  "notif_accum_year": 40000, "versao_modelo": "2026-06-30", "tweet": null,
+  "Localidade_id": 0, "casconf": null, "casprov_est": null, "casprov_est_min": null, "casprov_est_max": null
+ },
+ {
+  "id": 2, "SE": 202623, "data_iniSE": 1780790400000,
+  "casos_est": 1670.0, "casos_est_min": 1600, "casos_est_max": 1750,
+  "casos": 930, "casprov": 900,
+  "p_rt1": 0.61, "p_inc100k": 118.06434, "Rt": 1.0217663,
+  "nivel": 1, "nivel_inc": 2,
+  "municipio_nome": "Goiânia", "pop": 1414483,
+  "receptivo": 1, "transmissao": 1,
+  "tempmin": 14.8, "tempmed": 20.5, "tempmax": 28.1,
+  "umidmin": 32.0, "umidmed": 57.3, "umidmax": 82.0,
+  "notif_accum_year": 39000, "versao_modelo": "2026-06-30", "tweet": null,
+  "Localidade_id": 0, "casconf": null, "casprov_est": null, "casprov_est_min": null, "casprov_est_max": null
+ }
+]

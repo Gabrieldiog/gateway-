@@ -218,6 +218,26 @@ class ContratoPublico(BaseModel):
     vigencia_fim: date | None = None
 
 
+class AlertaDengue(BaseModel):
+    """Uma semana epidemiológica de um município no InfoDengue: casos
+    notificados, a estimativa corrigida (nowcast) e o nível de alerta do
+    modelo — de verde (1) a vermelho (4)."""
+
+    fonte: str = "infodengue"
+    municipio: str
+    ibge: int
+    doenca: str  # dengue, zika ou chikungunya
+    semana: int  # AAAASS (ano + semana epidemiológica)
+    inicio_semana: date | None = None
+    casos: int | None = None  # notificados (consolida com atraso)
+    casos_estimados: float | None = None  # nowcast do modelo
+    incidencia_100k: float | None = None
+    rt: float | None = None  # número de reprodução (>1 = crescendo)
+    nivel: int  # 1 verde, 2 amarelo, 3 laranja, 4 vermelho
+    alerta: str  # o nível por extenso
+    populacao: int | None = None
+
+
 class Queimada(BaseModel):
     """Focos de incêndio agregados por estado ou bioma num dia. Vem do INPE
     (Programa Queimadas), que detecta os focos por satélite e atualiza o
