@@ -122,6 +122,13 @@ body {
 }
 .pulsar { animation: pulsar 1.4s ease-in-out infinite; }
 
+/* a célula do relógio do selo ao-vivo pisca quando chega dado novo — o
+   elemento remonta (key) e a animação roda de novo */
+@keyframes selo-flash {
+  from { background-color: rgba(16, 185, 129, 0.45); }
+}
+.selo-flash { animation: selo-flash 0.9s ease-out 1; }
+
 @keyframes imprime {
   from { opacity: 0; transform: translateY(8px); background-color: var(--color-surface); }
   to { opacity: 1; transform: translateY(0); background-color: transparent; }
@@ -129,7 +136,7 @@ body {
 .imprime { animation: imprime 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .compor, .desenha-regua, .carimbo-shake, .pulsar, .imprime {
+  .compor, .desenha-regua, .carimbo-shake, .pulsar, .imprime, .selo-flash {
     animation: none !important;
   }
   .compor { opacity: 1; transform: none; clip-path: none; }

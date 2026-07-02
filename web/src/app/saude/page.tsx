@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -57,31 +58,23 @@ export default function CadernoSaude() {
       <div className="mb-6 flex flex-wrap items-center gap-4">
         <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
           UF
-          <select
-            value={uf}
-            onChange={(e) => setUf(e.target.value)}
-            className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-          >
+          <Seletor value={uf} onChange={(e) => setUf(e.target.value)}>
             {UFS.map((u) => (
               <option key={u} value={u}>
                 {u}
               </option>
             ))}
-          </select>
+          </Seletor>
         </label>
         <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
           Tipo
-          <select
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-            className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-          >
+          <Seletor value={tipo} onChange={(e) => setTipo(e.target.value)}>
             {TIPOS.map((t) => (
               <option key={t.cod} value={t.cod}>
                 {t.nome}
               </option>
             ))}
-          </select>
+          </Seletor>
         </label>
       </div>
 

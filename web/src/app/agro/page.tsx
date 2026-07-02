@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -74,11 +75,11 @@ export default function CadernoAgro() {
 
         {modo === "producao" ? (
           <>
-            <Seletor rotulo="Cultura" valor={produto} aoMudar={setProduto} opcoes={PRODUTOS} />
-            <Seletor rotulo="Medida" valor={variavel} aoMudar={setVariavel} opcoes={VARIAVEIS} />
+            <Filtro rotulo="Cultura" valor={produto} aoMudar={setProduto} opcoes={PRODUTOS} />
+            <Filtro rotulo="Medida" valor={variavel} aoMudar={setVariavel} opcoes={VARIAVEIS} />
           </>
         ) : (
-          <Seletor rotulo="Rebanho" valor={animal} aoMudar={setAnimal} opcoes={ANIMAIS} />
+          <Filtro rotulo="Rebanho" valor={animal} aoMudar={setAnimal} opcoes={ANIMAIS} />
         )}
 
         <div className="flex gap-1">
@@ -168,7 +169,7 @@ export default function CadernoAgro() {
   );
 }
 
-function Seletor({
+function Filtro({
   rotulo,
   valor,
   aoMudar,
@@ -182,17 +183,13 @@ function Seletor({
   return (
     <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
       {rotulo}
-      <select
-        value={valor}
-        onChange={(e) => aoMudar(e.target.value)}
-        className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-      >
+      <Seletor value={valor} onChange={(e) => aoMudar(e.target.value)}>
         {opcoes.map(([v, nome]) => (
           <option key={v} value={v}>
             {nome}
           </option>
         ))}
-      </select>
+      </Seletor>
     </label>
   );
 }

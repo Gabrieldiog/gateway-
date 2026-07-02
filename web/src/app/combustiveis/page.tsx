@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -93,16 +94,11 @@ export default function CadernoCombustiveis() {
           ))}
         </div>
         {por === "municipio" && (
-          <select
-            value={uf}
-            onChange={(e) => setUf(e.target.value)}
-            className="rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent focus:outline-none"
-            aria-label="estado"
-          >
+          <Seletor value={uf} onChange={(e) => setUf(e.target.value)} aria-label="estado">
             {UFS.map((u) => (
               <option key={u}>{u}</option>
             ))}
-          </select>
+          </Seletor>
         )}
         <Carimbo fonte="ANP" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>

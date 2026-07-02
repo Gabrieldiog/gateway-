@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
@@ -25,9 +26,6 @@ const COR_ALERTA: Record<string, { texto: string; fundo: string; barra: string }
   laranja: { texto: "text-orange-600", fundo: "bg-orange-500/10", barra: "#f97316" },
   vermelho: { texto: "text-rose-600", fundo: "bg-rose-600/10", barra: "#e11d48" },
 };
-
-const campo =
-  "rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent focus:outline-none";
 
 const inteiro = (v: number | null) =>
   v == null ? "—" : Math.round(v).toLocaleString("pt-BR");
@@ -60,18 +58,18 @@ export default function CadernoDengue() {
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <select value={uf} onChange={(e) => { setUf(e.target.value); setIbge(CAPITAIS[e.target.value]); }} className={campo} aria-label="estado">
+        <Seletor value={uf} onChange={(e) => { setUf(e.target.value); setIbge(CAPITAIS[e.target.value]); }} aria-label="estado">
           {UFS.map((u) => (
             <option key={u}>{u}</option>
           ))}
-        </select>
-        <select value={ibge} onChange={(e) => setIbge(e.target.value)} className={`${campo} max-w-56`} aria-label="cidade">
+        </Seletor>
+        <Seletor value={ibge} onChange={(e) => setIbge(e.target.value)} className="max-w-56" aria-label="cidade">
           {(cidades.dados?.dados ?? []).map((m) => (
             <option key={m.id} value={String(m.id)}>
               {m.nome}
             </option>
           ))}
-        </select>
+        </Seletor>
         <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
           {DOENCAS.map(([v, label]) => (
             <button

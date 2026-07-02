@@ -5,6 +5,7 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
@@ -20,9 +21,6 @@ const MODALIDADES = [
   ["inexigibilidade", "Inexigibilidade"],
   ["credenciamento", "Credenciamento"],
 ] as const;
-
-const campo =
-  "rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent focus:outline-none";
 
 function Paginacao({
   pagina,
@@ -69,13 +67,12 @@ function Licitacoes() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <select
+        <Seletor
           value={modalidade}
           onChange={(e) => {
             setModalidade(e.target.value);
             setPagina(1);
           }}
-          className={campo}
           aria-label="modalidade"
         >
           {MODALIDADES.map(([v, label]) => (
@@ -83,21 +80,20 @@ function Licitacoes() {
               {label}
             </option>
           ))}
-        </select>
-        <select
+        </Seletor>
+        <Seletor
           value={uf}
           onChange={(e) => {
             setUf(e.target.value);
             setPagina(1);
           }}
-          className={campo}
           aria-label="estado"
         >
           <option value="">Brasil todo</option>
           {UFS.map((u) => (
             <option key={u}>{u}</option>
           ))}
-        </select>
+        </Seletor>
         <Carimbo fonte="PNCP" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 

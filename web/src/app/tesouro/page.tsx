@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { BarrasGasto } from "@/components/BarrasGasto";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Seletor } from "@/components/Seletor";
 import { BarrasImposto } from "@/components/BarrasImposto";
 import { RankingArrecadacao } from "@/components/RankingArrecadacao";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -148,28 +149,24 @@ export default function CadernoTesouro() {
         {nivel !== "uniao" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             UF
-            <select
-              value={uf}
-              onChange={(e) => escolheUf(e.target.value)}
-              className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-            >
+            <Seletor value={uf} onChange={(e) => escolheUf(e.target.value)}>
               {UFS.map((u) => (
                 <option key={u} value={u}>
                   {u}
                 </option>
               ))}
-            </select>
+            </Seletor>
           </label>
         )}
 
         {nivel === "municipio" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             Cidade
-            <select
+            <Seletor
               value={ibge}
               onChange={(e) => setIbge(e.target.value)}
               disabled={!municipios.length}
-              className="max-w-56 rounded-md border border-line bg-surface px-2 py-1 text-ink disabled:opacity-50"
+              className="max-w-56"
             >
               {municipios.length ? (
                 municipios.map((m) => (
@@ -180,7 +177,7 @@ export default function CadernoTesouro() {
               ) : (
                 <option value={ibge}>carregando…</option>
               )}
-            </select>
+            </Seletor>
           </label>
         )}
 

@@ -286,6 +286,7 @@ export default function CadernoComercio() {
         <BadgeFrescor rotulo="dados mensais" detalhe="o MDIC fecha o mês anterior no início do seguinte" />
       </div>
       <Balanca />
+      <Destaques />
       <Rankings />
     </div>
   );
