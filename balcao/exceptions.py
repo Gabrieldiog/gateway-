@@ -40,6 +40,18 @@ class ParametroInvalido(BalcaoError):
         )
 
 
+class ChaveFaltando(BalcaoError):
+    """A fonte exige chave de API e ela nao esta configurada no ambiente."""
+
+    status_code = 503
+
+    def __init__(self, fonte: str, variavel: str):
+        super().__init__(
+            f"a fonte {fonte!r} exige chave de API; configure {variavel} no .env",
+            {"fonte": fonte, "variavel": variavel},
+        )
+
+
 class ErroUpstream(BalcaoError):
     """A fonte upstream falhou ou respondeu algo inesperado."""
 

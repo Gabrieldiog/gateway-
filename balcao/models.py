@@ -115,6 +115,53 @@ class Cotacao(BaseModel):
     atualizado: str | None = None  # quando a fonte registrou (data/hora)
 
 
+class Emenda(BaseModel):
+    """Uma emenda parlamentar: dinheiro que um congressista destinou do
+    orçamento. Os valores chegam da fonte em formato brasileiro ("8.000,00")
+    e saem daqui como Decimal."""
+
+    fonte: str = "transparencia"
+    codigo: str
+    ano: int
+    tipo: str | None = None  # individual, bancada...
+    autor: str
+    localidade: str | None = None  # "CUIABÁ - MT" — onde o dinheiro vai
+    funcao: str | None = None  # saúde, educação...
+    valor_empenhado: Decimal | None = None
+    valor_liquidado: Decimal | None = None
+    valor_pago: Decimal | None = None
+
+
+class Sancao(BaseModel):
+    """Empresa ou pessoa punida pelo poder público — impedida de contratar
+    (CEIS) ou punida pela Lei Anticorrupção (CNEP)."""
+
+    fonte: str = "transparencia"
+    cadastro: str  # CEIS ou CNEP
+    sancionado: str
+    documento: str | None = None  # CPF/CNPJ formatado
+    tipo: str | None = None  # a sanção em si
+    orgao: str | None = None  # quem puniu
+    uf: str | None = None
+    esfera: str | None = None  # FEDERAL, ESTADUAL, MUNICIPAL
+    inicio: date | None = None
+    fim: date | None = None
+
+
+class BeneficioSocial(BaseModel):
+    """Total pago por um programa social num município num mês (quantos
+    beneficiários e quanto dinheiro entrou)."""
+
+    fonte: str = "transparencia"
+    programa: str  # "Novo Bolsa Família"
+    municipio: str
+    uf: str | None = None
+    ibge: int | None = None
+    referencia: date | None = None  # o mês da folha
+    beneficiarios: int | None = None
+    valor: Decimal
+
+
 class Queimada(BaseModel):
     """Focos de incêndio agregados por estado ou bioma num dia. Vem do INPE
     (Programa Queimadas), que detecta os focos por satélite e atualiza o

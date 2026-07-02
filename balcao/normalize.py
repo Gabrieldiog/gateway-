@@ -3,6 +3,7 @@ de um jeito, e aqui tudo converge pro mesmo formato."""
 
 import re
 from datetime import date, datetime
+from decimal import Decimal, InvalidOperation
 
 UFS = {
     "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS",
@@ -37,6 +38,19 @@ def data_br(valor: str | None) -> str | None:
     # algumas fontes (BACEN) so aceitam dd/mm/aaaa na consulta
     d = para_data(valor)
     return d.strftime("%d/%m/%Y") if d else None
+
+
+def valor_br(valor) -> Decimal | None:
+    # dinheiro em formato brasileiro ("8.000,00") ou ja numerico -> Decimal
+    if valor is None or valor == "":
+        return None
+    if isinstance(valor, (int, float, Decimal)):
+        return Decimal(str(valor))
+    texto = str(valor).strip().replace(".", "").replace(",", ".")
+    try:
+        return Decimal(texto)
+    except InvalidOperation:
+        return None
 
 
 def limpa_texto(valor: str | None) -> str:

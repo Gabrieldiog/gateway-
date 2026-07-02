@@ -50,12 +50,19 @@ class BaseConnector(ABC):
         raise NotImplementedError
 
     async def _get(
-        self, path: str, params: dict | None = None, timeout: float | None = None
+        self,
+        path: str,
+        params: dict | None = None,
+        timeout: float | None = None,
+        headers: dict | None = None,
     ) -> httpx.Response:
         if self.breaker.aberto:
             raise ErroUpstream(self.name, circuito_aberto=True)
-        # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar
-        extra = {} if timeout is None else {"timeout": timeout}
+        # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar.
+        # headers extras servem pras fontes com chave (Transparencia, brapi)
+        extra: dict = {} if timeout is None else {"timeout": timeout}
+        if headers:
+            extra["headers"] = headers
         resp: httpx.Response | None = None
         try:
             async for tentativa in com_retry(self.retry_tentativas):
@@ -75,9 +82,13 @@ class BaseConnector(ABC):
         return resp
 
     async def get_json(
-        self, path: str, params: dict | None = None, timeout: float | None = None
+        self,
+        path: str,
+        params: dict | None = None,
+        timeout: float | None = None,
+        headers: dict | None = None,
     ) -> Any:
-        resp = await self._get(path, params, timeout)
+        resp = await self._get(path, params, timeout, headers)
         try:
             return resp.json()
         except ValueError as exc:

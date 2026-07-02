@@ -1,0 +1,17 @@
+[
+ {
+  "id": 119437605,
+  "dataReferencia": "2026-05-01",
+  "municipio": {
+   "codigoIBGE": "3550308",
+   "nomeIBGE": "SÃO PAULO",
+   "codigoRegiao": "3",
+   "nomeRegiao": "SUDESTE",
+   "pais": "BRASIL",
+   "uf": {"sigla": "SP", "nome": "SÃO PAULO"}
+  },
+  "tipo": {"id": 8, "descricao": "Novo Bolsa Família", "descricaoDetalhada": "Novo Bolsa Família"},
+  "valor": 406295426.00,
+  "quantidadeBeneficiados": 611753
+ }
+]

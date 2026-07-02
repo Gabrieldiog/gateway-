@@ -1,0 +1,13 @@
+[
+ {
+  "id": 1,
+  "dataInicioSancao": "20/09/2022",
+  "dataFimSancao": "20/09/2027",
+  "sancionado": {"nome": "EMPRESA EXEMPLO LTDA", "codigoFormatado": "12.345.678/0001-90"},
+  "pessoa": {"nome": "EMPRESA EXEMPLO LTDA", "cnpjFormatado": "12.345.678/0001-90", "tipo": "J"},
+  "tipoSancao": {"descricaoResumida": "Impedimento/proibição de contratar com prazo determinado", "descricaoPortal": "Impedimento/proibição de contratar com prazo determinado"},
+  "orgaoSancionador": {"nome": "Controladoria Geral do Estado de São Paulo", "siglaUf": "SP", "poder": "Executivo", "esfera": "ESTADUAL"},
+  "fonteSancao": {"nomeExibicao": "CGE-SP"},
+  "numeroProcesso": "123/2022"
+ }
+]
