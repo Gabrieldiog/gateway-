@@ -98,6 +98,46 @@ export interface Estado {
   regiao: string | null;
 }
 
+// emenda parlamentar (/v1/transparencia/emendas) — valores já normalizados
+export interface Emenda {
+  fonte: string;
+  codigo: string;
+  ano: number;
+  tipo: string | null;
+  autor: string;
+  localidade: string | null;
+  funcao: string | null;
+  valor_empenhado: string | null;
+  valor_liquidado: string | null;
+  valor_pago: string | null;
+}
+
+// punição em vigor (/v1/transparencia/sancoes) — CEIS ou CNEP
+export interface Sancao {
+  fonte: string;
+  cadastro: string; // CEIS | CNEP
+  sancionado: string;
+  documento: string | null;
+  tipo: string | null;
+  orgao: string | null;
+  uf: string | null;
+  esfera: string | null;
+  inicio: string | null;
+  fim: string | null;
+}
+
+// folha de um programa social num município (/v1/transparencia/bolsa-familia)
+export interface BeneficioSocial {
+  fonte: string;
+  programa: string;
+  municipio: string;
+  uf: string | null;
+  ibge: number | null;
+  referencia: string | null;
+  beneficiarios: number | null;
+  valor: string;
+}
+
 // focos de incêndio agregados por estado/bioma (/v1/inpe/queimadas)
 export interface Queimada {
   fonte: string;
