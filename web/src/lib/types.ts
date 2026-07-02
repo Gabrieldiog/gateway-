@@ -153,6 +153,43 @@ export interface BeneficioSocial {
   valor: string;
 }
 
+// uma semana epidemiológica de um município (/v1/infodengue/alertas)
+export interface AlertaDengue {
+  fonte: string;
+  municipio: string;
+  ibge: number;
+  doenca: string;
+  semana: number; // AAAASS
+  inicio_semana: string | null;
+  casos: number | null;
+  casos_estimados: number | null;
+  incidencia_100k: number | null;
+  rt: number | null;
+  nivel: number; // 1..4
+  alerta: string; // verde..vermelho
+  populacao: number | null;
+}
+
+// um mês da balança comercial (/v1/comex/balanca), US$ FOB
+export interface BalancaMensal {
+  fonte: string;
+  mes: string; // "2026-05"
+  exportacoes: string;
+  importacoes: string;
+  saldo: string;
+}
+
+// linha de ranking do comércio exterior (/v1/comex/ranking/{dim})
+export interface LinhaComercio {
+  fonte: string;
+  fluxo: string; // exportacao | importacao
+  dimensao: string; // pais | uf | produto
+  nome: string;
+  codigo: string | null;
+  valor_fob: string;
+  peso_kg: string | null;
+}
+
 // focos de incêndio agregados por estado/bioma (/v1/inpe/queimadas)
 export interface Queimada {
   fonte: string;

@@ -32,6 +32,7 @@ export const GRUPOS: Grupo[] = [
       { num: "XIV", nome: "Custo de Vida", sub: "inflação e o que o mercado espera", href: "/custo-de-vida" },
       { num: "VI", nome: "Impostos", sub: "arrecadação · país, estados, cidades", href: "/tesouro" },
       { num: "XIII", nome: "Arrecadômetro", sub: "quanto o Brasil já arrecadou", href: "/arrecadometro" },
+      { num: "XX", nome: "Comércio Exterior", sub: "balança comercial e parceiros", href: "/comercio" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },
       { num: "X", nome: "IPEADATA", sub: "séries da economia", href: "/ipeadata" },
     ],
@@ -54,6 +55,7 @@ export const GRUPOS: Grupo[] = [
     nome: "Social",
     cadernos: [
       { num: "VII", nome: "Saúde", sub: "estabelecimentos do SUS", href: "/saude" },
+      { num: "XIX", nome: "Dengue", sub: "alerta por cidade, semana a semana", href: "/dengue" },
       { num: "IX", nome: "Agro", sub: "produção e rebanho", href: "/agro" },
     ],
   },
