@@ -99,6 +99,16 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
+    # ANP — CSV rolante de preços de combustível; o firewall real barra UA
+    # técnico (403) e Accept: application/json (401) — o mock protege os dois
+    if "gov.br/anp" in url and "ultimas-4-semanas" in url:
+        if "Mozilla" not in request.headers.get("user-agent", ""):
+            return httpx.Response(403, text="Forbidden")
+        if request.headers.get("accept") == "application/json":
+            return httpx.Response(401, text="Unauthorized")
+        return httpx.Response(
+            200, text=(FIXTURES / "anp_precos.csv").read_text(encoding="utf-8")
+        )
     # Tesouro Direto — CSV de 14 MB sem ordem cronológica (fixture encolhida)
     if "tesourotransparente.gov.br" in url and "precotaxatesourodireto" in url:
         return httpx.Response(

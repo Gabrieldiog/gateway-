@@ -218,6 +218,23 @@ class ContratoPublico(BaseModel):
     vigencia_fim: date | None = None
 
 
+class PrecoCombustivel(BaseModel):
+    """Preço médio de um combustível num estado ou município, agregado das
+    coletas da ANP nos postos das últimas quatro semanas."""
+
+    fonte: str = "anp"
+    combustivel: str  # gasolina, etanol, diesel-s10...
+    produto: str  # o nome oficial na fonte (GASOLINA ADITIVADA...)
+    nivel: str  # estado ou municipio
+    local: str  # "GO" ou "GOIÂNIA"
+    uf: str | None = None
+    preco_medio: Decimal
+    preco_minimo: Decimal
+    preco_maximo: Decimal
+    coletas: int  # quantos preços de posto entraram na média
+    unidade: str  # "R$ / litro", "R$ / 13kg"...
+
+
 class TituloPublico(BaseModel):
     """Um título do Tesouro Direto na última data publicada: a taxa e o preço
     unitário de compra e venda. O nome comercial (Tesouro Selic 2029) é
