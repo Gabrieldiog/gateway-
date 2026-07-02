@@ -51,6 +51,21 @@ export interface PontoSerie {
   valor: string;
 }
 
+// ação ou índice da B3 (/v1/b3/acoes/...) — ~15 min de atraso no plano free
+export interface Acao {
+  fonte: string;
+  ticker: string; // IBOV, PETR4...
+  nome: string | null;
+  preco: string;
+  variacao_pct: number | null;
+  abertura: string | null;
+  maxima: string | null;
+  minima: string | null;
+  fechamento_anterior: string | null;
+  moeda: string | null; // null em índice (pontos)
+  atualizado: string | null;
+}
+
 export interface Cotacao {
   fonte: string;
   par: string; // "USD/BRL"

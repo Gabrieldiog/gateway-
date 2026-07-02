@@ -100,6 +100,23 @@ class ExpectativaMercado(BaseModel):
     respondentes: int | None = None
 
 
+class Acao(BaseModel):
+    """Uma ação ou índice da B3 — preço de mercado com o atraso do plano
+    gratuito da fonte (~15 minutos)."""
+
+    fonte: str = "b3"
+    ticker: str  # PETR4, VALE3, IBOV
+    nome: str | None = None
+    preco: Decimal  # pontos, no caso de índice
+    variacao_pct: float | None = None  # no dia
+    abertura: Decimal | None = None
+    maxima: Decimal | None = None
+    minima: Decimal | None = None
+    fechamento_anterior: Decimal | None = None
+    moeda: str | None = None  # BRL; None em índice
+    atualizado: str | None = None
+
+
 class Cotacao(BaseModel):
     """Cotação de câmbio/cripto quase em tempo real (preço de mercado)."""
 
