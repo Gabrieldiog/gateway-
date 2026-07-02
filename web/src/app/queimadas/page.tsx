@@ -123,7 +123,17 @@ export default function CadernoQueimadas() {
       </div>
 
       {q.erro ? (
-        <ErroBox erro={q.erro} aoTentar={q.recarregar} />
+        // 404 aqui não é defeito: o arquivo daquele dia ainda não existe no
+        // servidor do INPE (o de hoje só aparece ao longo da manhã)
+        q.erro.status === 404 ? (
+          <Vazio>
+            o INPE ainda não publicou o arquivo de {rotuloData.toLowerCase()} — o dia costuma
+            aparecer ao longo da manhã e ir crescendo até a noite. Enquanto isso, veja
+            &ldquo;Ontem&rdquo;, que já está completo.
+          </Vazio>
+        ) : (
+          <ErroBox erro={q.erro} aoTentar={q.recarregar} />
+        )
       ) : q.carregando && !q.dados ? (
         <Esqueleto linhas={10} />
       ) : linhas.length ? (

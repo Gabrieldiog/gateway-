@@ -7,6 +7,7 @@ export interface Caderno {
 
 export interface Grupo {
   nome: string;
+  desc?: string;
   cadernos: Caderno[];
 }
 
@@ -17,6 +18,7 @@ export const CAPA: Caderno = { num: "I", nome: "Capa", sub: "busca unificada", h
 export const GRUPOS: Grupo[] = [
   {
     nome: "Governo",
+    desc: "Quem manda e quanto custa: deputados, senadores, cada voto nominal, emendas, sanções e as compras públicas.",
     cadernos: [
       { num: "II", nome: "Câmara", sub: "deputados e gastos", href: "/camara" },
       { num: "III", nome: "Senado", sub: "senadores", href: "/senado" },
@@ -28,6 +30,7 @@ export const GRUPOS: Grupo[] = [
   },
   {
     nome: "Economia",
+    desc: "O dinheiro do país e o do seu bolso: câmbio ao vivo, inflação, impostos, comércio exterior, combustíveis e o Tesouro.",
     cadernos: [
       { num: "XII", nome: "Pulso", sub: "câmbio, ouro e cripto ao vivo", href: "/pulso" },
       { num: "XIV", nome: "Custo de Vida", sub: "inflação e o que o mercado espera", href: "/custo-de-vida" },
@@ -42,6 +45,7 @@ export const GRUPOS: Grupo[] = [
   },
   {
     nome: "Território",
+    desc: "O mapa do Brasil: estados, municípios e as queimadas que os satélites do INPE enxergam todo dia.",
     cadernos: [
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
       { num: "XVI", nome: "Queimadas", sub: "focos de incêndio por estado e bioma", href: "/queimadas" },
@@ -49,6 +53,7 @@ export const GRUPOS: Grupo[] = [
   },
   {
     nome: "Infraestrutura",
+    desc: "A máquina funcionando: a geração de energia do país em tempo real e os dados abertos de transporte.",
     cadernos: [
       { num: "XV", nome: "Energia", sub: "geração do país ao vivo", href: "/energia" },
       { num: "XI", nome: "Dados Abertos", sub: "energia, transporte (CKAN)", href: "/dados" },
@@ -56,6 +61,7 @@ export const GRUPOS: Grupo[] = [
   },
   {
     nome: "Social",
+    desc: "O dia a dia de quem vive aqui: os estabelecimentos do SUS, o alerta de dengue da sua cidade e o agro que alimenta.",
     cadernos: [
       { num: "VII", nome: "Saúde", sub: "estabelecimentos do SUS", href: "/saude" },
       { num: "XIX", nome: "Dengue", sub: "alerta por cidade, semana a semana", href: "/dengue" },
@@ -65,11 +71,22 @@ export const GRUPOS: Grupo[] = [
   {
     nome: "Sobre",
     cadernos: [
-      { num: "XII", nome: "Manual", sub: "como chamar a API", href: "/docs" },
-      { num: "XIII", nome: "Expediente", sub: "as fontes", href: "/fontes" },
+      { num: "XXIV", nome: "Sobre o Balcão", sub: "o que é este jornal", href: "/sobre" },
+      { num: "XXVI", nome: "Expediente", sub: "as fontes oficiais", href: "/fontes" },
+    ],
+  },
+  {
+    nome: "Desenvolvedores",
+    cadernos: [
+      { num: "XXV", nome: "Manual da API", sub: "como chamar cada fonte", href: "/docs" },
     ],
   },
 ];
+
+// os grupos de leitura — a vitrine da capa não mostra as seções institucionais
+export const TEMAS: Grupo[] = GRUPOS.filter(
+  (g) => g.nome !== "Sobre" && g.nome !== "Desenvolvedores",
+);
 
 // lista plana na ordem do sumário — pro índice mobile e contagens
 export const CADERNOS: Caderno[] = [CAPA, ...GRUPOS.flatMap((g) => g.cadernos)];
