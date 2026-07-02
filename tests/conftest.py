@@ -84,6 +84,9 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # ONS — geração do SIN quase em tempo real (balanço energético do dia)
     if "tr.ons.org.br/Content/Get/BalancoEnergetico" in url:
         return httpx.Response(200, json=carrega_fixture("ons_balanco"))
+    # INPE — arquivo CSV diário de focos de queimada (texto, não JSON)
+    if "dataserver-coids.inpe.br" in url and "focos_diario_br_" in url:
+        return httpx.Response(200, text=(FIXTURES / "inpe_focos.csv").read_text(encoding="utf-8"))
     # Câmara — arquivos anuais (histórico completo de votos por deputado)
     if "/arquivos/votacoesVotos/" in url:
         return httpx.Response(200, json=carrega_fixture("camara_arquivo_votos"))
