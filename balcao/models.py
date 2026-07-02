@@ -218,6 +218,22 @@ class ContratoPublico(BaseModel):
     vigencia_fim: date | None = None
 
 
+class TituloPublico(BaseModel):
+    """Um título do Tesouro Direto na última data publicada: a taxa e o preço
+    unitário de compra e venda. O nome comercial (Tesouro Selic 2029) é
+    montado a partir do tipo + ano de vencimento."""
+
+    fonte: str = "tesourodireto"
+    nome: str  # "Tesouro Selic 2029"
+    tipo: str  # Tesouro Selic, Tesouro Prefixado, Tesouro IPCA+...
+    vencimento: date
+    data: date  # a data-base do preço
+    taxa_compra: Decimal | None = None  # % a.a.
+    taxa_venda: Decimal | None = None
+    pu_compra: Decimal | None = None  # preço unitário, R$
+    pu_venda: Decimal | None = None
+
+
 class BalancaMensal(BaseModel):
     """Um mês da balança comercial: quanto o Brasil exportou, importou e o
     saldo, em dólares FOB."""
