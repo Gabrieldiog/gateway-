@@ -153,6 +153,34 @@ export interface BeneficioSocial {
   valor: string;
 }
 
+// preço agregado de um combustível (/v1/anp/precos) — média das coletas
+export interface PrecoCombustivel {
+  fonte: string;
+  combustivel: string;
+  produto: string;
+  nivel: string; // estado | municipio
+  local: string;
+  uf: string | null;
+  preco_medio: string;
+  preco_minimo: string;
+  preco_maximo: string;
+  coletas: number;
+  unidade: string;
+}
+
+// um título do Tesouro Direto na última data publicada (/v1/tesourodireto/titulos)
+export interface TituloPublico {
+  fonte: string;
+  nome: string; // "Tesouro Selic 2029"
+  tipo: string;
+  vencimento: string;
+  data: string;
+  taxa_compra: string | null;
+  taxa_venda: string | null;
+  pu_compra: string | null;
+  pu_venda: string | null;
+}
+
 // uma semana epidemiológica de um município (/v1/infodengue/alertas)
 export interface AlertaDengue {
   fonte: string;

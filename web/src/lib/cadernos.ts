@@ -33,6 +33,8 @@ export const GRUPOS: Grupo[] = [
       { num: "VI", nome: "Impostos", sub: "arrecadação · país, estados, cidades", href: "/tesouro" },
       { num: "XIII", nome: "Arrecadômetro", sub: "quanto o Brasil já arrecadou", href: "/arrecadometro" },
       { num: "XX", nome: "Comércio Exterior", sub: "balança comercial e parceiros", href: "/comercio" },
+      { num: "XXI", nome: "Combustíveis", sub: "gasolina, etanol e gás por estado", href: "/combustiveis" },
+      { num: "XXII", nome: "Títulos Públicos", sub: "Tesouro Direto: taxa e preço do dia", href: "/titulos" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },
       { num: "X", nome: "IPEADATA", sub: "séries da economia", href: "/ipeadata" },
     ],
