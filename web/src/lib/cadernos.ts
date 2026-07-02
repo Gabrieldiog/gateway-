@@ -38,6 +38,7 @@ export const GRUPOS: Grupo[] = [
     nome: "Território",
     cadernos: [
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
+      { num: "XVI", nome: "Queimadas", sub: "focos de incêndio por estado e bioma", href: "/queimadas" },
     ],
   },
   {
