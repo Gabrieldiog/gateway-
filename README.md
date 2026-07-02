@@ -92,11 +92,11 @@ Toda resposta de fonte vem no mesmo envelope:
 
 ## Dashboard
 
-Tem uma view web em [`web/`](web/) — um "diário de dados públicos" que consome o gateway: Câmara, Senado, Banco Central e IBGE numa interface única, com **busca unificada** que dispara as fontes em paralelo e mostra a latência e o estado do cache de cada uma ao vivo. Next.js 16 + Tailwind + Recharts, falando com a API por um proxy server-to-server (sem CORS). Detalhes no [README da view](web/README.md).
+Tem uma view web em [`web/`](web/) — um "diário de dados públicos" com **mais de vinte cadernos** sobre o gateway: do telão de energia ao vivo do ONS ao semáforo de dengue da sua cidade, passando por arrecadação, emendas, sanções, Bolsa Família, câmbio/ouro/cripto/bolsa em tempo real, queimadas, preço da gasolina e Tesouro Direto — com **busca unificada** que dispara as fontes em paralelo e mostra a latência e o estado do cache de cada uma ao vivo. Next.js 16 + Tailwind + Recharts, falando com a API por um proxy server-to-server (sem CORS). Detalhes no [README da view](web/README.md).
 
 ## MCP — consultas por agentes de IA
 
-O mesmo núcleo é exposto como um servidor [MCP](https://modelcontextprotocol.io) (via FastMCP), pra um agente (Claude, etc.) consultar dados públicos com ferramentas: `buscar`, `deputados`, `gastos`, `senadores`, `serie_economica`, `municipios` e `listar_fontes`. A lógica é a mesma que responde no HTTP — a busca em leque e os conectores vivem em [`balcao/search.py`](balcao/search.py) e são reusados pelas duas portas.
+O mesmo núcleo é exposto como um servidor [MCP](https://modelcontextprotocol.io) (via FastMCP), pra um agente (Claude, etc.) consultar dados públicos com ferramentas. O passe livre é **`consultar(fonte, recurso, params)`** — qualquer recurso das 25 fontes —, e os atalhos cobrem as perguntas mais comuns: `buscar`, `deputados`, `gastos`, `senadores`, `serie_economica`, `municipios`, `arrecadacao`, `energia_agora`, `preco_combustivel` e `listar_fontes`. A lógica é a mesma que responde no HTTP — a busca em leque e os conectores vivem em [`balcao/search.py`](balcao/search.py) e são reusados pelas duas portas.
 
 ```bash
 pip install -e ".[mcp]"
@@ -125,20 +125,32 @@ Testes (a suite roda **sem internet** — as fixtures gravadas respondem no luga
 .venv/bin/python -m pytest
 ```
 
-## Fontes ativas
+## Fontes ativas (25)
 
 | Fonte | Recursos | Chave? |
 |---|---|---|
-| Câmara dos Deputados | deputados, despesas (CEAP), votações, voto por deputado, proposições | não |
-| Senado Federal | senadores em exercício, detalhe | não |
-| Banco Central (SGS) | Selic, CDI, IPCA, IGP-M, câmbio e qualquer série por código | não |
+| Câmara dos Deputados | deputados, despesas (CEAP), votações, voto por deputado (inclusive o histórico anual por arquivo), proposições | não |
+| Senado Federal | senadores, histórico de votos por senador, matérias em tramitação (API nova) | não |
+| Banco Central (SGS) | Selic, CDI, IPCA, IGP-M, poupança, câmbio e qualquer série por código + painel de custo de vida | não |
+| Boletim Focus (Olinda) | o que o mercado espera pra IPCA, Selic, câmbio, PIB e IGP-M por ano | não |
 | IBGE | estados, municípios | não |
 | Ministério da Saúde (CNES) | estabelecimentos de saúde: hospitais, UBS, prontos-socorros | não |
-| Tesouro Nacional (SICONFI) | receita, arrecadação de impostos e despesa por função dos estados | não |
+| Tesouro Nacional (SICONFI) | arrecadação (impostos + contribuições), imposto a imposto e despesa por função — União, estados e municípios, com ranking | não |
+| Tesouro Direto | preço e taxa do dia de cada título público (CSV de 14 MB garimpado) | não |
 | IBGE SIDRA (agro) | produção agrícola (PAM) e pecuária por estado/município | não |
 | ANEEL · MME · ANTT (CKAN) | datasets e linhas reais (datastore) de energia, mineração e transporte | não |
-| IPEADATA | séries macro, regionais e sociais (PIB, inflação, emprego, renda...) | não |
-| Portal da Transparência | contratos, sanções *(planejado)* | token grátis |
+| IPEADATA | séries macro, regionais e sociais | não |
+| AwesomeAPI (câmbio) | dólar, euro, libra, ouro e cripto quase em tempo real (sem cache) | não |
+| B3 via brapi | ações e Ibovespa (~15 min de atraso; fan-out de 1 ativo por chamada) | token grátis |
+| ONS | geração do SIN por fonte quase em tempo real + % renovável | não |
+| INPE Queimadas | focos de incêndio do dia por estado, bioma e município (CSV diário) | não |
+| InfoDengue (Fiocruz) | dengue, zika e chikungunya por município com nível de alerta semanal | não |
+| Portal da Transparência (CGU) | emendas parlamentares, sanções (CEIS+CNEP) por CNPJ/CPF, Bolsa Família por município | token grátis |
+| PNCP | licitações e contratos públicos de todas as esferas (Lei 14.133) | não |
+| ComexStat (MDIC) | balança comercial mês a mês e rankings por país, UF e produto | não |
+| ANP | preço de gasolina, etanol, diesel, GNV e GLP por estado/município (coletas reais nos postos) | não |
+| DataJud (CNJ) | capa e movimentações de processos por tribunal + o que mais se processa | chave pública |
+| TSE | doações de campanha por candidato, partido, doador e origem (ZIP de até 1,4 GB) | não |
 
 ## As armadilhas de cada fonte (e como o Balcão resolve)
 
@@ -157,10 +169,25 @@ A parte divertida de unificar dados públicos é descobrir que **cada API tem su
 - **O SIDRA (IBGE) fala em código**: a resposta é uma lista onde o 1º item é o cabeçalho, as chaves são crípticas (`D1N` = localidade, `D2N` = variável, `D4N` = produto, `V` = valor), e ausência de dado vem como `"-"`, `".."` ou `"X"`. O conector lê o cabeçalho, traduz nomes amigáveis (`produto=soja`, `variavel=quantidade`) pros códigos de tabela/classificação do SIDRA, e devolve registros limpos com o valor já numérico (ou `null`).
 - **Muitos portais do governo rodam CKAN** (ANEEL, MME, ANTT...) com a mesma API. Em vez de um conector por órgão, há um **motor CKAN** (`connectors/ckan.py`): plugar um novo portal é uma subclasse com `name` + `base_url`. `/datasets` busca os conjuntos (com a marca de quais têm `datastore`) e `/dados/{id}` traz as linhas reais via `datastore_search` — porque CKAN é catálogo, e nem todo recurso expõe dado tabular (alguns são só CSV pra download).
 - **O OData do IPEADATA é mancha**: não aceita `contains` (só `startswith` pra buscar série por nome) e o `ValoresSerie` **ignora `$top`/`$orderby`** — devolve a série inteira, das décadas, em ordem crescente. O conector busca por prefixo, recorta os mais recentes (`ultimos`) do lado de cá e entrega as datas em ISO.
+- **O SGS do BACEN responde `{"erro":{}}` com HTTP 200** em certas séries (a 195, índice diário da poupança, quebra no `ultimos/1`). Corpo que não é lista vira resultado vazio, não exceção — e a poupança usa a série mensal (196), que é limpa.
+- **O Olinda (Boletim Focus) recusa o `$` percent-encoded**: mandar `%24top` dá 400. A query OData é montada à mão com o cifrão literal — e ainda tem que deduplicar por `baseCalculo` e conviver com nomes de recurso irregulares (`ExpectativasMercadoAnuais` no plural, `ExpectativaMercadoMensais` no singular).
+- **O ONS publica o minuto seguinte zerado** antes de ter o dado — o conector volta do fim do dia até achar geração de verdade. E Itaipu vem em campos próprios, contada como hidráulica.
+- **O host de dados do INPE migrou** (`queimadas.dgi.inpe.br` morreu; o atual é `dataserver-coids.inpe.br`) e o arquivo do dia enche ao longo das horas — de madrugada, "hoje" quase não tem focos, e isso é honesto, não bug.
+- **A Transparência (CGU) manda dinheiro em formato brasileiro** (`"8.000,00"`), datas `dd/mm/aaaa`, e o rate limit muda por horário (mais generoso de madrugada). Valores viram `Decimal`, datas viram ISO, e as sanções consultam CEIS e CNEP em paralelo.
+- **O PNCP quer datas `AAAAMMDD` sem separador**, exige a modalidade por um código de enum que só existe num manual em PDF, e o `tamanhoPagina` tem **mínimo de 10** (pedir 2 dá 400). O código virou slug legível (`pregao-eletronico`, `dispensa`). E a fonte cai por horas — o 502 limpo e o cache seguram.
+- **A brapi (B3) no plano gratuito só aceita 1 ativo por chamada** — a lista vira fan-out paralelo. E como o dado free tem ~15 min de atraso, a fonte é *cacheável* de propósito (proteger a cota de 15 mil requests/mês), ao contrário do câmbio.
+- **O ComexStat manda toda métrica como string** (`"6619343689"`), fala `export`/`import` em inglês, e embrulha tudo em `data.list`. O conector fala português (`exportacao`), devolve `Decimal` e calcula o saldo da balança juntando os dois fluxos em paralelo.
+- **O CSV do Tesouro Direto não tem ordem cronológica**: 14 MB desde 2002, com o topo em 2015 e o fim em 2005. A data mais recente é achada comparando `AAAAMMDD` como texto, sem converter 250 mil linhas.
+- **O firewall do gov.br (ANP) barra clientes que não pareçam navegador**: 403 pra User-Agent técnico e — descoberto na prática — **401 pro header `Accept: application/json`** que o client compartilhado usa pro Senado. O conector se apresenta como navegador e sobrescreve o Accept. De quebra: BOM UTF-8, campo com `;` embutido entre aspas (split ingênuo quebra) e vírgula decimal.
+- **O DataJud é Elasticsearch cru** — um índice por tribunal, query em DSL, resposta enterrada em `hits.hits[]._source`, atrás de uma **chave pública que o CNJ rotaciona** (por isso vive no `.env`). E o CNJ rate-limita agregações pesadas (429). A lista de movimentos não é ordenada: o último andamento é achado pelo `dataHora`.
+- **As APIs do Senado morrem com hora marcada**: a de matérias foi desativada em fev/2026 e até a rota "substituta" clássica já passou da própria data de desligamento (mas segue no ar, por inércia). O conector usa a API nova de processos — a primeira do Senado que fala JSON de verdade.
+- **O TSE não tem API**: doações de campanha são um **ZIP de 390 MB (2022) a 1,4 GB (2024)** com 112 CSVs latin-1 dentro. O conector baixa por streaming direto pro disco uma única vez (rename atômico pra nunca cachear download pela metade), lê só o CSV da UF pedida de dentro do zip e agrega. CPF de doador pode vir mascarado (LGPD).
+- **Portais podem responder 200 com HTML** (página de manutenção, firewall) — o `resp.json()` estourava como 500 cru; hoje corpo não-JSON vira **502 tipado** e conta pro circuit breaker.
+- **Toda resposta diz de onde veio**: os conectores carregam um **selo de procedência** (`meta.fonte` com nome, URL e nota honesta sobre limitações) — a resposta pro "o Google fala outro número".
 
 ## Stack
 
-Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetools · tenacity · slowapi · pytest (offline, `MockTransport`) · Docker
+Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetools · tenacity · slowapi · ijson (ETL streaming) · pytest (offline, `MockTransport`) · Docker
 
 ## Roadmap
 
@@ -174,4 +201,12 @@ Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetoo
 - [x] IBGE SIDRA: produção agrícola e pecuária (agro) por estado/município
 - [x] Motor CKAN reutilizável: ANEEL, MME e ANTT (energia, mineração, transporte)
 - [x] IPEADATA: séries macro, regionais e sociais (complementa o BACEN)
-- [ ] Fase 3 — Fontes com chave: Portal da Transparência (token) e PNCP (API instável)
+- [x] Fase 3 — Fontes com chave: Portal da Transparência, brapi (B3) e DataJud
+- [x] Economia viva: painel de custo de vida (inflação) e Boletim Focus
+- [x] Tempo real: câmbio/ouro/cripto (AwesomeAPI), geração de energia (ONS) e queimadas (INPE)
+- [x] Dinheiro público: arrecadação por ente (SICONFI), emendas, sanções, Bolsa Família e PNCP
+- [x] ComexStat (comércio exterior) e InfoDengue (vigilância epidemiológica)
+- [x] Fase 5 — Conectores de arquivo: ANP (combustíveis), Tesouro Direto e TSE (doações, ZIP de 1,4 GB)
+- [x] MCP com passe livre (`consultar`) sobre as 25 fontes
+- [ ] Deploy público (Render + Netlify) — blueprint pronto em `render.yaml`
+- [ ] Caderno de compras públicas na view (aguardando o PNCP estabilizar)

@@ -1,0 +1,23 @@
+# Blueprint do Render (plano free): New + > Blueprint > apontar pro repo.
+# As chaves de API são secrets — configurar no dashboard, nunca aqui.
+services:
+  - type: web
+    name: balcao-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: CACHE_TTL
+        value: "600"
+      - key: CACHE_STALE_TTL
+        value: "86400"
+      - key: RATE_LIMIT
+        value: 100/minute
+      - key: HTTP_TIMEOUT
+        value: "15"
+      - key: TRANSPARENCIA_API_KEY
+        sync: false
+      - key: BRAPI_TOKEN
+        sync: false
+      - key: DATAJUD_API_KEY
+        sync: false

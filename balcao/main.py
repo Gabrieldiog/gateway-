@@ -69,6 +69,11 @@ def create_app() -> FastAPI:
     async def loga_requisicoes(request: Request, call_next):
         inicio = time.perf_counter()
         response = await call_next(request)
+        # cabeçalhos de segurança pra exposição pública: a API é só JSON,
+        # então nada de sniffing, frames ou referrer vazando
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
         ms = round((time.perf_counter() - inicio) * 1000, 1)
         dados = {
             "metodo": request.method,

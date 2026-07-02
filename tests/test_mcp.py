@@ -67,3 +67,50 @@ async def test_mcp_gastos_agrega():
         assert r.data["total_documentos"] == 3
     finally:
         await cliente.aclose()
+
+
+async def test_mcp_consultar_e_passe_livre_pra_qualquer_fonte():
+    cliente = conectores_fake()
+    try:
+        async with Client(mcp_server.mcp) as c:
+            r = await c.call_tool(
+                "consultar",
+                {"fonte": "inpe", "recurso": "queimadas", "params": {"por": "bioma"}},
+            )
+        assert r.data["fonte"] == "inpe"
+        assert r.data["dados"][0]["nome"] == "Cerrado"
+    finally:
+        await cliente.aclose()
+
+
+async def test_mcp_consultar_fonte_desconhecida_lista_as_validas():
+    cliente = conectores_fake()
+    try:
+        async with Client(mcp_server.mcp) as c:
+            r = await c.call_tool("consultar", {"fonte": "nasa", "recurso": "foguetes"})
+        assert "erro" in r.data
+        assert "camara" in r.data["disponiveis"]
+    finally:
+        await cliente.aclose()
+
+
+async def test_mcp_energia_agora():
+    cliente = conectores_fake()
+    try:
+        async with Client(mcp_server.mcp) as c:
+            r = await c.call_tool("energia_agora", {})
+        sin = next(x for x in r.data if x["regiao"] == "SIN")
+        assert sin["renovavel_pct"] == 84.6
+    finally:
+        await cliente.aclose()
+
+
+async def test_mcp_preco_combustivel():
+    cliente = conectores_fake()
+    try:
+        async with Client(mcp_server.mcp) as c:
+            r = await c.call_tool("preco_combustivel", {"combustivel": "gasolina", "uf": "GO"})
+        locais = {x["local"] for x in r.data}
+        assert locais == {"GOIANIA", "ANAPOLIS"}
+    finally:
+        await cliente.aclose()
