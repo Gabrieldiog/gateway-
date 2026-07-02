@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataReaisCompacto } from "@/lib/api";
@@ -77,17 +78,13 @@ export function RankingArrecadacao({ ano }: { ano: number }) {
 
         <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
           Critério
-          <select
-            value={idx}
-            onChange={(e) => setIdx(Number(e.target.value))}
-            className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-          >
+          <Seletor value={idx} onChange={(e) => setIdx(Number(e.target.value))}>
             {criterios.map((c, i) => (
               <option key={c.label} value={i}>
                 {c.label}
               </option>
             ))}
-          </select>
+          </Seletor>
         </label>
       </div>
 

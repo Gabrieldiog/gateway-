@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Carimbo } from "@/components/Carimbo";
 import { AzulejoGlifo } from "@/components/Azulejo";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -43,17 +44,13 @@ export default function CadernoIbge() {
         {modo === "municipios" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             UF
-            <select
-              value={uf}
-              onChange={(e) => setUf(e.target.value)}
-              className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-            >
+            <Seletor value={uf} onChange={(e) => setUf(e.target.value)}>
               {UFS.map((u) => (
                 <option key={u} value={u}>
                   {u}
                 </option>
               ))}
-            </select>
+            </Seletor>
           </label>
         )}
       </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
 import { SeloFonte } from "@/components/SeloFonte";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -97,28 +98,24 @@ export default function CadernoArrecadometro() {
         {nivel !== "uniao" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             UF
-            <select
-              value={uf}
-              onChange={(e) => escolheUf(e.target.value)}
-              className="rounded-md border border-line bg-surface px-2 py-1 text-ink"
-            >
+            <Seletor value={uf} onChange={(e) => escolheUf(e.target.value)}>
               {UFS.map((u) => (
                 <option key={u} value={u}>
                   {u}
                 </option>
               ))}
-            </select>
+            </Seletor>
           </label>
         )}
 
         {nivel === "municipio" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             Cidade
-            <select
+            <Seletor
               value={ibge}
               onChange={(e) => setIbge(e.target.value)}
               disabled={!municipios.length}
-              className="max-w-56 rounded-md border border-line bg-surface px-2 py-1 text-ink disabled:opacity-50"
+              className="max-w-56"
             >
               {municipios.length ? (
                 municipios.map((m) => (
@@ -129,16 +126,16 @@ export default function CadernoArrecadometro() {
               ) : (
                 <option value={ibge}>carregando…</option>
               )}
-            </select>
+            </Seletor>
           </label>
         )}
 
         <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
           Contar
-          <select
+          <Seletor
             value={metrica}
             onChange={(e) => setMetrica(e.target.value)}
-            className="max-w-64 rounded-md border border-line bg-surface px-2 py-1 text-ink"
+            className="max-w-64"
           >
             <option value="arrecadacao">Arrecadação total</option>
             <option value="impostos">Impostos (todos)</option>
@@ -149,7 +146,7 @@ export default function CadernoArrecadometro() {
                   {i.sigla} — {i.nome}
                 </option>
               ))}
-          </select>
+          </Seletor>
         </label>
       </div>
 

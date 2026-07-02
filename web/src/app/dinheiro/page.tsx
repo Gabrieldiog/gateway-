@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
@@ -253,23 +254,22 @@ function BolsaFamilia() {
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <select
+        <Seletor
           value={uf}
           onChange={(e) => {
             setUf(e.target.value);
             setIbge(CAPITAIS[e.target.value]);
           }}
-          className={campo}
           aria-label="estado"
         >
           {UFS.map((u) => (
             <option key={u}>{u}</option>
           ))}
-        </select>
-        <select
+        </Seletor>
+        <Seletor
           value={ibge}
           onChange={(e) => setIbge(e.target.value)}
-          className={`${campo} max-w-56`}
+          className="max-w-56"
           aria-label="cidade"
         >
           {(cidades.dados?.dados ?? []).map((m) => (
@@ -277,14 +277,14 @@ function BolsaFamilia() {
               {m.nome}
             </option>
           ))}
-        </select>
-        <select value={mes} onChange={(e) => setMes(e.target.value)} className={campo} aria-label="mês">
+        </Seletor>
+        <Seletor value={mes} onChange={(e) => setMes(e.target.value)} aria-label="mês">
           {MESES.map((m) => (
             <option key={m.valor} value={m.valor}>
               {m.label}
             </option>
           ))}
-        </select>
+        </Seletor>
         <Carimbo fonte="CGU" ms={r.ms} erro={!!r.erro} />
       </div>
 
