@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -108,6 +109,80 @@ function Balanca() {
   );
 }
 
+function ListaDestaque({
+  titulo,
+  tom,
+  linhas,
+  carregando,
+}: {
+  titulo: string;
+  tom: "verde" | "rosa";
+  linhas: LinhaComercio[];
+  carregando: boolean;
+}) {
+  const cor = tom === "verde" ? "text-emerald-600" : "text-rose-600";
+  const barra = tom === "verde" ? "bg-emerald-500" : "bg-rose-400";
+  const max = linhas.length ? Number(linhas[0].valor_fob) : 1;
+  return (
+    <Card className="p-5 pt-6">
+      <p className={`kicker mb-3 pl-4 ${cor}`}>{titulo}</p>
+      {carregando && !linhas.length ? (
+        <Esqueleto linhas={5} />
+      ) : (
+        <ol className="flex flex-col gap-2.5 pl-4">
+          {linhas.map((l, i) => (
+            <li key={l.nome}>
+              <div className="mb-0.5 flex items-baseline justify-between gap-3">
+                <span className="num w-4 shrink-0 text-xs text-muted">{i + 1}</span>
+                <span className="min-w-0 flex-1 truncate text-sm text-ink/90" title={l.nome}>
+                  {l.nome}
+                </span>
+                <span className="num shrink-0 text-sm text-ink">{usd(l.valor_fob)}</span>
+              </div>
+              <div className="ml-6 h-1.5 overflow-hidden rounded-sm bg-surface-2">
+                <div
+                  className={`h-full rounded-sm ${barra}`}
+                  style={{ width: `${Math.max((100 * Number(l.valor_fob)) / max, 2)}%` }}
+                />
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+    </Card>
+  );
+}
+
+function Destaques() {
+  // as duas perguntas mais diretas do caderno, sempre à vista
+  const vende = useBalcao<NormalizedResponse<LinhaComercio>>(
+    caminho("comex/ranking/produto", { fluxo: "exportacao", limit: 5 }),
+  );
+  const compra = useBalcao<NormalizedResponse<LinhaComercio>>(
+    caminho("comex/ranking/produto", { fluxo: "importacao", limit: 5 }),
+  );
+  if (vende.erro && compra.erro) return null;
+  return (
+    <section className="mt-10">
+      <p className="kicker mb-3">o que o Brasil mais vende · e mais compra</p>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <ListaDestaque
+          titulo="mais vende (exportação)"
+          tom="verde"
+          linhas={vende.dados?.dados ?? []}
+          carregando={vende.carregando}
+        />
+        <ListaDestaque
+          titulo="mais compra (importação)"
+          tom="rosa"
+          linhas={compra.dados?.dados ?? []}
+          carregando={compra.carregando}
+        />
+      </div>
+    </section>
+  );
+}
+
 function Rankings() {
   const [dim, setDim] = useState<Dim>("pais");
   const [fluxo, setFluxo] = useState<Fluxo>("exportacao");
@@ -207,6 +282,9 @@ export default function CadernoComercio() {
         titulo="Comércio exterior"
         resumo="O que o Brasil vende e compra do mundo: a balança comercial mês a mês e os rankings de parceiros, estados exportadores e produtos — dos dados oficiais da Secretaria de Comércio Exterior."
       />
+      <div className="mb-5">
+        <BadgeFrescor rotulo="dados mensais" detalhe="o MDIC fecha o mês anterior no início do seguinte" />
+      </div>
       <Balanca />
       <Rankings />
     </div>

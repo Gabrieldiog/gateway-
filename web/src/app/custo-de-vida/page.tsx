@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -102,6 +103,10 @@ export default function CadernoCustoDeVida() {
         titulo="Custo de vida"
         resumo="A inflação que já corroeu o seu bolso — IPCA, IGP-M (o do aluguel), INPC — e o que os analistas do Boletim Focus esperam pra frente. Dois olhares do Banco Central: o retrospecto e a expectativa."
       />
+
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <BadgeFrescor rotulo="índices mensais" detalhe="Selic, CDI e dólar diários · Focus toda semana" />
+      </div>
 
       <section>
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

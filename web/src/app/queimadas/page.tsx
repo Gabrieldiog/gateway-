@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { Kpi } from "@/components/Kpi";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -107,6 +108,13 @@ export default function CadernoQueimadas() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="mb-3">
+        <BadgeFrescor
+          rotulo="satélite · atualiza ao longo do dia"
+          detalhe={offset === 0 ? "o dia de hoje ainda está enchendo" : undefined}
+        />
       </div>
 
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">

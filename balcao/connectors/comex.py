@@ -70,10 +70,19 @@ class ComexConnector(BaseConnector):
         return de, ate
 
     async def _consulta(self, corpo: dict) -> list[dict]:
-        bruto = await self.post_json("/general", corpo, timeout=40)
-        if not isinstance(bruto, dict) or not bruto.get("success"):
-            raise ErroUpstream(self.name)
-        return (bruto.get("data") or {}).get("list") or []
+        # o MDIC soluça: responde 200 com success=false de vez em quando e
+        # funciona logo em seguida. O retry do transporte não vê isso (não é
+        # erro HTTP), então a nova tentativa é daqui — sem ela, o primeiro
+        # acesso com cache frio vira 502 na cara do usuário
+        ultimo_erro: ErroUpstream | None = None
+        for tentativa in range(3):
+            if tentativa:
+                await asyncio.sleep(0.5 * tentativa)
+            bruto = await self.post_json("/general", corpo, timeout=40)
+            if isinstance(bruto, dict) and bruto.get("success"):
+                return (bruto.get("data") or {}).get("list") or []
+            ultimo_erro = ErroUpstream(self.name)
+        raise ultimo_erro or ErroUpstream(self.name)
 
     async def _balanca(self, recurso: str, params: dict) -> NormalizedResponse:
         invalidos = sorted(set(params) - PARAMS_BALANCA)

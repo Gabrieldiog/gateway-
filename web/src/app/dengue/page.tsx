@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -85,6 +86,7 @@ export default function CadernoDengue() {
             </button>
           ))}
         </div>
+        <BadgeFrescor rotulo="boletim semanal" detalhe="semanas recentes se ajustam (nowcast)" />
         <Carimbo fonte="FIOCRUZ" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 

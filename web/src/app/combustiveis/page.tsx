@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -106,11 +107,12 @@ export default function CadernoCombustiveis() {
         <Carimbo fonte="ANP" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 
-      {de && ate && (
-        <p className="kicker mb-3">
-          coletas de <span className="num text-ink">{de}</span> a <span className="num text-ink">{ate}</span> · {unidade}
-        </p>
-      )}
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <BadgeFrescor
+          rotulo="pesquisa semanal"
+          detalhe={de && ate ? `coletas de ${de} a ${ate} · ${unidade}` : undefined}
+        />
+      </div>
 
       {r.erro ? (
         <ErroBox erro={r.erro} aoTentar={r.recarregar} />

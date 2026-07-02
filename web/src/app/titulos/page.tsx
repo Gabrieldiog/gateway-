@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
@@ -61,11 +62,12 @@ export default function CadernoTitulos() {
         <Carimbo fonte="TESOURO" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 
-      {dataBase && (
-        <p className="kicker mb-3">
-          preços da manhã de <span className="num text-ink">{formataData(dataBase)}</span>
-        </p>
-      )}
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <BadgeFrescor
+          rotulo="atualizado diariamente"
+          detalhe={dataBase ? `preços da manhã de ${formataData(dataBase)}` : undefined}
+        />
+      </div>
 
       {r.erro ? (
         <ErroBox erro={r.erro} aoTentar={r.recarregar} />

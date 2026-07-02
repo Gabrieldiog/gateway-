@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
+import { BadgeAoVivo } from "@/components/Frescor";
 import { Esqueleto, ErroBox } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useTicker } from "@/hooks/useTicker";
@@ -111,6 +112,12 @@ export default function CadernoPulso() {
   const { recarregar } = cot;
   const recarregarBolsa = bolsa.recarregar;
 
+  // transparência do ao-vivo: marca a hora de cada resposta nova pro selo
+  const [atualizadoEm, setAtualizadoEm] = useState<number | null>(null);
+  useEffect(() => {
+    if (cot.dados) setAtualizadoEm(Date.now());
+  }, [cot.dados]);
+
   // polling: refaz a cada 20s pra o número mudar sozinho quando o mercado mexe.
   // a bolsa entra no mesmo ciclo — o cache do gateway segura o upstream
   useEffect(() => {
@@ -130,12 +137,9 @@ export default function CadernoPulso() {
         resumo="Câmbio, ouro e cripto quase em tempo real, pelo preço de mercado. A página se atualiza sozinha a cada 20 segundos — quando o mercado mexe, o número desliza pro novo valor. Dado vivo, não a foto de ontem."
       />
 
-      <div className="mb-5 flex items-center gap-2">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
-        </span>
-        <span className="num text-xs uppercase tracking-wider text-muted">ao vivo · atualiza a cada 20s</span>
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <BadgeAoVivo atualizadoEm={atualizadoEm} />
+        <span className="num text-xs uppercase tracking-wider text-muted">a cada 20s, sozinho</span>
       </div>
 
       {cot.erro ? (
