@@ -34,9 +34,6 @@ REBANHOS = {
     "caprino": 2681, "ovino": 2677, "bubalino": 2675, "codorna": 2680,
 }
 
-ANO_PADRAO = 2023
-
-
 @register
 class SidraConnector(BaseConnector):
     name = "sidra"
@@ -87,18 +84,22 @@ class SidraConnector(BaseConnector):
         var = str(params.get("variavel", var_padrao)).lower()
         if var not in variaveis:
             raise ParametroInvalido(recurso, [f"variavel={var}"], sorted(variaveis))
-        ano = str(params.get("ano", ANO_PADRAO))
-        if not ano.isdigit():
-            raise ParametroInvalido(recurso, ["ano"], ["ano"])
+        ano = str(params.get("ano", "")).strip()
+        if ano and not ano.isdigit():
+            raise ParametroInvalido(recurso, ["ano"], ["ano (AAAA) ou vazio pro mais recente"])
+        # sem ano, o SIDRA resolve "last" pro ultimo periodo publicado — a
+        # pagina nunca fica presa num ano que ja virou historia
+        periodo = ano or "last"
 
         nivel = self._nivel(recurso, params)
-        path = f"/values/t/{tabela}/{nivel}/v/{variaveis[var]}/p/{ano}/c{classif}/{itens[item]}"
+        path = f"/values/t/{tabela}/{nivel}/v/{variaveis[var]}/p/{periodo}/c{classif}/{itens[item]}"
         bruto = await self.get_json(path)
 
-        registros = self._parse(bruto, int(ano))
+        registros = self._parse(bruto, int(ano) if ano else None)
+        ano_usado = registros[0]["ano"] if registros else (int(ano) if ano else None)
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=registros, total=len(registros),
-            meta={"ano": int(ano), chave: item, "variavel": var},
+            meta={"ano": ano_usado, "ano_automatico": not ano, chave: item, "variavel": var},
         )
 
     def _nivel(self, recurso: str, params: dict) -> str:
@@ -115,7 +116,7 @@ class SidraConnector(BaseConnector):
             return f"n3/{cod}"
         return "n3/all"  # todas as UFs, pra comparar
 
-    def _parse(self, bruto: Any, ano: int) -> list[dict]:
+    def _parse(self, bruto: Any, ano: int | None) -> list[dict]:
         # o SIDRA devolve uma lista cujo primeiro item é o cabeçalho (rótulos das
         # chaves crípticas); as chaves são posicionais: D1=localidade, D2=variável,
         # D3=ano, D4=item (produto/rebanho), V=valor, MN=unidade
@@ -127,7 +128,9 @@ class SidraConnector(BaseConnector):
                 reg = IndicadorAgro(
                     localidade=row.get("D1N") or "",
                     localidade_id=int(row["D1C"]) if str(row.get("D1C") or "").isdigit() else None,
-                    ano=ano,
+                    # o ano de verdade vem em cada linha (D3C) — essencial no
+                    # modo "last", em que nao sabemos o periodo de antemao
+                    ano=int(row["D3C"]) if str(row.get("D3C") or "").isdigit() else ano,
                     item=row.get("D4N") or "",
                     variavel=row.get("D2N") or "",
                     valor=self._numero(row.get("V")),

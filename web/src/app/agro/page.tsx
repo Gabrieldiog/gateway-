@@ -9,6 +9,7 @@ import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
+import { anos } from "@/lib/datas";
 import type { IndicadorAgro, NormalizedResponse } from "@/lib/types";
 
 const FONTE_SIDRA = {
@@ -26,7 +27,6 @@ const ANIMAIS: [string, string][] = [
   ["caprino", "caprino"], ["ovino", "ovino"], ["bubalino", "bubalino"], ["codorna", "codorna"],
 ];
 const VARIAVEIS: [string, string][] = [["quantidade", "quantidade"], ["area", "área plantada"]];
-const ANOS = [2023, 2022, 2021, 2020];
 
 function compacto(valor: number, unidade: string | null): string {
   const n = new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(valor);
@@ -40,13 +40,15 @@ export default function CadernoAgro() {
   const [produto, setProduto] = useState("soja");
   const [animal, setAnimal] = useState("bovino");
   const [variavel, setVariavel] = useState("quantidade");
-  const [ano, setAno] = useState(2023);
+  // null = "o mais recente que o IBGE publicou" — quem decide é o gateway
+  const [ano, setAno] = useState<number | null>(null);
 
   const url =
     modo === "producao"
-      ? caminho("sidra/producao", { produto, variavel, ano })
-      : caminho("sidra/rebanho", { animal, ano });
+      ? caminho("sidra/producao", { produto, variavel, ano: ano ?? undefined })
+      : caminho("sidra/rebanho", { animal, ano: ano ?? undefined });
   const lista = useBalcao<NormalizedResponse<IndicadorAgro>>(url);
+  const anoRef = (lista.dados?.meta?.ano as number | undefined) ?? null;
 
   const dados = (lista.dados?.dados ?? []).filter((d) => d.valor != null);
   const max = dados[0]?.valor ?? 1; // o conector já devolve ordenado desc
@@ -89,8 +91,17 @@ export default function CadernoAgro() {
           <Filtro rotulo="Rebanho" valor={animal} aoMudar={setAnimal} opcoes={ANIMAIS} />
         )}
 
-        <div className="flex gap-1">
-          {ANOS.map((a) => (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setAno(null)}
+            aria-pressed={ano === null}
+            className={`num rounded px-1.5 py-0.5 text-xs transition-colors ${
+              ano === null ? "text-ink underline decoration-accent decoration-2 underline-offset-4" : "text-muted"
+            }`}
+          >
+            {ano === null && anoRef ? `último (${anoRef})` : "último"}
+          </button>
+          {(anoRef ? anos(anoRef - 1, anoRef - 3) : []).map((a) => (
             <button
               key={a}
               onClick={() => setAno(a)}
@@ -109,7 +120,7 @@ export default function CadernoAgro() {
         <div className="flex items-start justify-between gap-3 pl-5">
           <div>
             <h2 className="font-display text-2xl leading-tight text-ink">
-              {modo === "producao" ? "Produção de" : "Rebanho de"} {oque} · {ano}
+              {modo === "producao" ? "Produção de" : "Rebanho de"} {oque} · {ano ?? anoRef ?? "…"}
             </h2>
             <p className="num text-xs text-muted">
               {lista.carregando && !lista.dados ? "consultando…" : `${dados.length} estados com dado`}

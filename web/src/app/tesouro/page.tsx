@@ -13,6 +13,7 @@ import { RankingArrecadacao } from "@/components/RankingArrecadacao";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, escalaReais, formataBRL } from "@/lib/api";
+import { ANO_ATUAL, anos } from "@/lib/datas";
 import { UFS, CAPITAIS } from "@/lib/ufs";
 import type { Arrecadacao, Municipio, NormalizedResponse } from "@/lib/types";
 
@@ -30,7 +31,9 @@ function KpiReais({
   return <Kpi rotulo={`${rotulo} · R$`} valor={v} formato="decimal" sufixo={unidade} tom={tom} />;
 }
 
-const ANOS = [2025, 2024, 2023, 2022, 2021, 2020];
+// contas anuais: o ano corrente ainda está aberto, então o padrão é o
+// anterior — mas a lista cresce sozinha a cada virada de calendário
+const ANOS = anos(ANO_ATUAL, 2020);
 type Nivel = "uniao" | "estado" | "municipio";
 const NIVEIS: [Nivel, string][] = [
   ["uniao", "País"],
@@ -43,7 +46,7 @@ export default function CadernoTesouro() {
   const [nivel, setNivel] = useState<Nivel>("estado");
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS["GO"]);
-  const [ano, setAno] = useState(2024);
+  const [ano, setAno] = useState(ANO_ATUAL - 1);
 
   // ao trocar de nível/UF no modo cidade, já aponta pra capital da UF
   function escolheNivel(n: Nivel) {

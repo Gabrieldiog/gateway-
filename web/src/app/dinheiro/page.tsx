@@ -11,6 +11,7 @@ import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
+import { ANO_ATUAL, anos, rotuloMesAAAAMM, ultimosMeses } from "@/lib/datas";
 import { CAPITAIS, UFS } from "@/lib/ufs";
 import type {
   BeneficioSocial,
@@ -29,23 +30,17 @@ const MODOS: [Modo, string][] = [
   ["bolsa", "Bolsa Família"],
 ];
 
-const ANOS = [2026, 2025, 2024];
+const ANOS = anos(ANO_ATUAL, ANO_ATUAL - 2);
 
-// meses com folha fechada do Bolsa Família (a fonte publica com ~1 mês de atraso)
-const MESES = [
-  { valor: "202605", label: "mai/2026" },
-  { valor: "202604", label: "abr/2026" },
-  { valor: "202603", label: "mar/2026" },
-  { valor: "202602", label: "fev/2026" },
-  { valor: "202601", label: "jan/2026" },
-  { valor: "202512", label: "dez/2025" },
-];
+// opções de mês geradas do calendário; a padrão é "mais recente", em que o
+// gateway recua sozinho até a última folha publicada (walk-back)
+const MESES = ultimosMeses(8);
 
 const campo =
   "rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent focus:outline-none";
 
 function Emendas() {
-  const [ano, setAno] = useState(2026);
+  const [ano, setAno] = useState(ANO_ATUAL);
   const [autor, setAutor] = useState("");
   const [autorAplicado, setAutorAplicado] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -243,16 +238,17 @@ function Sancoes() {
 function BolsaFamilia() {
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS.GO);
-  const [mes, setMes] = useState(MESES[0].valor);
+  const [mes, setMes] = useState(""); // "" = a última folha publicada
 
   const cidades = useBalcao<NormalizedResponse<Municipio>>(
     caminho("ibge/municipios", { uf }),
   );
   const r = useBalcao<NormalizedResponse<BeneficioSocial>>(
-    caminho("transparencia/bolsa-familia", { municipio: ibge, mes }),
+    caminho("transparencia/bolsa-familia", { municipio: ibge, mes: mes || undefined }),
   );
   const folha = r.dados?.dados?.[0];
   const fonte = r.dados?.meta?.fonte as FonteDado | undefined;
+  const mesUsado = r.dados?.meta?.mes as string | undefined;
   const media =
     folha && folha.beneficiarios ? Number(folha.valor) / folha.beneficiarios : null;
 
@@ -284,6 +280,9 @@ function BolsaFamilia() {
           ))}
         </Seletor>
         <Seletor value={mes} onChange={(e) => setMes(e.target.value)} aria-label="mês">
+          <option value="">
+            mais recente{mes === "" && mesUsado ? ` (${rotuloMesAAAAMM(mesUsado)})` : ""}
+          </option>
           {MESES.map((m) => (
             <option key={m.valor} value={m.valor}>
               {m.label}
@@ -301,7 +300,8 @@ function BolsaFamilia() {
         <EmTransicao ativo={r.carregando}>
           <Card className="p-6">
             <p className="kicker mb-4 pl-4">
-              {folha.programa} · {folha.municipio}/{folha.uf}
+              {folha.programa} · {folha.municipio}/{folha.uf} · folha de{" "}
+              {rotuloMesAAAAMM(mesUsado)}
             </p>
             <div className="flex flex-wrap gap-x-12 gap-y-5 pl-4">
               <Kpi rotulo="famílias atendidas" valor={folha.beneficiarios ?? 0} tom="accent-2" />

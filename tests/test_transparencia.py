@@ -1,9 +1,19 @@
+from datetime import date, timedelta
+
 import httpx
 import pytest
 from httpx import MockTransport
 
 from balcao.connectors.transparencia import TransparenciaConnector
 from balcao.exceptions import ChaveFaltando
+
+
+def _mes(d: date) -> str:
+    return f"{d.year}{d.month:02d}"
+
+
+def _mes_anterior(d: date) -> date:
+    return (d.replace(day=1) - timedelta(days=1)).replace(day=1)
 
 
 async def test_emendas_normaliza_o_valor_brasileiro(api):
@@ -51,6 +61,38 @@ async def test_bolsa_familia_por_municipio(api):
 async def test_bolsa_familia_mes_invalido_da_400(api):
     resp = await api.get("/v1/transparencia/bolsa-familia?municipio=3550308&mes=maio")
     assert resp.status_code == 400
+
+
+async def test_bolsa_familia_sem_mes_recua_ate_o_publicado():
+    # a folha fecha com atraso: mes sem dado responde 200 com []. Sem o
+    # parametro, o conector recua mes a mes ate achar — e conta qual usou
+    atual = date.today().replace(day=1)
+    anterior = _mes_anterior(atual)
+    publicado = _mes_anterior(anterior)
+    folha = [{
+        "tipo": {"descricao": "Novo Bolsa Família"},
+        "municipio": {"nomeIBGE": "SÃO PAULO", "codigoIBGE": "3550308", "uf": {"sigla": "SP"}},
+        "dataReferencia": "01/05/2026",
+        "quantidadeBeneficiados": 100,
+        "valor": "1.000,00",
+    }]
+    consultados: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        mes = httpx.QueryParams(request.url.query).get("mesAno")
+        consultados.append(mes)
+        if mes in (_mes(atual), _mes(anterior)):
+            return httpx.Response(200, json=[])
+        return httpx.Response(200, json=folha)
+
+    cliente = httpx.AsyncClient(transport=MockTransport(handler))
+    conector = TransparenciaConnector(cliente, chave="teste")
+    resposta = await conector.fetch("bolsa-familia", municipio="3550308")
+    assert consultados == [_mes(atual), _mes(anterior), _mes(publicado)]
+    assert resposta.meta["mes"] == _mes(publicado)
+    assert resposta.meta["mes_automatico"] is True
+    assert resposta.total == 1
+    await cliente.aclose()
 
 
 async def test_sem_chave_da_erro_limpo():

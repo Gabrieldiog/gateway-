@@ -10,6 +10,7 @@ import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
+import { ANO_ATUAL, anos } from "@/lib/datas";
 import type {
   ExpectativaMercado,
   IndicadorEconomico,
@@ -28,7 +29,8 @@ const FONTE_FOCUS = {
   nota: "Projeção mediana de mais de cem instituições financeiras, coletada e divulgada toda semana pelo Banco Central. É expectativa de mercado, não previsão oficial.",
 };
 
-const ANOS = [2026, 2027, 2028];
+// o horizonte do Focus acompanha o calendário: este ano e os dois seguintes
+const ANOS = anos(ANO_ATUAL, ANO_ATUAL + 2);
 
 // mostra o valor de um indicador do bolso: % com o sinal, R$ com o cifrão
 function textoValor(valor: number, unidade: string): string {
@@ -87,7 +89,7 @@ function CartaoFocus({ e }: { e: ExpectativaMercado }) {
 }
 
 export default function CadernoCustoDeVida() {
-  const [ano, setAno] = useState(2026);
+  const [ano, setAno] = useState(ANO_ATUAL);
 
   const hoje = useBalcao<NormalizedResponse<IndicadorEconomico>>(caminho("bacen/inflacao"));
   const focus = useBalcao<NormalizedResponse<ExpectativaMercado>>(
