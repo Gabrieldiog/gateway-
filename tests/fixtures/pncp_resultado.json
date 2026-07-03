@@ -1,0 +1,16 @@
+[
+ {
+  "numeroItem": 1,
+  "nomeRazaoSocialFornecedor": "AUTO PECAS EXEMPLO LTDA",
+  "niFornecedor": "42125604000104",
+  "tipoPessoa": "PJ",
+  "porteFornecedorNome": "EPP",
+  "naturezaJuridicaNome": "Sociedade Empresária Limitada",
+  "valorUnitarioHomologado": 1298.0,
+  "valorTotalHomologado": 64900.0,
+  "quantidadeHomologada": 50.0,
+  "percentualDesconto": 5.09,
+  "situacaoCompraItemResultadoNome": "Informado",
+  "dataResultado": "2026-06-20"
+ }
+]

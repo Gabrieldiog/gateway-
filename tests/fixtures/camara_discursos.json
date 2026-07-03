@@ -1,0 +1,29 @@
+{
+ "dados": [
+  {
+   "dataHoraInicio": "2026-06-30T14:32",
+   "tipoDiscurso": "DISCUSSÃO",
+   "sumario": "Defende a aprovação do projeto de lei que amplia recursos da merenda escolar.",
+   "transcricao": "O SR. DEPUTADO - Sr. Presidente, Sras. e Srs. Deputados, venho a esta tribuna defender a aprovação do projeto de lei que amplia os recursos da merenda escolar em todo o país...",
+   "urlVideo": "https://www.youtube.com/watch?v=abc123",
+   "urlAudio": null,
+   "keywords": "merenda escolar, educação",
+   "faseEvento": {
+    "titulo": "Ordem do Dia"
+   }
+  },
+  {
+   "dataHoraInicio": "2026-06-25T10:05",
+   "tipoDiscurso": "QUESTÃO DE ORDEM",
+   "sumario": "Questiona o rito de tramitação da PEC em pauta.",
+   "transcricao": "O SR. DEPUTADO - Sr. Presidente, com base no art. 95 do Regimento Interno, questiono o rito adotado...",
+   "urlVideo": null,
+   "urlAudio": null,
+   "keywords": "regimento",
+   "faseEvento": {
+    "titulo": "Sessão Deliberativa"
+   }
+  }
+ ],
+ "links": []
+}

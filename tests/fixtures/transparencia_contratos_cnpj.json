@@ -1,0 +1,38 @@
+[
+ {
+  "id": 1,
+  "objeto": "Prestação de serviço de fretamento de aeronave para transporte de autoridades",
+  "situacaoContrato": "Encerrado",
+  "modalidadeCompra": "Dispensa de Licitação",
+  "dataInicioVigencia": "10/01/2023",
+  "dataFimVigencia": "31/12/2023",
+  "valorInicialCompra": "240.000,00",
+  "unidadeGestora": {
+   "codigo": "110001",
+   "nome": "Coordenação-Geral de Logística",
+   "orgaoVinculado": {
+    "cnpj": "00000000000000",
+    "sigla": "PR",
+    "nome": "Presidência da República"
+   }
+  }
+ },
+ {
+  "id": 2,
+  "objeto": "Fornecimento de passagens aéreas nacionais",
+  "situacaoContrato": "Ativo",
+  "modalidadeCompra": "Pregão Eletrônico",
+  "dataInicioVigencia": "01/02/2026",
+  "dataFimVigencia": "31/01/2027",
+  "valorInicialCompra": "1.500.000,00",
+  "unidadeGestora": {
+   "codigo": "200001",
+   "nome": "Diretoria de Administração",
+   "orgaoVinculado": {
+    "cnpj": "11111111111111",
+    "sigla": "MGI",
+    "nome": "Ministério da Gestão"
+   }
+  }
+ }
+]

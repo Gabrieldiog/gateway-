@@ -30,7 +30,9 @@ export interface Despesa {
   fornecedor_doc: string | null;
   data: string | null;
   valor: string;
-  url_documento: string | null;
+  valor_documento: string | null; // valor de face da nota
+  valor_glosa: string | null; // o que a própria Câmara cortou
+  url_documento: string | null; // o PDF da nota fiscal
 }
 
 export interface Senador {
@@ -496,4 +498,137 @@ export interface FontesOut {
 export interface ErroBalcao {
   erro: string;
   detalhes?: Record<string, unknown>;
+}
+
+export interface PerfilDeputado {
+  fonte: string;
+  id: number;
+  nome: string;
+  nome_civil: string | null;
+  partido: string | null;
+  uf: string | null;
+  situacao: string | null;
+  condicao: string | null;
+  nascimento: string | null;
+  naturalidade: string | null;
+  escolaridade: string | null;
+  email: string | null;
+  telefone_gabinete: string | null;
+  gabinete: string | null;
+  site: string | null;
+  redes: string[];
+  foto: string | null;
+}
+
+export interface Discurso {
+  fonte: string;
+  deputado_id: number;
+  data: string | null;
+  tipo: string | null;
+  sumario: string | null;
+  transcricao: string | null;
+  evento: string | null;
+  url_video: string | null;
+  url_audio: string | null;
+}
+
+export interface OrientacaoBancada {
+  fonte: string;
+  votacao_id: string;
+  bancada: string; // partido/bloco ou "Governo"/"Oposição"/"Maioria"
+  orientacao: string; // Sim, Não, Liberado...
+  lideranca: string | null;
+}
+
+export interface ItemCompra {
+  fonte: string;
+  numero: number;
+  descricao: string;
+  quantidade: number | null;
+  unidade: string | null;
+  valor_unitario: string | null;
+  valor_total: string | null;
+  situacao: string | null;
+  tem_resultado: boolean;
+  beneficio: string | null;
+}
+
+export interface VencedorItem {
+  fonte: string;
+  item: number;
+  fornecedor: string;
+  documento: string | null;
+  porte: string | null;
+  valor_unitario: string | null;
+  valor_total: string | null;
+  quantidade: number | null;
+  desconto_pct: number | null;
+  situacao: string | null;
+  data: string | null;
+}
+
+export interface DocumentoEmenda {
+  fonte: string;
+  emenda: string;
+  data: string | null;
+  fase: string | null;
+  documento: string | null;
+  documento_resumido: string | null;
+  especie: string | null;
+  tipo_emenda: string | null;
+}
+
+export interface TaxaJurosBanco {
+  fonte: string;
+  posicao: number;
+  instituicao: string;
+  modalidade: string;
+  mes: string | null; // início da janela de coleta
+  taxa_mes: number | null;
+  taxa_ano: number | null;
+}
+
+export interface FichaEmpresa {
+  fonte: string;
+  cnpj: string;
+  razao_social: string;
+  nome_fantasia: string | null;
+  situacao: string | null;
+  natureza: string | null;
+  abertura: string | null;
+  atividade: string | null;
+  capital_social: string | null;
+  municipio: string | null;
+  uf: string | null;
+  socios: string[];
+}
+
+export interface ContratoFederal {
+  fonte: string;
+  objeto: string;
+  orgao: string | null;
+  valor: string | null;
+  inicio: string | null;
+  fim: string | null;
+  situacao: string | null;
+  modalidade: string | null;
+}
+
+export interface VinculosEmpresa {
+  fonte: string;
+  cnpj: string;
+  razao_social: string | null;
+  nome_fantasia: string | null;
+  vinculos: string[]; // as flags acesas
+  flags: Record<string, boolean>;
+}
+
+export interface FornecedorOut {
+  cnpj: string;
+  cadastro: FichaEmpresa | null;
+  vinculos: VinculosEmpresa | null;
+  sancoes: Sancao[];
+  contratos: ContratoFederal[];
+  erros: Record<string, string>;
+  meta: Record<string, unknown>;
 }

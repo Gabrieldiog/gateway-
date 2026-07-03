@@ -1,0 +1,26 @@
+[
+ {
+  "numeroItem": 1,
+  "descricao": "ADITIVO PARA RADIADOR DE VEICULOS PESADOS",
+  "quantidade": 50.0,
+  "unidadeMedida": "UNIDADE",
+  "valorUnitarioEstimado": 1367.63,
+  "valorTotal": 68381.5,
+  "situacaoCompraItemNome": "Em Andamento",
+  "temResultado": true,
+  "tipoBeneficioNome": "Participação exclusiva para ME/EPP",
+  "materialOuServicoNome": "Material"
+ },
+ {
+  "numeroItem": 2,
+  "descricao": "FILTRO DE OLEO LUBRIFICANTE",
+  "quantidade": 120.0,
+  "unidadeMedida": "UNIDADE",
+  "valorUnitarioEstimado": 89.9,
+  "valorTotal": 10788.0,
+  "situacaoCompraItemNome": "Em Andamento",
+  "temResultado": false,
+  "tipoBeneficioNome": null,
+  "materialOuServicoNome": "Material"
+ }
+]

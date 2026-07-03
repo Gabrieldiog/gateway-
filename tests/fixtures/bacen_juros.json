@@ -1,0 +1,48 @@
+{
+ "value": [
+  {
+   "InicioPeriodo": "2026-06-15",
+   "FimPeriodo": "2026-06-19",
+   "Segmento": "PESSOA FÍSICA",
+   "Modalidade": "Cartão de crédito - rotativo total - Prefixado",
+   "Posicao": 1,
+   "InstituicaoFinanceira": "BANCO EXEMPLO BARATO S.A.",
+   "TaxaJurosAoMes": 9.51,
+   "TaxaJurosAoAno": 197.42,
+   "cnpj8": "11111111"
+  },
+  {
+   "InicioPeriodo": "2026-06-15",
+   "FimPeriodo": "2026-06-19",
+   "Segmento": "PESSOA FÍSICA",
+   "Modalidade": "Cartão de crédito - rotativo total - Prefixado",
+   "Posicao": 2,
+   "InstituicaoFinanceira": "BANCO MEDIO S.A.",
+   "TaxaJurosAoMes": 12.1,
+   "TaxaJurosAoAno": 294.3,
+   "cnpj8": "22222222"
+  },
+  {
+   "InicioPeriodo": "2026-06-15",
+   "FimPeriodo": "2026-06-19",
+   "Segmento": "PESSOA FÍSICA",
+   "Modalidade": "Cartão de crédito - rotativo total - Prefixado",
+   "Posicao": 3,
+   "InstituicaoFinanceira": "BANCO CARO S.A.",
+   "TaxaJurosAoMes": 15.8,
+   "TaxaJurosAoAno": 481.62,
+   "cnpj8": "33333333"
+  },
+  {
+   "InicioPeriodo": "2026-06-08",
+   "FimPeriodo": "2026-06-12",
+   "Segmento": "PESSOA FÍSICA",
+   "Modalidade": "Cartão de crédito - rotativo total - Prefixado",
+   "Posicao": 1,
+   "InstituicaoFinanceira": "BANCO DA JANELA PASSADA",
+   "TaxaJurosAoMes": 9.0,
+   "TaxaJurosAoAno": 180.0,
+   "cnpj8": "44444444"
+  }
+ ]
+}

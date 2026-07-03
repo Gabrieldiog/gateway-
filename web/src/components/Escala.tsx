@@ -1,19 +1,22 @@
 "use client";
 
 import { useContagem } from "@/hooks/useContagem";
+import { useBalcao } from "@/hooks/useBalcao";
+import { caminho } from "@/lib/api";
 import { AzulejoGlifo } from "@/components/Azulejo";
+import type { FontesOut } from "@/lib/types";
 
 type Tom = "ink" | "accent" | "accent-2";
 
 // números reais, conferidos nas APIs ao vivo (Câmara, IBGE, Senado, CNES).
-// são estáveis o bastante pra ficarem aqui em vez de uma chamada por carga.
+// são estáveis o bastante pra ficarem aqui — só a contagem de fontes vem
+// viva do próprio gateway, pra nunca mentir quando plugarmos uma nova.
 const ACERVO: { valor: number; sufixo?: string; rotulo: string; fonte: string; tom: Tom }[] = [
   { valor: 350000, sufixo: "+", rotulo: "estabelecimentos de saúde", fonte: "SUS · CNES", tom: "accent-2" },
   { valor: 5571, rotulo: "municípios", fonte: "IBGE", tom: "ink" },
   { valor: 513, rotulo: "deputados federais", fonte: "Câmara", tom: "accent" },
   { valor: 81, rotulo: "senadores", fonte: "Senado", tom: "ink" },
   { valor: 27, rotulo: "estados: receita, imposto e gasto", fonte: "Tesouro", tom: "accent-2" },
-  { valor: 25, rotulo: "fontes oficiais, um só formato", fonte: "Balcão", tom: "accent" },
 ];
 
 function corDe(tom: Tom): string {
@@ -37,6 +40,10 @@ function NumeroAcervo({ valor, sufixo, rotulo, fonte, tom }: (typeof ACERVO)[num
 }
 
 export function Escala() {
+  // a contagem de fontes vem do /v1/fontes de verdade; 25 é só o chão
+  // enquanto carrega
+  const fontes = useBalcao<FontesOut>(caminho("fontes"));
+  const totalFontes = fontes.dados?.total ?? 25;
   return (
     <section className="mt-14">
       <p className="kicker mb-3 flex items-center gap-2">
@@ -58,6 +65,12 @@ export function Escala() {
         {ACERVO.map((item) => (
           <NumeroAcervo key={item.rotulo} {...item} />
         ))}
+        <NumeroAcervo
+          valor={totalFontes}
+          rotulo="fontes oficiais, um só formato"
+          fonte="Balcão · ao vivo"
+          tom="accent"
+        />
       </div>
     </section>
   );

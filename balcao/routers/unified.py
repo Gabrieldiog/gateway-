@@ -1,9 +1,16 @@
 """As rotas cross-fonte: /v1/buscar dispara as fontes em paralelo e junta
-o resultado; /v1/gastos resolve o parlamentar e agrega as despesas. A
-lógica vive em balcao/search.py; aqui ficam só HTTP, cache e schema."""
+o resultado; /v1/gastos resolve o parlamentar e agrega as despesas;
+/v1/fornecedor cruza um CNPJ em quatro fontes. A lógica de busca vive em
+balcao/search.py; aqui ficam HTTP, cache e schema."""
+
+import asyncio
+from datetime import date
 
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel, Field
+
+from balcao.exceptions import BalcaoError, ParametroInvalido
+from balcao.normalize import so_digitos
 
 from balcao.search import (
     arrecadacao_ente,
@@ -34,6 +41,19 @@ class GastosOut(BaseModel):
     total_documentos: int
     valor_total: str
     por_tipo: dict[str, str]
+
+
+class FornecedorOut(BaseModel):
+    """A ficha follow-the-money de um CNPJ: quem é (Receita), que relação tem
+    com o governo federal, sanções e contratos — quatro consultas numa só."""
+
+    cnpj: str
+    cadastro: dict | None = None  # ficha da Receita (BrasilAPI)
+    vinculos: dict | None = None  # flags do dossiê da Transparência
+    sancoes: list[dict] = Field(default_factory=list)
+    contratos: list[dict] = Field(default_factory=list)
+    erros: dict[str, str] = Field(default_factory=dict)  # falha parcial não derruba
+    meta: dict = Field(default_factory=dict)
 
 
 class VotosParlamentarOut(BaseModel):
@@ -92,9 +112,10 @@ async def buscar(
 async def arrecadacao(
     request: Request,
     ente: str = Query(description="brasil, uma UF (GO), um código IBGE (5208707) ou o nome da cidade"),
-    ano: int = Query(2023, ge=2013, description="ano do balanço; 2023 é o mais completo"),
+    ano: int | None = Query(None, ge=2013, description="vazio = o exercício anterior ao corrente"),
     uf: str | None = Query(None, description="desempata quando o nome da cidade existe em vários estados"),
 ) -> ArrecadacaoOut:
+    ano = ano or date.today().year - 1
     # dado anual e estável: cacheia o pacote inteiro com folga
     cache = request.app.state.cache
     chave = cache.chave("_arrecadacao", ente.lower(), {"ano": ano, "uf": (uf or "").upper()})
@@ -115,11 +136,12 @@ async def arrecadacao(
 async def arrecadacao_ranking(
     request: Request,
     nivel: str = Query("estado", pattern="^(estado|capital)$", description="estado (27) ou capital (27)"),
-    ano: int = Query(2023, ge=2013),
+    ano: int | None = Query(None, ge=2013, description="vazio = o exercício anterior ao corrente"),
     imposto: str | None = Query(None, description="sigla pra ranquear por um imposto só (ICMS, ISS, IPTU...)"),
     por: str = Query("total", pattern="^(total|per_capita)$", description="total arrecadado ou por habitante"),
     limit: int = Query(27, ge=1, le=27),
 ) -> RankingOut:
+    ano = ano or date.today().year - 1
     # varre 27 entes; dado anual e estável, então cacheia o ranking inteiro
     cache = request.app.state.cache
     chave = cache.chave(
@@ -138,13 +160,66 @@ async def arrecadacao_ranking(
     return resposta
 
 
+@router.get("/fornecedor/{cnpj:path}", response_model=FornecedorOut)
+async def fornecedor(request: Request, cnpj: str) -> FornecedorOut:
+    doc = so_digitos(cnpj) or ""
+    if len(doc) != 14:
+        raise ParametroInvalido("fornecedor", ["cnpj"], ["cnpj de 14 dígitos (com ou sem máscara)"])
+
+    cache = request.app.state.cache
+    chave = cache.chave("_fornecedor", doc, {})
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    conectores = request.app.state.connectors
+
+    async def pega(fonte: str, recurso: str, **params):
+        try:
+            return await conectores[fonte].fetch(recurso, **params), None
+        except BalcaoError as exc:
+            return None, exc.mensagem
+
+    (cad, e_cad), (vin, e_vin), (san, e_san), (con, e_con) = await asyncio.gather(
+        pega("brasilapi", f"cnpj/{doc}"),
+        pega("transparencia", "vinculos", cnpj=doc),
+        pega("transparencia", "sancoes", documento=doc),
+        pega("transparencia", "contratos", documento=doc),
+    )
+    erros = {
+        nome: msg
+        for nome, msg in (
+            ("cadastro", e_cad), ("vinculos", e_vin), ("sancoes", e_san), ("contratos", e_con),
+        )
+        if msg
+    }
+    resposta = FornecedorOut(
+        cnpj=doc,
+        cadastro=cad.dados[0] if cad and cad.dados else None,
+        vinculos=vin.dados[0] if vin and vin.dados else None,
+        sancoes=san.dados if san else [],
+        contratos=con.dados if con else [],
+        erros=erros,
+        meta={
+            "fontes_consultadas": ["brasilapi", "transparencia"],
+            "contratos_tem_proxima": bool(con and con.meta.get("tem_proxima")),
+        },
+    )
+    if not erros:
+        cache.guarda(chave, resposta)
+    return resposta
+
+
 @router.get("/gastos", response_model=GastosOut)
 async def gastos(
     request: Request,
     deputado: str = Query(description="id ou nome do deputado"),
-    ano: int = Query(2026, ge=2008),
+    ano: int | None = Query(None, ge=2008, description="vazio = ano corrente"),
     uf: str | None = None,
 ) -> GastosOut:
+    ano = ano or date.today().year
     camara = request.app.state.connectors["camara"]
     resultado = await gastos_deputado(camara, deputado, ano, uf)
     return GastosOut(**resultado)

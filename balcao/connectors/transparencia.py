@@ -11,7 +11,7 @@ from typing import Any
 from balcao.config import get_settings
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ChaveFaltando, ErroUpstream, ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import BeneficioSocial, Emenda, Sancao
+from balcao.models import BeneficioSocial, ContratoFederal, DocumentoEmenda, Emenda, Sancao
 from balcao.normalize import limpa_texto, para_data, so_digitos, valor_br
 
 FONTE = {
@@ -37,7 +37,10 @@ class TransparenciaConnector(BaseConnector):
     description = "Portal da Transparência (CGU): emendas parlamentares, sanções por CNPJ/CPF e Bolsa Família"
     resources = {
         "emendas": "emendas parlamentares (params: ano, autor, pagina)",
+        "emendas/documentos": "os empenhos por trás de uma emenda (params: codigo, pagina)",
         "sancoes": "CEIS + CNEP juntos: quem está punido (params: documento = CNPJ ou CPF, pagina)",
+        "contratos": "contratos federais de um fornecedor (params: documento = CNPJ ou CPF, pagina)",
+        "vinculos": "dossiê-relâmpago de um CNPJ: flags de relação com o governo federal (params: cnpj)",
         "bolsa-familia": "folha do Novo Bolsa Família num município (params: municipio = código IBGE, mes = AAAAMM)",
     }
 
@@ -58,8 +61,14 @@ class TransparenciaConnector(BaseConnector):
         match partes:
             case ["emendas"]:
                 return await self._emendas(recurso, params)
+            case ["emendas", "documentos"]:
+                return await self._emenda_documentos(recurso, params)
             case ["sancoes"]:
                 return await self._sancoes(recurso, params)
+            case ["contratos"]:
+                return await self._contratos(recurso, params)
+            case ["vinculos"]:
+                return await self._vinculos(recurso, params)
             case ["bolsa-familia"] | ["bolsa_familia"]:
                 return await self._bolsa(recurso, params)
             case _:
@@ -98,6 +107,86 @@ class TransparenciaConnector(BaseConnector):
         meta = {"pagina": pagina, "tem_proxima": len(itens) >= 15, "fonte": FONTE}
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _emenda_documentos(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._valida(recurso, params, {"codigo", "pagina"})
+        pagina = self._pagina(recurso, params)
+        codigo = str(params.get("codigo", "")).strip()
+        if not codigo:
+            raise ParametroInvalido(recurso, ["codigo"], ["codigo da emenda (ex 202538950005)"])
+        bruto = await self._api(f"/emendas/documentos/{codigo}", {"pagina": pagina})
+
+        itens = []
+        for d in bruto if isinstance(bruto, list) else []:
+            itens.append(
+                DocumentoEmenda(
+                    emenda=codigo,
+                    data=para_data(d.get("data")),
+                    fase=limpa_texto(d.get("fase")) or None,
+                    documento=limpa_texto(d.get("codigoDocumento")) or None,
+                    documento_resumido=limpa_texto(d.get("codigoDocumentoResumido")) or None,
+                    especie=limpa_texto(d.get("especieTipo")) or None,
+                    tipo_emenda=limpa_texto(d.get("tipoEmenda")) or None,
+                ).model_dump(mode="json")
+            )
+        meta = {"emenda": codigo, "pagina": pagina, "tem_proxima": len(itens) >= 15, "fonte": FONTE}
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _contratos(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._valida(recurso, params, {"documento", "pagina"})
+        pagina = self._pagina(recurso, params)
+        doc = so_digitos(str(params.get("documento", ""))) or ""
+        if len(doc) not in (11, 14):
+            raise ParametroInvalido(recurso, ["documento"], ["documento = CNPJ ou CPF"])
+        bruto = await self._api("/contratos/cpf-cnpj", {"cpfCnpj": doc, "pagina": pagina})
+
+        itens = []
+        for c in bruto if isinstance(bruto, list) else []:
+            ug = c.get("unidadeGestora") or {}
+            orgao = (ug.get("orgaoVinculado") or {}).get("nome") or ug.get("nome")
+            itens.append(
+                ContratoFederal(
+                    objeto=limpa_texto(c.get("objeto")) or "—",
+                    orgao=limpa_texto(orgao) or None,
+                    valor=valor_br(c.get("valorInicialCompra")),
+                    inicio=para_data(c.get("dataInicioVigencia")),
+                    fim=para_data(c.get("dataFimVigencia")),
+                    situacao=limpa_texto(c.get("situacaoContrato")) or None,
+                    modalidade=limpa_texto(c.get("modalidadeCompra")) or None,
+                ).model_dump(mode="json")
+            )
+        meta = {"documento": doc, "pagina": pagina, "tem_proxima": len(itens) >= 15, "fonte": FONTE}
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _vinculos(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._valida(recurso, params, {"cnpj"})
+        cnpj = so_digitos(str(params.get("cnpj", ""))) or ""
+        if len(cnpj) != 14:
+            raise ParametroInvalido(recurso, ["cnpj"], ["cnpj de 14 dígitos"])
+        bruto = await self._api("/pessoa-juridica", {"cnpj": cnpj})
+        # CNPJ sem relação com o governo federal volta 200 com corpo vazio
+        if not isinstance(bruto, dict) or not bruto:
+            return NormalizedResponse(
+                fonte=self.name, recurso=recurso, dados=[], total=0,
+                meta={"cnpj": cnpj, "aviso": "sem vínculos com o governo federal", "fonte": FONTE},
+            )
+        flags = {k: v for k, v in bruto.items() if isinstance(v, bool)}
+        dado = {
+            "fonte": self.name,
+            "cnpj": cnpj,
+            "razao_social": limpa_texto(bruto.get("razaoSocial")) or None,
+            "nome_fantasia": limpa_texto(bruto.get("nomeFantasia")) or None,
+            "vinculos": sorted(k for k, v in flags.items() if v),
+            "flags": flags,
+        }
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=[dado], total=1,
+            meta={"cnpj": cnpj, "fonte": FONTE},
         )
 
     async def _sancoes(self, recurso: str, params: dict) -> NormalizedResponse:

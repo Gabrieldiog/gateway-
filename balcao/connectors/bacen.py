@@ -6,8 +6,8 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ErroUpstream, ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import IndicadorEconomico, PontoSerie
-from balcao.normalize import data_br, para_data
+from balcao.models import IndicadorEconomico, PontoSerie, TaxaJurosBanco
+from balcao.normalize import data_br, limpa_texto, para_data
 
 # atalhos pros codigos de serie mais pedidos do SGS
 SERIES = {
@@ -60,6 +60,7 @@ class BacenConnector(BaseConnector):
     suporta_busca = True
     resources = {
         "inflacao": "painel de custo de vida: IPCA, IGP-M, INPC, Selic, CDI, poupança e dólar (valor mais recente)",
+        "juros-bancos": "ranking oficial: quanto cada banco cobra numa modalidade de crédito (params: modalidade, limit)",
         "serie/{codigo}": f"pontos de uma série do SGS; filtros: {', '.join(sorted(PARAMS_SERIE))}",
         **{
             apelido: f"atalho pra série {codigo} do SGS"
@@ -72,12 +73,80 @@ class BacenConnector(BaseConnector):
         match partes:
             case ["inflacao"] | ["painel"]:
                 return await self._painel(recurso)
+            case ["juros-bancos"] | ["juros"]:
+                return await self._juros_bancos(recurso, params)
             case [apelido] if apelido in SERIES:
                 return await self._serie(recurso, SERIES[apelido], params, nome=apelido)
             case ["serie", codigo] if codigo.isdigit():
                 return await self._serie(recurso, int(codigo), params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    async def _juros_bancos(self, recurso: str, params: dict) -> NormalizedResponse:
+        """Ranking oficial: quanto cada banco cobra numa modalidade de crédito,
+        na última janela publicada (5 dias úteis). Vive no Olinda (outro host
+        do BCB); o $ vai literal na URL porque o Olinda rejeita %24. A fonte
+        é lenta — o cache do gateway segura o resto."""
+        aceitos = {"modalidade", "limit"}
+        invalidos = sorted(set(params) - aceitos)
+        if invalidos:
+            raise ParametroInvalido(recurso, invalidos, sorted(aceitos))
+        limit = str(params.get("limit", 30))
+        if not limit.isdigit() or not (1 <= int(limit) <= 100):
+            raise ParametroInvalido(recurso, ["limit"], ["limit entre 1 e 100"])
+        filtro = ""
+        modalidade = str(params.get("modalidade", "")).strip()
+        if modalidade:
+            texto = modalidade.replace("'", "")
+            filtro = f"&$filter=contains(Modalidade,'{texto}')"
+        # ordena da janela mais nova pra mais velha e corta na primeira completa
+        url = (
+            "https://olinda.bcb.gov.br/olinda/servico/taxaJuros/versao/v2/odata/"
+            f"TaxasJurosDiariaPorInicioPeriodo?$top=600&$format=json"
+            f"&$orderby=InicioPeriodo desc,Posicao{filtro}"
+        )
+        bruto = await self.get_json(url, timeout=50)
+        linhas = bruto.get("value", []) if isinstance(bruto, dict) else []
+        itens: list[dict] = []
+        janela = None
+        for r in linhas:
+            inicio = r.get("InicioPeriodo")
+            if janela is None:
+                janela = (inicio, r.get("FimPeriodo"))
+            if inicio != janela[0]:
+                break
+            try:
+                itens.append(
+                    TaxaJurosBanco(
+                        posicao=int(r.get("Posicao") or 0),
+                        instituicao=limpa_texto(r.get("InstituicaoFinanceira")) or "—",
+                        modalidade=limpa_texto(r.get("Modalidade")) or "—",
+                        mes=inicio,
+                        taxa_mes=float(r["TaxaJurosAoMes"]) if r.get("TaxaJurosAoMes") is not None else None,
+                        taxa_ano=float(r["TaxaJurosAoAno"]) if r.get("TaxaJurosAoAno") is not None else None,
+                    ).model_dump(mode="json")
+                )
+            except (ValueError, TypeError):
+                continue
+            if len(itens) >= int(limit):
+                break
+        meta = {
+            "modalidade": modalidade or "todas",
+            "janela_de": janela[0] if janela else None,
+            "janela_ate": janela[1] if janela else None,
+            "fonte": {
+                "nome": "Banco Central — ranking de taxas de juros (Olinda)",
+                "url": "https://www.bcb.gov.br/estatisticas/txjuros",
+                "nota": (
+                    "Taxas médias efetivamente cobradas por cada instituição na "
+                    "última janela de cinco dias úteis, apuradas e publicadas "
+                    "pelo Banco Central."
+                ),
+            },
+        }
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
 
     async def buscar(self, q: str) -> list[dict]:
         termo = q.casefold()

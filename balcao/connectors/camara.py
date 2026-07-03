@@ -6,7 +6,16 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import Deputado, Despesa, Proposicao, Votacao, VotoDeputado
+from balcao.models import (
+    Deputado,
+    Despesa,
+    Discurso,
+    OrientacaoBancada,
+    PerfilDeputado,
+    Proposicao,
+    Votacao,
+    VotoDeputado,
+)
 from balcao.normalize import limpa_texto, normaliza_uf, para_data, so_digitos
 
 # de um lado os nomes genericos do Balcao, do outro os que a Camara espera
@@ -57,10 +66,13 @@ class CamaraConnector(BaseConnector):
     resources = {
         "deputados": f"lista deputados; filtros: {', '.join(PARAMS_DEPUTADOS)}",
         "deputados/{id}": "detalhe de um deputado",
-        "deputados/{id}/despesas": f"despesas CEAP; filtros: {', '.join(PARAMS_DESPESAS)}",
+        "deputados/{id}/perfil": "perfil completo: formação, naturalidade, gabinete, redes sociais",
+        "deputados/{id}/despesas": f"despesas CEAP com a nota fiscal; filtros: {', '.join(PARAMS_DESPESAS)}",
+        "deputados/{id}/discursos": "discursos com sumário e transcrição (params: de, ate = AAAA-MM-DD, itens)",
         "votacoes": f"votações; filtros: {', '.join(PARAMS_VOTACOES)}",
         "votacoes/{id}": "detalhe de uma votação (placar, data, órgão)",
         "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
+        "votacoes/{id}/orientacoes": "como cada partido/bloco (e Governo/Oposição) orientou; só nas nominais",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
     }
 
@@ -71,12 +83,18 @@ class CamaraConnector(BaseConnector):
                 return await self._deputados(recurso, params)
             case ["deputados", dep_id] if dep_id.isdigit():
                 return await self._deputado_detalhe(recurso, int(dep_id))
+            case ["deputados", dep_id, "perfil"] if dep_id.isdigit():
+                return await self._perfil(recurso, int(dep_id))
             case ["deputados", dep_id, "despesas"] if dep_id.isdigit():
                 return await self._despesas(recurso, int(dep_id), params)
+            case ["deputados", dep_id, "discursos"] if dep_id.isdigit():
+                return await self._discursos(recurso, int(dep_id), params)
             case ["votacoes"]:
                 return await self._votacoes(recurso, params)
             case ["votacoes", vid, "votos"]:  # id tem hífen ("2629954-8"), não é só dígito
                 return await self._votos(recurso, vid)
+            case ["votacoes", vid, "orientacoes"]:
+                return await self._orientacoes(recurso, vid)
             case ["votacoes", vid]:
                 return await self._votacao_detalhe(recurso, vid)
             case ["proposicoes"]:
@@ -126,6 +144,74 @@ class CamaraConnector(BaseConnector):
             recurso=recurso,
             dados=[deputado.model_dump(mode="json")],
             total=1,
+        )
+
+    async def _perfil(self, recurso: str, dep_id: int) -> NormalizedResponse:
+        bruto = await self.get_json(f"/deputados/{dep_id}")
+        d = bruto.get("dados", {})
+        status = d.get("ultimoStatus", {})
+        gabinete = status.get("gabinete") or {}
+        cidade = limpa_texto(d.get("municipioNascimento"))
+        uf_nasc = d.get("ufNascimento")
+        sala = " · ".join(
+            p for p in (
+                f"prédio {gabinete['predio']}" if gabinete.get("predio") else None,
+                f"sala {gabinete['sala']}" if gabinete.get("sala") else None,
+            ) if p
+        )
+        perfil = PerfilDeputado(
+            id=d["id"],
+            nome=limpa_texto(status.get("nomeEleitoral") or status.get("nome") or d.get("nomeCivil")),
+            nome_civil=limpa_texto(d.get("nomeCivil")) or None,
+            partido=status.get("siglaPartido"),
+            uf=normaliza_uf(status.get("siglaUf")),
+            situacao=status.get("situacao"),
+            condicao=status.get("condicaoEleitoral"),
+            nascimento=para_data(d.get("dataNascimento")),
+            naturalidade=" · ".join(p for p in (cidade, uf_nasc) if p) or None,
+            escolaridade=limpa_texto(d.get("escolaridade")) or None,
+            email=status.get("email") or gabinete.get("email"),
+            telefone_gabinete=gabinete.get("telefone"),
+            gabinete=sala or None,
+            site=d.get("urlWebsite"),
+            redes=[r for r in (d.get("redeSocial") or []) if r],
+            foto=status.get("urlFoto"),
+        )
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=[perfil.model_dump(mode="json")], total=1
+        )
+
+    async def _discursos(self, recurso: str, dep_id: int, params: dict) -> NormalizedResponse:
+        mapa = {"de": "dataInicio", "ate": "dataFim", "itens": "itens", "pagina": "pagina"}
+        query = self._traduz(recurso, params, mapa)
+        query.setdefault("ordenarPor", "dataHoraInicio")
+        query.setdefault("ordem", "DESC")
+        bruto = await self.get_json(f"/deputados/{dep_id}/discursos", params=query)
+        return self._envelopa(
+            recurso, bruto, params, lambda b: self._norm_discurso(b, dep_id)
+        )
+
+    async def _orientacoes(self, recurso: str, vid: str) -> NormalizedResponse:
+        bruto = await self.get_json(f"/votacoes/{vid}/orientacoes")
+        itens = []
+        for o in bruto.get("dados", []):
+            bancada = limpa_texto(o.get("siglaPartidoBloco"))
+            orientacao = limpa_texto(o.get("orientacaoVoto"))
+            if not bancada or not orientacao:
+                continue
+            itens.append(
+                OrientacaoBancada(
+                    votacao_id=vid,
+                    bancada=bancada,
+                    orientacao=orientacao,
+                    lideranca=o.get("codTipoLideranca"),
+                ).model_dump(mode="json")
+            )
+        meta: dict[str, Any] = {}
+        if not itens:
+            meta["aviso"] = "votação simbólica não tem orientação registrada; só as nominais"
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )
 
     async def _despesas(self, recurso: str, dep_id: int, params: dict) -> NormalizedResponse:
@@ -227,6 +313,10 @@ class CamaraConnector(BaseConnector):
         )
 
     def _norm_despesa(self, b: dict, dep_id: int) -> Despesa:
+        def dec(campo: str) -> Decimal | None:
+            v = b.get(campo)
+            return Decimal(str(v)) if v not in (None, "") else None
+
         return Despesa(
             deputado_id=dep_id,
             ano=b["ano"],
@@ -236,7 +326,22 @@ class CamaraConnector(BaseConnector):
             fornecedor_doc=so_digitos(b.get("cnpjCpfFornecedor")),
             data=para_data(b.get("dataDocumento")),
             valor=Decimal(str(b.get("valorLiquido") or "0")),
+            valor_documento=dec("valorDocumento"),
+            valor_glosa=dec("valorGlosa"),
             url_documento=b.get("urlDocumento") or None,
+        )
+
+    def _norm_discurso(self, b: dict, dep_id: int) -> Discurso:
+        fase = b.get("faseEvento") or {}
+        return Discurso(
+            deputado_id=dep_id,
+            data=b.get("dataHoraInicio"),
+            tipo=limpa_texto(b.get("tipoDiscurso")) or None,
+            sumario=limpa_texto(b.get("sumario")) or None,
+            transcricao=limpa_texto(b.get("transcricao")) or None,
+            evento=limpa_texto(fase.get("titulo")) or None,
+            url_video=b.get("urlVideo") or None,
+            url_audio=b.get("urlAudio") or None,
         )
 
     def _norm_votacao(self, b: dict) -> Votacao:

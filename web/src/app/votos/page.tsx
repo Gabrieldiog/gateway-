@@ -15,6 +15,7 @@ import { PARTIDOS } from "@/lib/partidos";
 import type {
   Deputado,
   NormalizedResponse,
+  OrientacaoBancada,
   Votacao,
   VotoDeputado,
   VotosParlamentarOut,
@@ -98,6 +99,28 @@ function PorVotacao() {
   const deputados = votos.dados?.dados ?? [];
   const placar = votos.dados?.meta?.placar as Record<string, number> | undefined;
   const aviso = votos.dados?.meta?.aviso as string | undefined;
+
+  const orientacoes = useBalcao<NormalizedResponse<OrientacaoBancada>>(
+    sel ? caminho(`camara/votacoes/${sel.id}/orientacoes`) : null,
+  );
+  const bancadas = orientacoes.dados?.dados ?? [];
+  const avisoBancadas = orientacoes.dados?.meta?.aviso as string | undefined;
+
+  // mapa partido -> orientação (só Sim/Não; Liberado não conta como ordem).
+  // bancada pode vir como bloco ("PT-PCdoB-PV"), então cada pedaço vira chave.
+  const ordemDoPartido = new Map<string, string>();
+  for (const b of bancadas) {
+    if (b.orientacao !== "Sim" && b.orientacao !== "Não") continue;
+    for (const parte of b.bancada.split(/[\s\-/·,]+/)) {
+      if (parte) ordemDoPartido.set(parte.toLowerCase(), b.orientacao);
+    }
+  }
+  const contrariou = (d: VotoDeputado) => {
+    if (d.voto !== "Sim" && d.voto !== "Não") return false;
+    const ordem = d.partido ? ordemDoPartido.get(d.partido.toLowerCase()) : undefined;
+    return ordem !== undefined && ordem !== d.voto;
+  };
+  const rebeldes = deputados.filter(contrariou).length;
 
   // votação simbólica vem vazia e leve: enquanto ninguém escolheu na mão,
   // pula pra próxima até achar uma nominal (que registra voto por deputado).
@@ -188,6 +211,21 @@ function PorVotacao() {
                 <EmTransicao ativo={votos.carregando}>
                   <Placar placar={placar} />
 
+                  {(bancadas.length > 0 || avisoBancadas) && (
+                    <div className="mt-6">
+                      <p className="kicker mb-2">como as bancadas orientaram</p>
+                      {avisoBancadas ? (
+                        <p className="font-editorial text-sm italic text-muted">{avisoBancadas}</p>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {bancadas.map((b) => (
+                            <ChipOrientacao key={`${b.bancada}-${b.orientacao}`} o={b} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="mt-6 mb-3 flex flex-wrap items-center gap-2">
                     <FiltroChip ativo={filtro === null} aoClicar={() => setFiltro(null)}>
                       todos ({deputados.length})
@@ -199,6 +237,14 @@ function PorVotacao() {
                     ))}
                   </div>
 
+                  {rebeldes > 0 && (
+                    <p className="num mb-2 text-xs text-accent">
+                      {rebeldes === 1
+                        ? "1 deputado votou contra a orientação do próprio partido"
+                        : `${rebeldes} deputados votaram contra a orientação do próprio partido`}
+                    </p>
+                  )}
+
                   <ul className="flex max-h-128 flex-col divide-y divide-line overflow-y-auto">
                     {filtrados.map((d) => (
                       <li
@@ -209,6 +255,11 @@ function PorVotacao() {
                           <span className="block truncate text-sm text-ink">{d.deputado}</span>
                           <span className="num text-xs text-muted">
                             {[d.partido, d.uf].filter(Boolean).join(" · ")}
+                            {contrariou(d) && (
+                              <span className="num ml-2 rounded bg-accent/10 px-1.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-accent">
+                                contra o partido
+                              </span>
+                            )}
                           </span>
                         </span>
                         <span className={`num shrink-0 text-xs font-semibold ${corVoto(d.voto).txt}`}>
@@ -508,6 +559,31 @@ function Placar({ placar }: { placar: Record<string, number> }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+// verde quando a bancada mandou Sim, rosa no Não, cinza quando liberou.
+// Governo e Oposição ganham borda mais forte: são as orientações-farol.
+function ChipOrientacao({ o }: { o: OrientacaoBancada }) {
+  const farol = ["governo", "oposição", "oposicao"].includes(o.bancada.toLowerCase());
+  const cor =
+    o.orientacao === "Sim"
+      ? farol
+        ? "border-ok bg-ok/10 text-ok"
+        : "border-ok/30 bg-ok/10 text-ok"
+      : o.orientacao === "Não"
+        ? farol
+          ? "border-accent bg-accent/10 text-accent"
+          : "border-accent/30 bg-accent/10 text-accent"
+        : farol
+          ? "border-muted bg-surface-2 text-muted"
+          : "border-line bg-surface-2 text-muted";
+  return (
+    <span
+      className={`num rounded-md border px-2 py-0.5 text-xs ${cor} ${farol ? "font-semibold" : ""}`}
+    >
+      {o.bancada} → {o.orientacao}
+    </span>
   );
 }
 

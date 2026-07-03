@@ -29,7 +29,9 @@ class Despesa(BaseModel):
     fornecedor_doc: str | None = None  # cnpj ou cpf, so digitos
     data: date | None = None
     valor: Decimal  # valorLiquido, o que foi de fato reembolsado
-    url_documento: str | None = None
+    valor_documento: Decimal | None = None  # o valor de face da nota
+    valor_glosa: Decimal | None = None  # a parte que a própria Câmara cortou
+    url_documento: str | None = None  # o PDF da nota fiscal
 
 
 class Votacao(BaseModel):
@@ -531,3 +533,136 @@ class PontoIpea(BaseModel):
     data: date | None = None
     valor: float | None = None
     territorio: str | None = None  # quando a série é regional
+
+
+class PerfilDeputado(BaseModel):
+    """O deputado por inteiro — o que a lista não conta: formação, origem,
+    gabinete pra cobrar e redes pra acompanhar."""
+
+    fonte: str = "camara"
+    id: int
+    nome: str
+    nome_civil: str | None = None
+    partido: str | None = None
+    uf: str | None = None
+    situacao: str | None = None
+    condicao: str | None = None  # Titular ou Suplente
+    nascimento: date | None = None
+    naturalidade: str | None = None  # "Cidade · UF"
+    escolaridade: str | None = None
+    email: str | None = None
+    telefone_gabinete: str | None = None
+    gabinete: str | None = None  # "prédio 4, sala 617"
+    site: str | None = None
+    redes: list[str] = []
+    foto: str | None = None
+
+
+class Discurso(BaseModel):
+    fonte: str = "camara"
+    deputado_id: int
+    data: str | None = None  # dataHoraInicio, ISO
+    tipo: str | None = None
+    sumario: str | None = None
+    transcricao: str | None = None  # texto integral do que foi dito
+    evento: str | None = None
+    url_video: str | None = None
+    url_audio: str | None = None
+
+
+class OrientacaoBancada(BaseModel):
+    """Como cada partido/bloco (e o Governo/Oposição) orientou a bancada numa
+    votação nominal. Cruzar com os votos revela quem seguiu e quem traiu."""
+
+    fonte: str = "camara"
+    votacao_id: str
+    bancada: str  # sigla do partido/bloco ou "Governo"/"Oposição"/"Maioria"
+    orientacao: str  # Sim, Não, Liberado...
+    lideranca: str | None = None  # P = partido, B = bloco
+
+
+class ItemCompra(BaseModel):
+    """Um item de uma contratação do PNCP: o que exatamente está sendo
+    comprado, em que quantidade e por quanto (estimado)."""
+
+    fonte: str = "pncp"
+    numero: int
+    descricao: str
+    quantidade: float | None = None
+    unidade: str | None = None
+    valor_unitario: Decimal | None = None
+    valor_total: Decimal | None = None
+    situacao: str | None = None
+    tem_resultado: bool = False
+    beneficio: str | None = None  # exclusivo ME/EPP etc.
+
+
+class VencedorItem(BaseModel):
+    fonte: str = "pncp"
+    item: int
+    fornecedor: str
+    documento: str | None = None  # CNPJ/CPF, só dígitos
+    porte: str | None = None
+    valor_unitario: Decimal | None = None
+    valor_total: Decimal | None = None
+    quantidade: float | None = None
+    desconto_pct: float | None = None
+    situacao: str | None = None
+    data: date | None = None
+
+
+class DocumentoEmenda(BaseModel):
+    """Um empenho/documento por trás de uma emenda parlamentar — o rastro
+    concreto do dinheiro."""
+
+    fonte: str = "transparencia"
+    emenda: str  # código da emenda
+    data: date | None = None
+    fase: str | None = None  # Empenho, Liquidação, Pagamento
+    documento: str | None = None
+    documento_resumido: str | None = None
+    especie: str | None = None
+    tipo_emenda: str | None = None
+
+
+class TaxaJurosBanco(BaseModel):
+    """Uma linha do ranking oficial de juros do BCB: quanto cada banco cobra
+    numa modalidade de crédito, no mês de referência."""
+
+    fonte: str = "bacen"
+    posicao: int
+    instituicao: str
+    modalidade: str
+    mes: str | None = None  # "Mai-2026"
+    taxa_mes: float | None = None  # % ao mês
+    taxa_ano: float | None = None  # % ao ano
+
+
+class FichaEmpresa(BaseModel):
+    """A ficha cadastral de um CNPJ na Receita (via BrasilAPI)."""
+
+    fonte: str = "brasilapi"
+    cnpj: str
+    razao_social: str
+    nome_fantasia: str | None = None
+    situacao: str | None = None
+    natureza: str | None = None
+    abertura: date | None = None
+    atividade: str | None = None  # descrição do CNAE principal
+    capital_social: Decimal | None = None
+    municipio: str | None = None
+    uf: str | None = None
+    socios: list[str] = []
+
+
+class ContratoFederal(BaseModel):
+    """Um contrato do governo federal com um CNPJ/CPF (Transparência)."""
+
+    fonte: str = "transparencia"
+    objeto: str
+    orgao: str | None = None
+    valor: Decimal | None = None
+    inicio: date | None = None
+    fim: date | None = None
+    situacao: str | None = None
+    modalidade: str | None = None

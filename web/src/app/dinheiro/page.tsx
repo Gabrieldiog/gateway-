@@ -15,6 +15,7 @@ import { ANO_ATUAL, anos, rotuloMesAAAAMM, ultimosMeses } from "@/lib/datas";
 import { CAPITAIS, UFS } from "@/lib/ufs";
 import type {
   BeneficioSocial,
+  DocumentoEmenda,
   Emenda,
   FonteDado,
   Municipio,
@@ -39,11 +40,46 @@ const MESES = ultimosMeses(8);
 const campo =
   "rounded-md border border-line bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent focus:outline-none";
 
+// a cor conta a história: empenho é promessa, pagamento é dinheiro que saiu
+function corFase(fase: string | null): string {
+  if (fase === "Pagamento") return "text-emerald-600";
+  if (fase === "Empenho") return "text-accent-2";
+  return "text-muted";
+}
+
+// os documentos por trás de uma emenda; monta quando a linha abre
+function DocumentosDaEmenda({ codigo }: { codigo: string }) {
+  const r = useBalcao<NormalizedResponse<DocumentoEmenda>>(
+    caminho("transparencia/emendas/documentos", { codigo }),
+  );
+  const docs = r.dados?.dados ?? [];
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !r.dados) return <Esqueleto linhas={3} />;
+  if (!docs.length) return <Vazio>nenhum documento publicado ainda.</Vazio>;
+
+  return (
+    <ul className="flex flex-col divide-y divide-line/60">
+      {docs.map((d, i) => (
+        <li key={`${d.documento_resumido}-${i}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
+          <span className="num w-20 shrink-0 text-xs text-muted">{formataData(d.data)}</span>
+          <span className={`num w-24 shrink-0 text-xs font-semibold uppercase tracking-wider ${corFase(d.fase)}`}>
+            {d.fase ?? "—"}
+          </span>
+          <span className="num text-xs text-ink">{d.documento_resumido ?? "—"}</span>
+          {d.especie && <span className="text-xs text-muted">{d.especie}</span>}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Emendas() {
   const [ano, setAno] = useState(ANO_ATUAL);
   const [autor, setAutor] = useState("");
   const [autorAplicado, setAutorAplicado] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [aberta, setAberta] = useState<string | null>(null);
 
   const r = useBalcao<NormalizedResponse<Emenda>>(
     caminho("transparencia/emendas", { ano, autor: autorAplicado || undefined, pagina }),
@@ -109,24 +145,38 @@ function Emendas() {
         <EmTransicao ativo={r.carregando}>
           <Card className="divide-y divide-line p-0">
             {emendas.map((e) => (
-              <div key={e.codigo} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-ink" title={e.autor}>
-                    {e.autor}
-                  </p>
-                  <p className="num mt-0.5 text-xs text-muted">
-                    {[e.funcao, e.localidade].filter(Boolean).join(" · ")}
-                  </p>
+              <div key={e.codigo} className="px-5 py-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-ink" title={e.autor}>
+                      {e.autor}
+                    </p>
+                    <p className="num mt-0.5 text-xs text-muted">
+                      {[e.funcao, e.localidade].filter(Boolean).join(" · ")}
+                      <button
+                        onClick={() => setAberta((a) => (a === e.codigo ? null : e.codigo))}
+                        aria-expanded={aberta === e.codigo}
+                        className="ml-3 uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
+                      >
+                        {aberta === e.codigo ? "fechar ▾" : "ver os empenhos ▸"}
+                      </button>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="num text-sm text-ink">
+                      {e.valor_empenhado ? formataReaisCompacto(e.valor_empenhado) : "—"}
+                      <span className="ml-1 text-xs text-muted">empenhado</span>
+                    </p>
+                    <p className="num text-xs text-muted">
+                      pago {e.valor_pago ? formataReaisCompacto(e.valor_pago) : "—"}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="num text-sm text-ink">
-                    {e.valor_empenhado ? formataReaisCompacto(e.valor_empenhado) : "—"}
-                    <span className="ml-1 text-xs text-muted">empenhado</span>
-                  </p>
-                  <p className="num text-xs text-muted">
-                    pago {e.valor_pago ? formataReaisCompacto(e.valor_pago) : "—"}
-                  </p>
-                </div>
+                {aberta === e.codigo && (
+                  <div className="mt-3 border-t border-line/60 pt-3">
+                    <DocumentosDaEmenda codigo={e.codigo} />
+                  </div>
+                )}
               </div>
             ))}
           </Card>

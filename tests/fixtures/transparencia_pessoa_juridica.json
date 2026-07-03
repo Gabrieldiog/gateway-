@@ -1,0 +1,18 @@
+{
+ "cnpj": "04984400000130",
+ "razaoSocial": "CTA - CLEITON TAXI AEREO LTDA",
+ "nomeFantasia": "CTA TAXI AEREO",
+ "favorecidoDespesas": true,
+ "possuiContratacao": true,
+ "convenios": false,
+ "favorecidoTransferencias": false,
+ "sancionadoCEPIM": false,
+ "sancionadoCEIS": false,
+ "sancionadoCNEP": false,
+ "sancionadoCEAF": false,
+ "participanteLicitacao": true,
+ "emitiuNFe": true,
+ "beneficiadoRenunciaFiscal": false,
+ "isentoImuneRenunciaFiscal": false,
+ "habilitadoRenunciaFiscal": false
+}
