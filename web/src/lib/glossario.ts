@@ -111,4 +111,24 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  volumeutil: {
+    titulo: "Volume útil",
+    texto:
+      "A parte da água do reservatório que dá pra usar de verdade — o que está acima da tomada d'água. 100% é reservatório cheio; 0% não é seco, é o ponto abaixo do qual a água não desce mais por gravidade.",
+  },
+  afluencia: {
+    titulo: "Afluência",
+    texto:
+      "Quanta água está CHEGANDO ao reservatório, em metros cúbicos por segundo — os rios e a chuva que desaguam nele. Afluência maior que a defluência = reservatório enchendo.",
+  },
+  defluencia: {
+    titulo: "Defluência",
+    texto:
+      "Quanta água está SAINDO do reservatório, em metros cúbicos por segundo — pelas turbinas, pelo vertedouro ou pro abastecimento. Defluência maior que a afluência = reservatório baixando.",
+  },
+  cota: {
+    titulo: "Cota",
+    texto:
+      "O nível da água, em metros em relação ao nível do mar. É a régua do reservatório: cota subindo é água entrando. Cada reservatório tem sua faixa própria — compare a cota com ela mesma ao longo dos dias, não entre reservatórios.",
+  },
 };

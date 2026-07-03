@@ -791,3 +791,24 @@ export interface FornecedorOut {
   erros: Record<string, string>;
   meta: Record<string, unknown>;
 }
+
+export interface Reservatorio {
+  fonte: string;
+  codigo: string;
+  nome: string;
+  sistema: string;
+  uf: string | null;
+}
+
+export interface MedicaoReservatorio {
+  fonte: string;
+  codigo: string;
+  reservatorio: string;
+  sistema: string | null;
+  data: string | null;
+  volume_util_pct: number | null;
+  volume_hm3: number | null;
+  cota: number | null;
+  afluencia: number | null;
+  defluencia: number | null;
+}

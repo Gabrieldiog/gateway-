@@ -110,6 +110,20 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # BCB Olinda — ranking de juros por banco (taxaJuros v2)
     if "servico/taxaJuros" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_juros"))
+    # ANA/SAR — última medição é JSON; lista e histórico são páginas HTML
+    if "ana.gov.br/sar/restportal" in url:
+        return httpx.Response(200, json=carrega_fixture("ana_ultima"))
+    if "ana.gov.br/sar0/" in url:
+        if "dataInicial" in url:
+            if "Reservatorios=29" in url:
+                arquivo = "ana_historico_cant.html"
+            elif "Reservatorios=12" in url:
+                arquivo = "ana_historico_ne.html"
+            else:
+                arquivo = "ana_historico_sin.html"
+        else:
+            arquivo = "ana_dropdown_ne.html" if url.endswith("/Medicao") else "ana_dropdown_sin.html"
+        return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     # CONAB — arquivos TXT em latin-1 (o conector decodifica dos bytes)
     if "portaldeinformacoes.conab.gov.br" in url:
         arquivo = "conab_levantamento.txt" if "LevantamentoGraos" in url else "conab_precos.txt"

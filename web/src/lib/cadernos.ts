@@ -47,11 +47,12 @@ export const GRUPOS: Grupo[] = [
   },
   {
     nome: "Território",
-    desc: "O mapa do Brasil: estados, municípios e as queimadas que os satélites do INPE enxergam todo dia.",
+    desc: "O mapa do Brasil: estados, municípios, as queimadas que os satélites enxergam e a água dos reservatórios.",
     cadernos: [
       { num: "XXVIII", nome: "Minha Cidade", sub: "censo, PIB e as contas da prefeitura", href: "/cidade" },
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
       { num: "XVI", nome: "Queimadas", sub: "focos de incêndio por estado e bioma", href: "/queimadas" },
+      { num: "XXXI", nome: "Água", sub: "quanto têm os reservatórios, dia a dia", href: "/agua" },
     ],
   },
   {
