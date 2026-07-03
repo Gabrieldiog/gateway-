@@ -1,10 +1,12 @@
+import asyncio
+from decimal import Decimal
 from typing import Any
 
 from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import Abate, IndicadorAgro, Leite, SafraMensal
+from balcao.models import Abate, CensoCidade, IndicadorAgro, Leite, PibCidade, SafraMensal
 from balcao.normalize import normaliza_uf
 
 # código IBGE de 2 dígitos de cada UF (o SIDRA usa no nível n3)
@@ -57,6 +59,18 @@ FONTE_LSPA = {
     ),
 }
 
+FONTE_CENSO = {
+    "nome": "IBGE — Censo Demográfico 2022",
+    "url": "https://censo2022.ibge.gov.br",
+    "nota": "A contagem oficial de gente e moradia do país, município a município.",
+}
+
+FONTE_PIB = {
+    "nome": "IBGE — PIB dos Municípios",
+    "url": "https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9088-produto-interno-bruto-dos-municipios.html",
+    "nota": "As contas municipais oficiais, publicadas com cerca de dois anos de defasagem — o retrato mais recente que existe.",
+}
+
 FONTE_TRIMESTRAIS = {
     "nome": "IBGE — pesquisas trimestrais do abate e do leite",
     "url": "https://sidra.ibge.gov.br/pesquisa/abate-de-animais",
@@ -93,6 +107,8 @@ class SidraConnector(BaseConnector):
             "os municípios que mais produzem uma cultura numa UF (PAM 5457); "
             f"filtros: produto ({', '.join(PAM_MUNICIPAL)}), uf (obrigatória), limit"
         ),
+        "censo": "Censo 2022 de um município: população, crescimento, domicílios (param: municipio)",
+        "pib": "PIB municipal mais recente publicado (param: municipio)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -118,8 +134,73 @@ class SidraConnector(BaseConnector):
                 return await self._leite(recurso, params)
             case ["municipios"]:
                 return await self._municipios(recurso, params)
+            case ["censo"]:
+                return await self._censo(recurso, params)
+            case ["pib"]:
+                return await self._pib(recurso, params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    def _cod_municipio(self, recurso: str, params: dict) -> str:
+        mun = str(params.get("municipio", "")).strip()
+        if not mun.isdigit() or len(mun) != 7:
+            raise ParametroInvalido(recurso, ["municipio"], ["municipio = código IBGE de 7 dígitos"])
+        return mun
+
+    async def _censo(self, recurso: str, params: dict) -> NormalizedResponse:
+        """Censo 2022 num município: população e crescimento (tabela 4709) +
+        domicílios e moradores por domicílio (4712), numa resposta só."""
+        self._checa(recurso, params, {"municipio"})
+        mun = self._cod_municipio(recurso, params)
+        pop_bruto, dom_bruto = await asyncio.gather(
+            self.get_json(f"/values/t/4709/n6/{mun}/v/allxp/p/last"),
+            self.get_json(f"/values/t/4712/n6/{mun}/v/allxp/p/last"),
+        )
+        campos: dict = {}
+        nome = ""
+        ano = 2022
+        for bruto in (pop_bruto, dom_bruto):
+            for row in bruto[1:] if isinstance(bruto, list) else []:
+                nome = row.get("D1N") or nome
+                ano = int(row["D3C"]) if str(row.get("D3C") or "").isdigit() else ano
+                valor = self._numero(row.get("V"))
+                match row.get("D2C"):
+                    case "93":
+                        campos["populacao"] = int(valor) if valor is not None else None
+                    case "5936":
+                        campos["variacao_desde_2010"] = int(valor) if valor is not None else None
+                    case "10605":
+                        campos["crescimento_aa_pct"] = valor
+                    case "381":
+                        campos["domicilios"] = int(valor) if valor is not None else None
+                    case "5930":
+                        campos["moradores_por_domicilio"] = valor
+        item = CensoCidade(municipio=nome or mun, ibge=int(mun), ano=ano, **campos)
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=[item.model_dump(mode="json")], total=1,
+            meta={"ano": ano, "fonte": FONTE_CENSO},
+        )
+
+    async def _pib(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._checa(recurso, params, {"municipio"})
+        mun = self._cod_municipio(recurso, params)
+        bruto = await self.get_json(f"/values/t/5938/n6/{mun}/v/37/p/last")
+        nome = ""
+        ano = None
+        pib = None
+        for row in bruto[1:] if isinstance(bruto, list) else []:
+            nome = row.get("D1N") or nome
+            ano = int(row["D3C"]) if str(row.get("D3C") or "").isdigit() else ano
+            cru = str(row.get("V") or "")
+            if row.get("D2C") == "37" and cru.replace(".", "", 1).isdigit():
+                # a fonte fala em mil reais; entregamos reais — Decimal do
+                # valor cru pra não passar por float
+                pib = Decimal(cru) * 1000
+        item = PibCidade(municipio=nome or mun, ibge=int(mun), ano=ano or 0, pib=pib)
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=[item.model_dump(mode="json")], total=1,
+            meta={"ano": ano, "fonte": FONTE_PIB},
+        )
 
     async def _safra(self, recurso: str, params: dict) -> NormalizedResponse:
         """LSPA (tabela 6588): a estimativa mensal da safra em curso. O quirk

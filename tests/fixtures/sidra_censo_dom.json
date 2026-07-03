@@ -1,0 +1,30 @@
+[
+ {
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Ano (Código)",
+  "D3N": "Ano",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "381",
+  "D2N": "Domicílios ocupados",
+  "D3C": "2022",
+  "V": "4307665",
+  "MN": "Domicílios"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "5930",
+  "D2N": "Média de moradores",
+  "D3C": "2022",
+  "V": "2.65",
+  "MN": "Pessoas"
+ }
+]

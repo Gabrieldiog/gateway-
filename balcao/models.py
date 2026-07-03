@@ -694,6 +694,30 @@ class ArquivoCompra(BaseModel):
     url: str
 
 
+class CensoCidade(BaseModel):
+    """O retrato do Censo 2022 pra um município: gente e moradia."""
+
+    fonte: str = "sidra"
+    municipio: str
+    ibge: int | None = None
+    ano: int  # ano de referência do Censo
+    populacao: int | None = None
+    variacao_desde_2010: int | None = None
+    crescimento_aa_pct: float | None = None  # taxa geométrica anual
+    domicilios: int | None = None
+    moradores_por_domicilio: float | None = None
+
+
+class PibCidade(BaseModel):
+    """O PIB municipal (contas do IBGE, publicadas com ~2 anos de defasagem)."""
+
+    fonte: str = "sidra"
+    municipio: str
+    ibge: int | None = None
+    ano: int
+    pib: Decimal | None = None  # em reais (a fonte fala em mil reais)
+
+
 class SafraMensal(BaseModel):
     """A estimativa do LSPA/IBGE pra safra em curso — revisada todo mês."""
 

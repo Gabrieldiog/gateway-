@@ -1,0 +1,39 @@
+[
+ {
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Ano (Código)",
+  "D3N": "Ano",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "93",
+  "D2N": "População residente",
+  "D3C": "2022",
+  "V": "11451999",
+  "MN": "Pessoas"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "5936",
+  "D2N": "Variação absoluta",
+  "D3C": "2022",
+  "V": "198496",
+  "MN": "Pessoas"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "10605",
+  "D2N": "Taxa de crescimento geométrico",
+  "D3C": "2022",
+  "V": "0.15",
+  "MN": "%"
+ }
+]

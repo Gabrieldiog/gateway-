@@ -56,6 +56,9 @@ ROTAS_FAKE = [
     ("https://apisidra.ibge.gov.br/values/t/1094", "sidra_abate"),
     ("https://apisidra.ibge.gov.br/values/t/1086", "sidra_leite"),
     ("https://apisidra.ibge.gov.br/values/t/5457", "sidra_municipios"),
+    ("https://apisidra.ibge.gov.br/values/t/4709", "sidra_censo_pop"),
+    ("https://apisidra.ibge.gov.br/values/t/4712", "sidra_censo_dom"),
+    ("https://apisidra.ibge.gov.br/values/t/5938", "sidra_pib"),
     ("http://www.ipeadata.gov.br/api/odata4/Metadados", "ipeadata_series"),
     ("http://www.ipeadata.gov.br/api/odata4/ValoresSerie", "ipeadata_valores"),
 ]
