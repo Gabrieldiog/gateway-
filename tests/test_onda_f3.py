@@ -7,7 +7,7 @@ async def test_obras_paralisadas_com_flag_de_atraso(api):
     corpo = resp.json()
     o = corpo["dados"][0]
     assert o["situacao"] == "Paralisada"
-    assert o["valor_previsto"] == "12500000.5"
+    assert o["valor_previsto"] == "12500000.5"  # soma das fontes: 10 mi federal + 2,5 mi estadual
     # fim previsto em 2024 e obra parada: atrasada
     assert o["atrasada"] is True
     assert o["empregos"] == 120
@@ -33,3 +33,26 @@ async def test_obras_tolera_strings_vazias_da_fonte(api):
     assert creche["empregos"] is None
     assert creche["valor_previsto"] is None
     assert creche["atrasada"] is True
+
+
+async def test_obras_paginacao_ignora_metadados_mentirosos(api):
+    # a fixture tem página cheia (20): tem_proxima True mesmo com last=true
+    resp = await api.get("/v1/obrasgov/obras?uf=GO&situacao=paralisada")
+    assert resp.json()["meta"]["tem_proxima"] is True
+
+
+async def test_obras_placeholder_de_um_centavo_vira_none(api):
+    resp = await api.get("/v1/obrasgov/obras?uf=GO&situacao=paralisada")
+    creche = next(o for o in resp.json()["dados"] if "Creche" in o["nome"])
+    assert creche["valor_previsto"] is None
+
+
+async def test_execucao_soma_os_empenhos(api):
+    resp = await api.get("/v1/obrasgov/execucao?id=33266.16-49")
+    corpo = resp.json()
+    assert corpo["total"] == 2
+    assert corpo["meta"]["total_empenhado_na_pagina"] == "5891825.69"
+    e = corpo["dados"][0]
+    assert e["favorecido"].startswith("CONSTRUTORA")
+    assert e["valor"] == "4891825.69"
+    assert e["nota"] == "2025NE000300"

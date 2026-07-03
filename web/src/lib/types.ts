@@ -623,6 +623,16 @@ export interface VinculosEmpresa {
   flags: Record<string, boolean>;
 }
 
+export interface EmpenhoObra {
+  fonte: string;
+  obra: string;
+  favorecido: string | null;
+  valor: string | null;
+  natureza: string | null;
+  nota: string | null;
+  ug: string | null;
+}
+
 export interface ObraPublica {
   fonte: string;
   id: string;
@@ -637,6 +647,7 @@ export interface ObraPublica {
   fim_previsto: string | null;
   inicio_efetivo: string | null;
   fim_efetivo: string | null;
+  executor: string | null;
   empregos: number | null;
   populacao_beneficiada: number | null;
   atrasada: boolean;

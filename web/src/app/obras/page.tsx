@@ -11,7 +11,7 @@ import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
-import type { FonteDado, NormalizedResponse, ObraPublica } from "@/lib/types";
+import type { EmpenhoObra, FonteDado, NormalizedResponse, ObraPublica } from "@/lib/types";
 
 const SITUACOES: [string, string][] = [
   ["paralisada", "Paralisadas"],
@@ -19,6 +19,50 @@ const SITUACOES: [string, string][] = [
   ["concluida", "Concluídas"],
   ["cadastrada", "Cadastradas"],
 ];
+
+// o dinheiro que já saiu: os empenhos da obra, abertos sob demanda
+function EmpenhosDaObra({ id }: { id: string }) {
+  const r = useBalcao<NormalizedResponse<EmpenhoObra>>(caminho("obrasgov/execucao", { id }));
+  const empenhos = r.dados?.dados ?? [];
+  const totalPagina = r.dados?.meta?.total_empenhado_na_pagina as string | undefined;
+  const temProxima = Boolean(r.dados?.meta?.tem_proxima);
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !r.dados) return <Esqueleto linhas={2} />;
+  if (!empenhos.length) {
+    return (
+      <p className="font-editorial text-sm italic text-muted">
+        nenhum empenho registrado — o dinheiro ainda não começou a sair (ou o órgão não informou).
+      </p>
+    );
+  }
+  return (
+    <div>
+      {totalPagina && Number(totalPagina) > 0 && (
+        <p className="kicker mb-2">
+          já empenhado:{" "}
+          <span className="num normal-case tracking-normal text-ink">
+            {formataReaisCompacto(totalPagina)}
+            {temProxima && "+"}
+          </span>
+        </p>
+      )}
+      <ul className="flex flex-col divide-y divide-line/60">
+        {empenhos.map((e, i) => (
+          <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 py-1.5">
+            <span className="min-w-0 flex-1 truncate text-sm text-ink/85">
+              {e.favorecido ?? "favorecido não informado"}
+              {e.nota && <span className="num ml-2 text-xs text-muted">{e.nota}</span>}
+            </span>
+            <span className="num shrink-0 text-sm text-ink">
+              {e.valor ? formataReaisCompacto(e.valor) : "—"}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 // cor do carimbo de situação — parada é vermelho, andando é verde
 function corSituacao(s: string | null): string {
@@ -32,6 +76,7 @@ export default function CadernoObras() {
   const [situacao, setSituacao] = useState("paralisada");
   const [uf, setUf] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [aberta, setAberta] = useState<string | null>(null);
 
   const r = useBalcao<NormalizedResponse<ObraPublica>>(
     caminho("obrasgov/obras", { situacao, uf: uf || undefined, pagina }),
@@ -129,11 +174,24 @@ export default function CadernoObras() {
                     </span>
                   )}
                   {o.fim_efetivo && <span className="text-ok">entregue em {formataData(o.fim_efetivo)}</span>}
+                  {o.executor && <span>executor: {o.executor}</span>}
                   {o.empregos != null && <span>{o.empregos.toLocaleString("pt-BR")} empregos</span>}
                   {o.populacao_beneficiada != null && (
                     <span>{o.populacao_beneficiada.toLocaleString("pt-BR")} beneficiados</span>
                   )}
+                  <button
+                    onClick={() => setAberta(aberta === o.id ? null : o.id)}
+                    aria-expanded={aberta === o.id}
+                    className="uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
+                  >
+                    {aberta === o.id ? "fechar ▴" : "o dinheiro que já saiu ▸"}
+                  </button>
                 </div>
+                {aberta === o.id && (
+                  <div className="mt-3 border-t border-line pt-3">
+                    <EmpenhosDaObra id={o.id} />
+                  </div>
+                )}
               </Card>
             ))}
           </div>

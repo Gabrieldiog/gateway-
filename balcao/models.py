@@ -711,9 +711,22 @@ class ObraPublica(BaseModel):
     fim_previsto: date | None = None
     inicio_efetivo: date | None = None
     fim_efetivo: date | None = None
+    executor: str | None = None  # quem toca a obra (ex: FNDE)
     empregos: int | None = None
     populacao_beneficiada: int | None = None
     atrasada: bool = False  # fim previsto no passado e obra não concluída
+
+
+class EmpenhoObra(BaseModel):
+    """Um empenho da execução financeira de uma obra — dinheiro que já saiu."""
+
+    fonte: str = "obrasgov"
+    obra: str  # idUnico
+    favorecido: str | None = None
+    valor: Decimal | None = None
+    natureza: str | None = None
+    nota: str | None = None  # numeroNotaEmpenhoGerada, quando vem
+    ug: str | None = None
 
 
 class DiarioOficial(BaseModel):
