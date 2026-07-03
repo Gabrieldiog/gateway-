@@ -12,11 +12,18 @@ import { SeloFonte } from "@/components/SeloFonte";
 import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
-import { apiGet, caminho, formataBRL } from "@/lib/api";
+import { apiGet, caminho, formataBRL, formataData } from "@/lib/api";
 import { ANO_ATUAL, anos } from "@/lib/datas";
 import { UFS } from "@/lib/ufs";
 import { PARTIDOS } from "@/lib/partidos";
-import type { Deputado, GastosOut, NormalizedResponse } from "@/lib/types";
+import type {
+  Deputado,
+  Despesa,
+  Discurso,
+  GastosOut,
+  NormalizedResponse,
+  PerfilDeputado,
+} from "@/lib/types";
 
 const FONTE_CAMARA = {
   nome: "Câmara dos Deputados — Dados Abertos",
@@ -166,10 +173,17 @@ export default function CadernoCamara() {
           </div>
           {!sel ? (
             <Vazio>escolha um deputado.</Vazio>
-          ) : ano === "todos" ? (
-            <PainelTodosAnos deputado={sel} />
           ) : (
-            <PainelGastos deputado={sel} ano={ano} />
+            <div className="flex flex-col gap-6">
+              {ano === "todos" ? (
+                <PainelTodosAnos deputado={sel} />
+              ) : (
+                <PainelGastos deputado={sel} ano={ano} />
+              )}
+              <PainelPerfil deputadoId={sel.id} />
+              <PainelNotas deputadoId={sel.id} ano={ano} />
+              <PainelDiscursos deputadoId={sel.id} />
+            </div>
           )}
         </div>
       </div>
@@ -288,5 +302,229 @@ function PainelTodosAnos({ deputado }: { deputado: Deputado }) {
         )}
       </div>
     </Card>
+  );
+}
+
+// tira o nome da rede a partir do domínio do link
+function rotuloRede(url: string): string {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+    if (host.includes("twitter") || host === "x.com") return "Twitter/X";
+    if (host.includes("instagram")) return "Instagram";
+    if (host.includes("facebook")) return "Facebook";
+    if (host.includes("youtube") || host.includes("youtu.be")) return "YouTube";
+    if (host.includes("tiktok")) return "TikTok";
+    return host;
+  } catch {
+    return url;
+  }
+}
+
+// a ficha civil do deputado: formação, origem, mandato, gabinete e redes
+function PainelPerfil({ deputadoId }: { deputadoId: number }) {
+  const { dados, carregando, erro, recarregar } = useBalcao<NormalizedResponse<PerfilDeputado>>(
+    caminho(`camara/deputados/${deputadoId}/perfil`),
+  );
+  const perfil = dados?.dados[0] ?? null;
+
+  const linhas: [string, string][] = [];
+  if (perfil) {
+    if (perfil.escolaridade) linhas.push(["escolaridade", perfil.escolaridade]);
+    if (perfil.naturalidade) linhas.push(["naturalidade", perfil.naturalidade]);
+    if (perfil.nascimento) linhas.push(["nascimento", formataData(perfil.nascimento)]);
+    const mandato = [perfil.situacao, perfil.condicao].filter(Boolean).join(" · ");
+    if (mandato) linhas.push(["mandato", mandato]);
+    const contato = [
+      perfil.gabinete ? `gabinete ${perfil.gabinete}` : null,
+      perfil.telefone_gabinete ? `tel ${perfil.telefone_gabinete}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    if (contato) linhas.push(["contato", contato]);
+  }
+
+  // carregou e não veio nada: a seção some em silêncio
+  if (!carregando && !erro && !perfil) return null;
+
+  return (
+    <div>
+      <p className="kicker mb-3">quem é</p>
+      {erro ? (
+        <ErroBox erro={erro} aoTentar={recarregar} />
+      ) : carregando && !dados ? (
+        <Esqueleto linhas={3} />
+      ) : perfil ? (
+        <EmTransicao ativo={carregando}>
+          <Card className="p-4 pl-7">
+            <ul className="flex flex-col gap-1.5">
+              {linhas.map(([rotulo, valor]) => (
+                <li key={rotulo} className="flex items-baseline gap-3">
+                  <span className="num w-28 shrink-0 text-xs uppercase tracking-wider text-muted">
+                    {rotulo}
+                  </span>
+                  <span className="min-w-0 text-sm text-ink/90">{valor}</span>
+                </li>
+              ))}
+            </ul>
+            {perfil.redes.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {perfil.redes.map((url) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="num rounded-md border border-line bg-surface-2/60 px-2 py-0.5 text-xs text-ink/80 transition-colors hover:border-accent/40 hover:text-accent"
+                  >
+                    {rotuloRede(url)} ↗
+                  </a>
+                ))}
+              </div>
+            )}
+          </Card>
+        </EmTransicao>
+      ) : null}
+    </div>
+  );
+}
+
+// as notas fiscais mais recentes por trás do agregado do painel de cima
+function PainelNotas({ deputadoId, ano }: { deputadoId: number; ano: AnoSel }) {
+  const { dados, carregando, erro, recarregar } = useBalcao<NormalizedResponse<Despesa>>(
+    caminho(`camara/deputados/${deputadoId}/despesas`, {
+      ano: ano === "todos" ? undefined : ano,
+      itens: 6,
+    }),
+  );
+  const notas = dados?.dados ?? [];
+
+  return (
+    <div>
+      <p className="kicker mb-3">
+        <Termo t="ceap">as últimas notas</Termo>
+      </p>
+      {erro ? (
+        <ErroBox erro={erro} aoTentar={recarregar} />
+      ) : carregando && !dados ? (
+        <Esqueleto linhas={4} />
+      ) : notas.length === 0 ? (
+        <Vazio>nenhuma nota nesse período.</Vazio>
+      ) : (
+        <EmTransicao ativo={carregando}>
+          <Card className="p-4 pl-7">
+            <ul className="flex flex-col divide-y divide-line">
+              {notas.map((n, i) => (
+                <li key={`${n.data}-${n.valor}-${i}`} className="flex items-start justify-between gap-3 py-2 first:pt-0 last:pb-0">
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm text-ink">{n.tipo}</span>
+                    <span className="num block truncate text-xs text-muted">
+                      {n.fornecedor} · {formataData(n.data)}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-right">
+                    <span className="num block text-sm text-ink">{formataBRL(n.valor)}</span>
+                    {n.valor_glosa && Number(n.valor_glosa) > 0 && (
+                      <span className="num block text-xs text-erro">
+                        glosa {formataBRL(n.valor_glosa)}
+                      </span>
+                    )}
+                    {n.url_documento && (
+                      <a
+                        href={n.url_documento}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="num text-xs text-accent-2 transition-colors hover:text-accent"
+                      >
+                        ver a nota →
+                      </a>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </EmTransicao>
+      )}
+    </div>
+  );
+}
+
+// os últimos discursos em plenário, com a transcrição dobrada por padrão
+function PainelDiscursos({ deputadoId }: { deputadoId: number }) {
+  const { dados, carregando, erro, recarregar } = useBalcao<NormalizedResponse<Discurso>>(
+    caminho(`camara/deputados/${deputadoId}/discursos`, { itens: 3 }),
+  );
+  const discursos = dados?.dados ?? [];
+
+  return (
+    <div>
+      <p className="kicker mb-3">na tribuna</p>
+      {erro ? (
+        <ErroBox erro={erro} aoTentar={recarregar} />
+      ) : carregando && !dados ? (
+        <Esqueleto linhas={3} />
+      ) : discursos.length === 0 ? (
+        <Vazio>sem discursos recentes.</Vazio>
+      ) : (
+        <EmTransicao ativo={carregando}>
+          <Card className="p-4 pl-7">
+            <ul className="flex flex-col divide-y divide-line">
+              {discursos.map((d, i) => (
+                <DiscursoItem key={`${d.data}-${i}`} discurso={d} />
+              ))}
+            </ul>
+          </Card>
+        </EmTransicao>
+      )}
+    </div>
+  );
+}
+
+function DiscursoItem({ discurso: d }: { discurso: Discurso }) {
+  const [aberto, setAberto] = useState(false);
+  return (
+    <li className="py-2.5 first:pt-0 last:pb-0">
+      <p className="num text-xs text-muted">
+        {formataData(d.data)}
+        {d.tipo ? ` · ${d.tipo}` : ""}
+      </p>
+      {d.sumario && (
+        <p className="mt-1 font-editorial text-[0.95rem] leading-snug text-ink/90">{d.sumario}</p>
+      )}
+      <div className="mt-1.5 flex flex-wrap items-center gap-3">
+        {d.transcricao && (
+          <button
+            onClick={() => setAberto((a) => !a)}
+            aria-expanded={aberto}
+            className="num text-xs uppercase tracking-wider text-accent-2 transition-colors hover:text-accent"
+          >
+            {aberto ? "fechar a transcrição" : "ler a transcrição"}
+          </button>
+        )}
+        {d.url_video && (
+          <a
+            href={d.url_video}
+            target="_blank"
+            rel="noreferrer"
+            className="num text-xs text-muted transition-colors hover:text-ink"
+          >
+            ▶ vídeo
+          </a>
+        )}
+      </div>
+      {d.transcricao && (
+        <div
+          className={`grid transition-[grid-template-rows] duration-300 ${
+            aberto ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <p className="mt-2 whitespace-pre-line border-l-2 border-line pl-3 font-editorial text-sm leading-relaxed text-ink/80">
+              {d.transcricao}
+            </p>
+          </div>
+        </div>
+      )}
+    </li>
   );
 }

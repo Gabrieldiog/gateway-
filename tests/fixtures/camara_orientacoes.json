@@ -1,0 +1,40 @@
+{
+ "dados": [
+  {
+   "siglaPartidoBloco": "PT",
+   "codPartidoBloco": 36844,
+   "codTipoLideranca": "P",
+   "orientacaoVoto": "Sim",
+   "uriPartidoBloco": null
+  },
+  {
+   "siglaPartidoBloco": "PL",
+   "codPartidoBloco": 37906,
+   "codTipoLideranca": "P",
+   "orientacaoVoto": "Não",
+   "uriPartidoBloco": null
+  },
+  {
+   "siglaPartidoBloco": "NOVO",
+   "codPartidoBloco": 37901,
+   "codTipoLideranca": "P",
+   "orientacaoVoto": "Liberado",
+   "uriPartidoBloco": null
+  },
+  {
+   "siglaPartidoBloco": "Governo",
+   "codPartidoBloco": null,
+   "codTipoLideranca": "G",
+   "orientacaoVoto": "Sim",
+   "uriPartidoBloco": null
+  },
+  {
+   "siglaPartidoBloco": "Oposição",
+   "codPartidoBloco": null,
+   "codTipoLideranca": "O",
+   "orientacaoVoto": "Não",
+   "uriPartidoBloco": null
+  }
+ ],
+ "links": []
+}

@@ -74,8 +74,11 @@ class BaseConnector(ABC):
         try:
             async for tentativa in com_retry(self.retry_tentativas):
                 with tentativa:
+                    # path absoluto (http...) passa reto: fontes como o BCB
+                    # espalham dados por mais de um host (SGS + Olinda)
+                    url = path if path.startswith("http") else f"{self.base_url}{path}"
                     resp = await self.client.request(
-                        metodo, f"{self.base_url}{path}", params=params, json=json, **extra
+                        metodo, url, params=params, json=json, **extra
                     )
                     resp.raise_for_status()
         except httpx.HTTPStatusError as exc:

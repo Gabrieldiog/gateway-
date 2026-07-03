@@ -26,6 +26,7 @@ export const GRUPOS: Grupo[] = [
       { num: "XVII", nome: "Dinheiro Público", sub: "emendas, sanções e Bolsa Família", href: "/dinheiro" },
       { num: "XVIII", nome: "Em Pauta", sub: "o que a Câmara votou e movimentou", href: "/pauta" },
       { num: "XXIII", nome: "Compras Públicas", sub: "licitações e contratos (PNCP)", href: "/compras" },
+      { num: "XXVII", nome: "Ficha do Fornecedor", sub: "um CNPJ, quatro fontes", href: "/fornecedor" },
     ],
   },
   {

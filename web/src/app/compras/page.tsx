@@ -9,9 +9,16 @@ import { Seletor } from "@/components/Seletor";
 import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
-import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
+import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
-import type { ContratoPublico, FonteDado, Licitacao, NormalizedResponse } from "@/lib/types";
+import type {
+  ContratoPublico,
+  FonteDado,
+  ItemCompra,
+  Licitacao,
+  NormalizedResponse,
+  VencedorItem,
+} from "@/lib/types";
 
 type Aba = "licitacoes" | "contratos";
 
@@ -53,10 +60,112 @@ function Paginacao({
   );
 }
 
+// o vencedor de um item, buscado só quando alguém pergunta
+function Vencedor({ controle, item }: { controle: string; item: number }) {
+  const r = useBalcao<NormalizedResponse<VencedorItem>>(
+    caminho("pncp/resultado", { controle, item }),
+  );
+  const vencedores = r.dados?.dados ?? [];
+  const aviso = r.dados?.meta?.aviso as string | undefined;
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !r.dados) return <Esqueleto linhas={2} />;
+  if (!vencedores.length) {
+    return (
+      <p className="font-editorial text-sm italic text-muted">
+        {aviso ?? "item ainda sem resultado homologado."}
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      {vencedores.map((v, i) => (
+        <div key={`${v.fornecedor}-${i}`} className="rounded-md bg-surface-2/60 px-3 py-2">
+          <p className="text-sm text-ink">
+            <span className="font-semibold">{v.fornecedor}</span>
+            {v.porte && <span className="num ml-2 text-xs text-muted">{v.porte}</span>}
+          </p>
+          <p className="num mt-0.5 text-xs text-muted">
+            {v.valor_total && (
+              <span className="text-ink">homologado por {formataBRL(v.valor_total)}</span>
+            )}
+            {v.desconto_pct != null && v.desconto_pct > 0 && (
+              <span className="ml-2 text-emerald-600">
+                {v.desconto_pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}% abaixo do
+                estimado
+              </span>
+            )}
+            {v.data && <span className="ml-2">· {formataData(v.data)}</span>}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// os itens de uma contratação; monta quando a linha abre, aí busca
+function ItensDaCompra({ controle }: { controle: string }) {
+  const r = useBalcao<NormalizedResponse<ItemCompra>>(caminho("pncp/itens", { controle }));
+  const [vencedorDe, setVencedorDe] = useState<number | null>(null);
+  const itens = r.dados?.dados ?? [];
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !r.dados) return <Esqueleto linhas={3} />;
+  if (!itens.length) return <Vazio>a fonte ainda não publicou os itens dessa contratação.</Vazio>;
+
+  return (
+    <ol className="flex flex-col divide-y divide-line/60">
+      {itens.map((i) => (
+        <li key={i.numero} className="py-2.5">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <p className="min-w-0 flex-1 text-sm text-ink/90">
+              <span className="num mr-2 text-xs text-muted">{i.numero}.</span>
+              {i.descricao}
+              {i.beneficio?.toUpperCase().includes("ME/EPP") && (
+                <span className="num ml-2 rounded-full bg-accent-2/10 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-accent-2">
+                  ME/EPP
+                </span>
+              )}
+            </p>
+            <span className="num shrink-0 text-sm text-accent">
+              {i.valor_total ? formataBRL(i.valor_total) : "—"}
+            </span>
+          </div>
+          <p className="num mt-1 text-xs text-muted">
+            {i.quantidade != null && (
+              <span>
+                {i.quantidade.toLocaleString("pt-BR")}
+                {i.unidade && ` ${i.unidade.toLowerCase()}`}
+              </span>
+            )}
+            {i.valor_unitario && <span className="ml-2">· {formataBRL(i.valor_unitario)} cada</span>}
+            {i.situacao && <span className="ml-2">· {i.situacao.toLowerCase()}</span>}
+            {i.tem_resultado && (
+              <button
+                onClick={() => setVencedorDe((n) => (n === i.numero ? null : i.numero))}
+                aria-expanded={vencedorDe === i.numero}
+                className="ml-3 uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
+              >
+                {vencedorDe === i.numero ? "fechar ▴" : "quem venceu?"}
+              </button>
+            )}
+          </p>
+          {vencedorDe === i.numero && (
+            <div className="mt-2">
+              <Vencedor controle={controle} item={i.numero} />
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function Licitacoes() {
   const [modalidade, setModalidade] = useState<string>("pregao-eletronico");
   const [uf, setUf] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [aberta, setAberta] = useState<string | null>(null);
 
   const r = useBalcao<NormalizedResponse<Licitacao>>(
     caminho("pncp/licitacoes", { modalidade, uf: uf || undefined, pagina }),
@@ -137,7 +246,21 @@ function Licitacoes() {
                   {l.propostas_ate && (
                     <span className="ml-2 text-ok">propostas até {formataData(l.propostas_ate)}</span>
                   )}
+                  <button
+                    onClick={() =>
+                      setAberta((a) => (a === l.numero_controle ? null : l.numero_controle))
+                    }
+                    aria-expanded={aberta === l.numero_controle}
+                    className="ml-3 uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
+                  >
+                    {aberta === l.numero_controle ? "fechar ▾" : "o que estão comprando ▸"}
+                  </button>
                 </p>
+                {aberta === l.numero_controle && (
+                  <div className="mt-3 border-t border-line/60 pt-3">
+                    <ItensDaCompra controle={l.numero_controle} />
+                  </div>
+                )}
               </div>
             ))}
           </Card>

@@ -1,0 +1,21 @@
+{
+ "cnpj": "04984400000130",
+ "razao_social": "CTA - CLEITON TAXI AEREO LTDA",
+ "nome_fantasia": "CTA TAXI AEREO",
+ "descricao_situacao_cadastral": "ATIVA",
+ "natureza_juridica": "Sociedade Empresária Limitada",
+ "data_inicio_atividade": "2002-03-15",
+ "cnae_fiscal": 5112901,
+ "cnae_fiscal_descricao": "Serviço de táxi aéreo e locação de aeronaves com tripulação",
+ "capital_social": 1200000.0,
+ "municipio": "MANAUS",
+ "uf": "AM",
+ "qsa": [
+  {
+   "nome_socio": "CLEITON SILVA"
+  },
+  {
+   "nome_socio": "MARIA SILVA"
+  }
+ ]
+}

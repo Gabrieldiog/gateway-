@@ -7,14 +7,16 @@ import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Termo } from "@/components/Termo";
-import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
+import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import { ANO_ATUAL, anos } from "@/lib/datas";
 import type {
   ExpectativaMercado,
+  FonteDado,
   IndicadorEconomico,
   NormalizedResponse,
+  TaxaJurosBanco,
 } from "@/lib/types";
 
 const FONTE_BACEN = {
@@ -31,6 +33,133 @@ const FONTE_FOCUS = {
 
 // o horizonte do Focus acompanha o calendário: este ano e os dois seguintes
 const ANOS = anos(ANO_ATUAL, ANO_ATUAL + 2);
+
+// o primeiro valor vai como filtro de modalidade na API do BCB
+const MODALIDADES_JUROS = [
+  ["rotativo", "Cartão rotativo"],
+  ["Cheque especial", "Cheque especial"],
+  ["consignado INSS", "Consignado INSS"],
+  ["Aquisição de veículos", "Financiamento de veículo"],
+  ["não consignado", "Crédito pessoal"],
+] as const;
+
+// verde no banco barato, vermelho no caro — interpola pela posição no ranking
+function corJuros(frac: number): string {
+  const de = [16, 185, 129]; // emerald
+  const ate = [225, 29, 72]; // rose
+  const [r, g, b] = de.map((v, i) => Math.round(v + (ate[i] - v) * frac));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function pctAno(taxa: number | null): string {
+  if (taxa == null) return "—";
+  return `${taxa.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% a.a.`;
+}
+
+function JurosBancos() {
+  const [modalidade, setModalidade] = useState<string>(MODALIDADES_JUROS[0][0]);
+
+  const r = useBalcao<NormalizedResponse<TaxaJurosBanco>>(
+    caminho("bacen/juros-bancos", { modalidade, limit: 12 }),
+  );
+  const linhas = r.dados?.dados ?? [];
+  const max = linhas.reduce((m, l) => Math.max(m, l.taxa_ano ?? 0), 0) || 1;
+  const janelaDe = r.dados?.meta?.janela_de as string | undefined;
+  const janelaAte = r.dados?.meta?.janela_ate as string | undefined;
+  const fonte = r.dados?.meta?.fonte as FonteDado | undefined;
+
+  return (
+    <section>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="kicker mb-1 text-accent">juros banco a banco</p>
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
+            Quanto o seu banco cobra
+          </h2>
+        </div>
+        <Carimbo
+          fonte="BACEN"
+          cache={r.dados?.meta?.cache as string | undefined}
+          ms={r.ms}
+          erro={!!r.erro}
+        />
+      </div>
+
+      <div className="mb-5 flex flex-wrap items-center gap-2">
+        {MODALIDADES_JUROS.map(([v, label]) => (
+          <button
+            key={v}
+            onClick={() => setModalidade(v)}
+            aria-pressed={v === modalidade}
+            className={`num rounded-full border px-3 py-1 text-xs uppercase tracking-wider transition-colors ${
+              v === modalidade
+                ? "border-accent bg-accent text-surface"
+                : "border-line text-muted hover:border-accent hover:text-accent"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {r.erro ? (
+        <ErroBox erro={r.erro} aoTentar={r.recarregar} />
+      ) : r.carregando && !r.dados ? (
+        <Esqueleto linhas={8} />
+      ) : !linhas.length ? (
+        <Vazio>o Banco Central não publicou taxas pra essa modalidade na última janela.</Vazio>
+      ) : (
+        <EmTransicao ativo={r.carregando}>
+          <Card className="p-5 sm:p-6">
+            <ol className="flex flex-col gap-3">
+              {linhas.map((l, i) => {
+                const caro = i === linhas.length - 1 && linhas.length > 1;
+                return (
+                  <li key={`${l.posicao}-${l.instituicao}`} className="flex items-center gap-3">
+                    <span className="num w-6 shrink-0 text-right text-sm text-muted">
+                      {l.posicao}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-baseline justify-between gap-3">
+                        <span
+                          className={`truncate text-sm ${caro ? "font-semibold text-erro" : "text-ink/90"}`}
+                          title={l.instituicao}
+                        >
+                          {l.instituicao}
+                        </span>
+                        <span className={`num shrink-0 text-sm ${caro ? "font-semibold text-erro" : "text-ink"}`}>
+                          {pctAno(l.taxa_ano)}
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-sm bg-surface-2">
+                        <div
+                          className="h-full rounded-sm transition-all duration-500"
+                          style={{
+                            width: `${Math.max(((l.taxa_ano ?? 0) / max) * 100, 1.5)}%`,
+                            background: corJuros(linhas.length > 1 ? i / (linhas.length - 1) : 0),
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+            {janelaDe && janelaAte && (
+              <p className="mt-5 border-t border-line pt-3 font-editorial text-sm italic text-muted">
+                Taxas médias efetivamente cobradas na janela de {formataData(janelaDe)} a{" "}
+                {formataData(janelaAte)}, apuradas pelo Banco Central. O ranking muda a cada
+                semana.
+              </p>
+            )}
+          </Card>
+        </EmTransicao>
+      )}
+
+      <SeloFonte fonte={fonte} />
+    </section>
+  );
+}
 
 // mostra o valor de um indicador do bolso: % com o sinal, R$ com o cifrão
 function textoValor(valor: number, unidade: string): string {
@@ -203,6 +332,10 @@ export default function CadernoCustoDeVida() {
 
         <SeloFonte fonte={FONTE_FOCUS} />
       </section>
+
+      <div className="regua-dupla my-10" />
+
+      <JurosBancos />
     </div>
   );
 }

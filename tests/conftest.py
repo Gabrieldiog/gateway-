@@ -29,12 +29,15 @@ FIXTURES = Path(__file__).parent / "fixtures"
 ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528/despesas", "camara_despesas"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/221328/despesas", "camara_despesas"),
+    ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528/discursos", "camara_discursos"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/204528", "camara_deputado_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados/999999999", None),
     ("https://dadosabertos.camara.leg.br/api/v2/deputados", "camara_deputados"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8/votos", "camara_votos"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/9999999-9/votos", "camara_votos_vazio"),
+    ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8/orientacoes", "camara_orientacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8", "camara_votacao_detalhe"),
+    ("https://brasilapi.com.br/api/cnpj/v1/", "brasilapi_cnpj"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes", "camara_votacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
@@ -90,9 +93,23 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             "baseCalculo": 0,
         }]})
     # Portal da Transparencia — exige o header chave-api-dados; sem ele, 401
+    # BCB Olinda — ranking de juros por banco (taxaJuros v2)
+    if "servico/taxaJuros" in url:
+        return httpx.Response(200, json=carrega_fixture("bacen_juros"))
+    # PNCP operacional (/api/pncp): itens da compra e resultado por item
+    if "pncp.gov.br/api/pncp/v1/orgaos" in url:
+        if "/resultados" in url:
+            return httpx.Response(200, json=carrega_fixture("pncp_resultado"))
+        return httpx.Response(200, json=carrega_fixture("pncp_itens"))
     if "api.portaldatransparencia.gov.br" in url:
         if not request.headers.get("chave-api-dados"):
             return httpx.Response(401, json={"Erro na API": "Chave de API não informada!"})
+        if "/emendas/documentos" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_emendas_documentos"))
+        if "/contratos/cpf-cnpj" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_contratos_cnpj"))
+        if "/pessoa-juridica" in url:
+            return httpx.Response(200, json=carrega_fixture("transparencia_pessoa_juridica"))
         if "/emendas" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_emendas"))
         if "/ceis" in url:

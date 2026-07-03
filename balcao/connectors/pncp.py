@@ -4,13 +4,14 @@ manha: datas em AAAAMMDD sem separador, modalidade obrigatória por código de
 enum que só vive num manual em PDF, tamanhoPagina com mínimo de 10 e um
 envelope de erro próprio. O conector esconde tudo isso."""
 
+import json
 from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import ContratoPublico, Licitacao
+from balcao.models import ContratoPublico, ItemCompra, Licitacao, VencedorItem
 from balcao.normalize import limpa_texto, para_data, so_digitos
 
 # enum de modalidades da Lei 14.133 (manual do PNCP); o cliente usa o slug
@@ -56,6 +57,8 @@ class PncpConnector(BaseConnector):
             f"modalidade = {', '.join(sorted(MODALIDADES))}, uf, municipio, pagina)"
         ),
         "contratos": "contratos assinados no período (params: de, ate, cnpj do órgão, pagina)",
+        "itens": "o que está sendo comprado numa contratação, item a item (params: controle = numeroControlePNCP)",
+        "resultado": "quem venceu um item: fornecedor, porte, valor homologado (params: controle, item)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -65,8 +68,95 @@ class PncpConnector(BaseConnector):
                 return await self._licitacoes(recurso, params)
             case ["contratos"]:
                 return await self._contratos(recurso, params)
+            case ["itens"]:
+                return await self._itens(recurso, params)
+            case ["resultado"]:
+                return await self._resultado(recurso, params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
+
+    @staticmethod
+    def _parse_controle(recurso: str, controle: str) -> tuple[str, int, int]:
+        """numeroControlePNCP: '76205699000198-1-000072/2026' → (cnpj, ano, seq)."""
+        try:
+            resto, ano = controle.strip().split("/")
+            cnpj, _, seq = resto.split("-")
+            if len(cnpj) != 14 or not cnpj.isdigit():
+                raise ValueError
+            return cnpj, int(ano), int(seq)
+        except (ValueError, AttributeError):
+            raise ParametroInvalido(
+                recurso, ["controle"], ["controle = numeroControlePNCP (ex 76205699000198-1-000072/2026)"]
+            ) from None
+
+    async def _itens(self, recurso: str, params: dict) -> NormalizedResponse:
+        """O que exatamente está sendo comprado numa contratação — item a item.
+        Vive no lado operacional (/api/pncp), irmão da API de consulta."""
+        self._valida(recurso, params, {"controle", "pagina"})
+        controle = str(params.get("controle", ""))
+        cnpj, ano, seq = self._parse_controle(recurso, controle)
+        pagina = self._pagina(recurso, params)
+        bruto = await self.get_json(
+            f"https://pncp.gov.br/api/pncp/v1/orgaos/{cnpj}/compras/{ano}/{seq}/itens",
+            params={"pagina": pagina, "tamanhoPagina": 50},
+        )
+        itens = []
+        for i in bruto if isinstance(bruto, list) else []:
+            itens.append(
+                ItemCompra(
+                    numero=int(i.get("numeroItem") or 0),
+                    descricao=limpa_texto(i.get("descricao")) or "—",
+                    quantidade=float(i["quantidade"]) if i.get("quantidade") is not None else None,
+                    unidade=limpa_texto(i.get("unidadeMedida")) or None,
+                    valor_unitario=_decimal(i.get("valorUnitarioEstimado")),
+                    valor_total=_decimal(i.get("valorTotal")),
+                    situacao=limpa_texto(i.get("situacaoCompraItemNome")) or None,
+                    tem_resultado=bool(i.get("temResultado")),
+                    beneficio=limpa_texto(i.get("tipoBeneficioNome")) or None,
+                ).model_dump(mode="json")
+            )
+        meta = {"controle": controle, "pagina": pagina, "fonte": FONTE}
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _resultado(self, recurso: str, params: dict) -> NormalizedResponse:
+        """Quem venceu um item: fornecedor, porte e valor homologado.
+        Quirk da fonte: item sem resultado responde 204 com corpo vazio."""
+        self._valida(recurso, params, {"controle", "item"})
+        controle = str(params.get("controle", ""))
+        cnpj, ano, seq = self._parse_controle(recurso, controle)
+        item = str(params.get("item", ""))
+        if not item.isdigit():
+            raise ParametroInvalido(recurso, ["item"], ["item = número do item (inteiro)"])
+        corpo = await self.get_text(
+            f"https://pncp.gov.br/api/pncp/v1/orgaos/{cnpj}/compras/{ano}/{seq}/itens/{item}/resultados",
+        )
+        bruto = json.loads(corpo) if corpo and corpo.strip() else []
+        if isinstance(bruto, dict):
+            bruto = [bruto]
+        itens = []
+        for r in bruto:
+            itens.append(
+                VencedorItem(
+                    item=int(item),
+                    fornecedor=limpa_texto(r.get("nomeRazaoSocialFornecedor")) or "—",
+                    documento=so_digitos(r.get("niFornecedor")),
+                    porte=limpa_texto(r.get("porteFornecedorNome")) or None,
+                    valor_unitario=_decimal(r.get("valorUnitarioHomologado")),
+                    valor_total=_decimal(r.get("valorTotalHomologado")),
+                    quantidade=float(r["quantidadeHomologada"]) if r.get("quantidadeHomologada") is not None else None,
+                    desconto_pct=float(r["percentualDesconto"]) if r.get("percentualDesconto") is not None else None,
+                    situacao=limpa_texto(r.get("situacaoCompraItemResultadoNome")) or None,
+                    data=para_data(r.get("dataResultado")),
+                ).model_dump(mode="json")
+            )
+        meta: dict[str, Any] = {"controle": controle, "item": int(item), "fonte": FONTE}
+        if not itens:
+            meta["aviso"] = "item ainda sem resultado homologado"
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
 
     async def _licitacoes(self, recurso: str, params: dict) -> NormalizedResponse:
         self._valida(recurso, params, PARAMS_LICITACOES)
