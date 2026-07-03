@@ -27,6 +27,7 @@ export const GRUPOS: Grupo[] = [
       { num: "XVIII", nome: "Em Pauta", sub: "o que a Câmara votou e movimentou", href: "/pauta" },
       { num: "XXIII", nome: "Compras Públicas", sub: "licitações e contratos (PNCP)", href: "/compras" },
       { num: "XXVII", nome: "Ficha do Fornecedor", sub: "um CNPJ, quatro fontes", href: "/fornecedor" },
+      { num: "XXIX", nome: "Diários Oficiais", sub: "busque no papel da prefeitura", href: "/diarios" },
     ],
   },
   {

@@ -1,0 +1,18 @@
+{
+ "cities": [
+  {
+   "territory_id": "5208707",
+   "territory_name": "Goiânia",
+   "state_code": "GO",
+   "publication_urls": [],
+   "level": "3"
+  },
+  {
+   "territory_id": "5200050",
+   "territory_name": "Abadia de Goiás",
+   "state_code": "GO",
+   "publication_urls": [],
+   "level": "0"
+  }
+ ]
+}
