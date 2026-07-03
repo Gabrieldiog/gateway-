@@ -359,3 +359,56 @@ async def ranking_arrecadacao(
         "total_entes": len(linhas),
         "ranking": linhas[:limit],
     }
+
+
+async def arrecadacao_todas_esferas(tesouro: BaseConnector, ano: int) -> dict:
+    """Soma as 55 maiores contas publicas do pais — Uniao + 27 estados + 27
+    capitais — direto dos balancos do SICONFI. E a versao honesta do painel
+    'todas as esferas': cada parcela e um balanco oficial de verdade. Os
+    municipios fora das capitais ficam declaradamente de fora (nao existe
+    agregado oficial e somar 5.570 balancos por visita nao e viavel)."""
+    porta = asyncio.Semaphore(10)
+    alvos = (
+        [("uniao", "uniao")]
+        + [(f"estado-{uf}", f"estados/{uf}") for uf in UF_IBGE]
+        + [(f"capital-{uf}", f"municipios/{cod}") for uf, cod in CAPITAIS.items()]
+    )
+
+    async def puxa(chave: str, base: str):
+        async with porta:
+            try:
+                return chave, await tesouro.fetch(base, ano=str(ano))
+            except BalcaoError:
+                return chave, None
+
+    respostas = await asyncio.gather(*(puxa(c, b) for c, b in alvos))
+    uniao = estados = capitais = Decimal(0)
+    somados = 0
+    for chave, resp in respostas:
+        if resp is None or not resp.dados:
+            continue
+        valor = Decimal(str(resp.dados[0].get("arrecadacao_total") or "0"))
+        if not valor:
+            continue
+        somados += 1
+        if chave == "uniao":
+            uniao += valor
+        elif chave.startswith("capital-"):
+            capitais += valor
+        else:
+            estados += valor
+    return {
+        "ano": ano,
+        "uniao": str(uniao),
+        "estados": str(estados),
+        "capitais": str(capitais),
+        "total": str(uniao + estados + capitais),
+        "entes_somados": somados,
+        "meta": {
+            "nota": (
+                "soma real dos balancos SICONFI de Uniao, 27 estados e 27 "
+                "capitais; municipios fora das capitais nao entram (nao ha "
+                "agregado oficial)"
+            ),
+        },
+    }

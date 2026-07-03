@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
 import { Termo } from "@/components/Termo";
+import { LerMais } from "@/components/LerMais";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
@@ -238,9 +239,11 @@ function Licitacoes() {
                     {l.valor_estimado ? formataReaisCompacto(l.valor_estimado) : "—"}
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 font-editorial text-sm leading-snug text-ink/80" title={l.objeto}>
-                  {l.objeto}
-                </p>
+                <LerMais
+                  texto={l.objeto}
+                  limite={170}
+                  className="mt-1 font-editorial text-sm leading-snug text-ink/80"
+                />
                 <p className="num mt-1 text-xs text-muted">
                   {l.modalidade}
                   {l.propostas_ate && (
@@ -319,9 +322,11 @@ function Contratos() {
                     {c.valor ? formataReaisCompacto(c.valor) : "—"}
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 font-editorial text-sm leading-snug text-ink/80" title={c.objeto}>
-                  {c.objeto}
-                </p>
+                <LerMais
+                  texto={c.objeto}
+                  limite={170}
+                  className="mt-1 font-editorial text-sm leading-snug text-ink/80"
+                />
                 <p className="num mt-1 text-xs text-muted">
                   {[c.municipio, c.uf].filter(Boolean).join("/")}
                   {c.assinado_em && ` · assinado em ${formataData(c.assinado_em)}`}

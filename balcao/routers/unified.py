@@ -14,6 +14,7 @@ from balcao.normalize import so_digitos
 
 from balcao.search import (
     arrecadacao_ente,
+    arrecadacao_todas_esferas,
     busca_unificada,
     gastos_deputado,
     ranking_arrecadacao,
@@ -208,6 +209,42 @@ async def fornecedor(request: Request, cnpj: str) -> FornecedorOut:
         },
     )
     if not erros:
+        cache.guarda(chave, resposta)
+    return resposta
+
+
+class TodasEsferasOut(BaseModel):
+    """O bolo tributario somado de verdade: Uniao + 27 estados + 27 capitais,
+    balanco a balanco do SICONFI (municipios do interior declaradamente fora)."""
+
+    ano: int
+    uniao: str
+    estados: str
+    capitais: str
+    total: str
+    entes_somados: int
+    meta: dict = Field(default_factory=dict)
+
+
+@router.get("/arrecadacao/geral", response_model=TodasEsferasOut)
+async def arrecadacao_geral(
+    request: Request,
+    ano: int | None = Query(None, ge=2013, description="vazio = o exercício anterior ao corrente"),
+) -> TodasEsferasOut:
+    ano = ano or date.today().year - 1
+    # 55 consultas ao SICONFI: cacheia o pacote com carinho
+    cache = request.app.state.cache
+    chave = cache.chave("_todas_esferas", str(ano), {})
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    tesouro = request.app.state.connectors["tesouro"]
+    resultado = await arrecadacao_todas_esferas(tesouro, ano)
+    resposta = TodasEsferasOut(**resultado)
+    if resultado["entes_somados"]:
         cache.guarda(chave, resposta)
     return resposta
 

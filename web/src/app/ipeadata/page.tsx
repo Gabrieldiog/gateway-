@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SerieChart } from "@/components/SerieChart";
 import { SeloFonte } from "@/components/SeloFonte";
+import { LerMais } from "@/components/LerMais";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
@@ -108,7 +109,9 @@ export default function CadernoIpea() {
                         ativo ? "border-accent/40 bg-surface" : "border-transparent hover:bg-surface/70"
                       }`}
                     >
-                      <span className="line-clamp-2 text-sm text-ink/90">{s.nome}</span>
+                      <span className="line-clamp-2 text-sm text-ink/90" title={s.nome}>
+                        {s.nome}
+                      </span>
                       <span className="num text-xs text-muted">
                         {[s.periodicidade, s.fonte_dados].filter(Boolean).join(" · ")}
                         {!s.ativa && " · descontinuada"}
@@ -127,6 +130,11 @@ export default function CadernoIpea() {
             <Vazio>escolha uma série.</Vazio>
           ) : (
             <Card className="overflow-hidden p-5 pt-6">
+              <LerMais
+                texto={sel.nome}
+                limite={90}
+                className="mb-2 pl-5 font-editorial text-[1.02rem] leading-snug text-ink"
+              />
               <div className="mb-4 flex flex-wrap items-end justify-between gap-4 pl-5">
                 {ultimo ? (
                   <Kpi

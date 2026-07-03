@@ -75,3 +75,17 @@ async def test_gastos_resolve_deputado_por_nome(api):
     corpo = resp.json()
     assert corpo["deputado"]["id"] in {221328, 204528, 204554}
     assert corpo["valor_total"] == "730.5"
+
+
+async def test_arrecadacao_todas_esferas_soma_os_55_balancos(api):
+    from decimal import Decimal
+
+    resp = await api.get("/v1/arrecadacao/geral?ano=2023")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    # Uniao + 27 estados + 27 capitais, todos com balanco na fixture
+    assert corpo["entes_somados"] == 55
+    soma = Decimal(corpo["uniao"]) + Decimal(corpo["estados"]) + Decimal(corpo["capitais"])
+    assert Decimal(corpo["total"]) == soma
+    assert Decimal(corpo["uniao"]) > 0
+    assert Decimal(corpo["capitais"]) > 0
