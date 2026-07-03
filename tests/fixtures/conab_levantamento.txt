@@ -1,0 +1,7 @@
+ano_agricola;safra;uf;produto;id_produto;id_levantamento;dsc_levantamento;area_plantada_mil_ha;producao_mil_t;produtividade_mil_ha
+2024/25             ;UNICA          ;MT;SOJA                ;4787; 012;12º LEV             ;12000;43000;3.58
+2025/26             ;UNICA          ;MT;SOJA                ;4787; 009;9º LEV              ;12500;45000;3.6
+2025/26             ;UNICA          ;PR;SOJA                ;4787; 009;9º LEV              ;5800;22000;3.79
+2025/26             ;1ª SAFRA       ;MT;MILHO               ;4785; 009;9º LEV              ;120;800;6.67
+2025/26             ;2ª SAFRA       ;MT;MILHO               ;4785; 009;9º LEV              ;7300;52000;7.12
+2025/26             ;UNICA          ;GO;ARROZ               ;4770; 009;9º LEV              ;20;150;7.5

@@ -49,6 +49,12 @@ ROTAS_FAKE = [
     ("https://apidadosabertos.saude.gov.br/cnes/estabelecimentos", "sus_estabelecimentos"),
     ("https://apisidra.ibge.gov.br/values/t/1612", "sidra_producao"),
     ("https://apisidra.ibge.gov.br/values/t/3939", "sidra_rebanho"),
+    ("https://apisidra.ibge.gov.br/values/t/6588", "sidra_safra"),
+    ("https://apisidra.ibge.gov.br/values/t/1092", "sidra_abate"),
+    ("https://apisidra.ibge.gov.br/values/t/1093", "sidra_abate"),
+    ("https://apisidra.ibge.gov.br/values/t/1094", "sidra_abate"),
+    ("https://apisidra.ibge.gov.br/values/t/1086", "sidra_leite"),
+    ("https://apisidra.ibge.gov.br/values/t/5457", "sidra_municipios"),
     ("http://www.ipeadata.gov.br/api/odata4/Metadados", "ipeadata_series"),
     ("http://www.ipeadata.gov.br/api/odata4/ValoresSerie", "ipeadata_valores"),
 ]
@@ -96,6 +102,10 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # BCB Olinda — ranking de juros por banco (taxaJuros v2)
     if "servico/taxaJuros" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_juros"))
+    # CONAB — arquivos TXT em latin-1 (o conector decodifica dos bytes)
+    if "portaldeinformacoes.conab.gov.br" in url:
+        arquivo = "conab_levantamento.txt" if "LevantamentoGraos" in url else "conab_precos.txt"
+        return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     # PNCP operacional (/api/pncp): itens da compra e resultado por item
     if "pncp.gov.br/api/pncp/v1/orgaos" in url:
         if "/resultados" in url:

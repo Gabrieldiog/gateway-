@@ -1,0 +1,39 @@
+[
+ {
+  "NC": "Nível",
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Mês (Código)",
+  "D3N": "Mês",
+  "D4C": "Produto (Código)",
+  "D4N": "Produto",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1N": "Brasil",
+  "D2C": "151",
+  "D2N": "Número de informantes",
+  "D3N": "1º trimestre 2026",
+  "V": "1118",
+  "MN": "Unidades"
+ },
+ {
+  "D1N": "Brasil",
+  "D2C": "284",
+  "D2N": "Animais abatidos",
+  "D3N": "1º trimestre 2026",
+  "V": "10289201",
+  "MN": "Cabeças"
+ },
+ {
+  "D1N": "Brasil",
+  "D2C": "285",
+  "D2N": "Peso total das carcaças",
+  "D3N": "1º trimestre 2026",
+  "V": "2634899004",
+  "MN": "Quilogramas"
+ }
+]

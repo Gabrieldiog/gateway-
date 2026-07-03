@@ -1,0 +1,31 @@
+[
+ {
+  "NC": "Nível",
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Mês (Código)",
+  "D3N": "Mês",
+  "D4C": "Produto (Código)",
+  "D4N": "Produto",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1N": "Brasil",
+  "D2C": "282",
+  "D2N": "Leite cru adquirido",
+  "D3N": "1º trimestre 2026",
+  "V": "6780958",
+  "MN": "Mil litros"
+ },
+ {
+  "D1N": "Brasil",
+  "D2C": "2522",
+  "D2N": "Preço médio",
+  "D3N": "1º trimestre 2026",
+  "V": "2.24",
+  "MN": "Reais por litro"
+ }
+]

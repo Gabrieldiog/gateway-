@@ -1,0 +1,48 @@
+[
+ {
+  "NC": "Nível",
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Mês (Código)",
+  "D3N": "Mês",
+  "D4C": "Produto (Código)",
+  "D4N": "Produto",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1C": "1",
+  "D1N": "Brasil",
+  "D2C": "35",
+  "D2N": "Produção",
+  "D3C": "202605",
+  "D3N": "maio 2026",
+  "D4N": "Soja (em grão)",
+  "V": "174587586",
+  "MN": "Toneladas"
+ },
+ {
+  "D1C": "1",
+  "D1N": "Brasil",
+  "D2C": "109",
+  "D2N": "Área plantada",
+  "D3C": "202605",
+  "D3N": "maio 2026",
+  "D4N": "Soja (em grão)",
+  "V": "48300000",
+  "MN": "Hectares"
+ },
+ {
+  "D1C": "1",
+  "D1N": "Brasil",
+  "D2C": "36",
+  "D2N": "Rendimento médio",
+  "D3C": "202605",
+  "D3N": "maio 2026",
+  "D4N": "Soja (em grão)",
+  "V": "3617",
+  "MN": "kg/ha"
+ }
+]

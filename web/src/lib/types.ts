@@ -623,6 +623,52 @@ export interface VinculosEmpresa {
   flags: Record<string, boolean>;
 }
 
+export interface SafraMensal {
+  fonte: string;
+  produto: string;
+  mes: string; // AAAAMM do levantamento
+  localidade: string;
+  area_plantada_ha: number | null;
+  producao_t: number | null;
+  rendimento_kg_ha: number | null;
+}
+
+export interface Abate {
+  fonte: string;
+  tipo: string;
+  trimestre: string;
+  animais: number | null;
+  peso_kg: number | null;
+}
+
+export interface Leite {
+  fonte: string;
+  trimestre: string;
+  localidade: string;
+  litros: number | null;
+  preco_medio: number | null;
+}
+
+export interface SafraConab {
+  fonte: string;
+  ano_agricola: string;
+  levantamento: string;
+  produto: string;
+  uf: string | null;
+  area_mil_ha: number | null;
+  producao_mil_t: number | null;
+  produtividade: number | null;
+}
+
+export interface PrecoAgro {
+  fonte: string;
+  produto: string;
+  uf: string;
+  nivel: string | null;
+  periodo: string; // AAAA-MM
+  valor_kg: number | null;
+}
+
 export interface FornecedorOut {
   cnpj: string;
   cadastro: FichaEmpresa | null;

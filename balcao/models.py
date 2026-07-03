@@ -655,6 +655,60 @@ class FichaEmpresa(BaseModel):
     socios: list[str] = []
 
 
+class SafraMensal(BaseModel):
+    """A estimativa do LSPA/IBGE pra safra em curso — revisada todo mês."""
+
+    fonte: str = "sidra"
+    produto: str
+    mes: str  # AAAAMM do levantamento
+    localidade: str
+    area_plantada_ha: float | None = None
+    producao_t: float | None = None
+    rendimento_kg_ha: float | None = None
+
+
+class Abate(BaseModel):
+    """Quantos animais o Brasil abateu no trimestre (pesquisa do IBGE)."""
+
+    fonte: str = "sidra"
+    tipo: str  # bovino, suino, frango
+    trimestre: str
+    animais: float | None = None
+    peso_kg: float | None = None
+
+
+class Leite(BaseModel):
+    fonte: str = "sidra"
+    trimestre: str
+    localidade: str = "Brasil"
+    litros: float | None = None
+    preco_medio: float | None = None  # R$/litro pago ao produtor
+
+
+class SafraConab(BaseModel):
+    """Uma linha do levantamento mensal de grãos da CONAB."""
+
+    fonte: str = "conab"
+    ano_agricola: str  # "2025/26"
+    levantamento: str  # "9º LEV"
+    produto: str
+    uf: str | None = None  # None = Brasil (somado)
+    area_mil_ha: float | None = None
+    producao_mil_t: float | None = None
+    produtividade: float | None = None  # t/ha
+
+
+class PrecoAgro(BaseModel):
+    """Preço médio de mercado apurado pela CONAB, normalizado por kg."""
+
+    fonte: str = "conab"
+    produto: str
+    uf: str
+    nivel: str | None = None  # ex: preço pago ao produtor
+    periodo: str  # AAAA-MM
+    valor_kg: float | None = None
+
+
 class ContratoFederal(BaseModel):
     """Um contrato do governo federal com um CNPJ/CPF (Transparência)."""
 

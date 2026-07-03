@@ -1,0 +1,48 @@
+[
+ {
+  "NC": "Nível",
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Mês (Código)",
+  "D3N": "Mês",
+  "D4C": "Produto (Código)",
+  "D4N": "Produto",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1C": "5107925",
+  "D1N": "Sorriso (MT)",
+  "D2C": "214",
+  "D2N": "Quantidade produzida",
+  "D3C": "2024",
+  "D3N": "2024",
+  "D4N": "Soja (em grão)",
+  "V": "2084520",
+  "MN": "Toneladas"
+ },
+ {
+  "D1C": "5107248",
+  "D1N": "Querência (MT)",
+  "D2C": "214",
+  "D2N": "Quantidade produzida",
+  "D3C": "2024",
+  "D3N": "2024",
+  "D4N": "Soja (em grão)",
+  "V": "1500000",
+  "MN": "Toneladas"
+ },
+ {
+  "D1C": "5106224",
+  "D1N": "Nova Mutum (MT)",
+  "D2C": "214",
+  "D2N": "Quantidade produzida",
+  "D3C": "2024",
+  "D3N": "2024",
+  "D4N": "Soja (em grão)",
+  "V": "1200000",
+  "MN": "Toneladas"
+ }
+]

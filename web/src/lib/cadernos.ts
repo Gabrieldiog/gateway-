@@ -66,7 +66,7 @@ export const GRUPOS: Grupo[] = [
     cadernos: [
       { num: "VII", nome: "Saúde", sub: "estabelecimentos do SUS", href: "/saude" },
       { num: "XIX", nome: "Dengue", sub: "alerta por cidade, semana a semana", href: "/dengue" },
-      { num: "IX", nome: "Agro", sub: "produção e rebanho", href: "/agro" },
+      { num: "IX", nome: "Agro", sub: "safra de agora, preços e rebanho", href: "/agro" },
     ],
   },
   {
