@@ -6,10 +6,17 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SerieChart } from "@/components/SerieChart";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoIpea, SerieIpea } from "@/lib/types";
+
+const FONTE_IPEA = {
+  nome: "IPEADATA — Instituto de Pesquisa Econômica Aplicada",
+  url: "http://www.ipeadata.gov.br/",
+  nota: "Milhares de séries históricas da economia brasileira mantidas pelo IPEA, servidas via OData e normalizadas pelo Balcão.",
+};
 
 const JANELAS = [24, 48, 120];
 
@@ -164,6 +171,8 @@ export default function CadernoIpea() {
           )}
         </div>
       </div>
+
+      <SeloFonte fonte={FONTE_IPEA} />
     </div>
   );
 }

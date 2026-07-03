@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -97,8 +98,8 @@ function Balanca() {
               })}
             </div>
             <p className="mt-5 border-t border-line pt-3 font-editorial text-sm italic text-muted">
-              Verde: exportações · rosa: importações. Valores em dólares FOB, fechados mês a mês pela
-              Secretaria de Comércio Exterior.
+              Verde: exportações · rosa: importações. Valores em dólares{" "}
+              <Termo t="fob">FOB</Termo>, fechados mês a mês pela Secretaria de Comércio Exterior.
             </p>
           </Card>
         </EmTransicao>

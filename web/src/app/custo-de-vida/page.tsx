@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
@@ -41,7 +42,9 @@ function CartaoHoje({ ind, destaque }: { ind: IndicadorEconomico; destaque?: boo
   const valor = Number(ind.valor);
   return (
     <Card className={`p-4 pt-5 ${destaque ? "border-accent/45" : ""}`}>
-      <p className="kicker mb-2 pl-4">{ind.nome}</p>
+      <p className="kicker mb-2 pl-4">
+        <Termo t={ind.chave}>{ind.nome}</Termo>
+      </p>
       <p
         className={`num tabular-nums pl-4 text-3xl font-semibold leading-none tracking-tight ${
           destaque ? "text-accent" : "text-ink"
@@ -153,7 +156,7 @@ export default function CadernoCustoDeVida() {
               O que o mercado espera
             </h2>
             <p className="mt-1 max-w-[52ch] font-editorial text-sm text-ink/70">
-              Projeção mediana dos analistas para {ano}
+              Projeção mediana do <Termo t="focus">Boletim Focus</Termo> para {ano}
               {coleta && (
                 <>
                   {" "}

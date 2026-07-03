@@ -5,10 +5,17 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import type { IndicadorAgro, NormalizedResponse } from "@/lib/types";
+
+const FONTE_SIDRA = {
+  nome: "IBGE — SIDRA (PAM e PPM)",
+  url: "https://sidra.ibge.gov.br/",
+  nota: "Produção Agrícola Municipal e Pesquisa da Pecuária Municipal do IBGE. O SIDRA fala em códigos de tabela — o Balcão traduz e devolve o ranking pronto.",
+};
 
 const PRODUTOS: [string, string][] = [
   ["soja", "soja"], ["milho", "milho"], ["cana", "cana-de-açúcar"], ["algodao", "algodão"],
@@ -165,6 +172,8 @@ export default function CadernoAgro() {
           )}
         </div>
       </Card>
+
+      <SeloFonte fonte={FONTE_SIDRA} />
     </div>
   );
 }

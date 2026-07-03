@@ -4,10 +4,17 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, Votacao } from "@/lib/types";
+
+const FONTE_CAMARA = {
+  nome: "Câmara dos Deputados — Dados Abertos",
+  url: "https://dadosabertos.camara.leg.br/",
+  nota: "Votações e proposições em tramitação, direto da API oficial da Câmara — o que o plenário decidiu e o que está na fila.",
+};
 
 interface Proposicao {
   fonte: string;
@@ -217,6 +224,8 @@ export default function CadernoPauta() {
       </div>
 
       {aba === "votacoes" ? <Votacoes dias={dias} /> : <Proposicoes dias={dias} />}
+
+      <SeloFonte fonte={FONTE_CAMARA} />
     </div>
   );
 }

@@ -4,11 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { BadgeAoVivo } from "@/components/Frescor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useTicker } from "@/hooks/useTicker";
 import { caminho } from "@/lib/api";
 import type { Acao, Cotacao, NormalizedResponse } from "@/lib/types";
+
+const FONTE_CAMBIO = {
+  nome: "AwesomeAPI — cotações em tempo real",
+  url: "https://docs.awesomeapi.com.br/",
+  nota: "Câmbio, ouro e cripto atualizados a cada poucos segundos. O dólar oficial de referência (PTAX) é o do Banco Central; este aqui é o mercado se mexendo ao vivo.",
+};
+
+const FONTE_BOLSA = {
+  nome: "brapi — dados da B3",
+  url: "https://brapi.dev/",
+  nota: "Ibovespa e ações da bolsa brasileira. No plano gratuito os preços chegam com ~15 minutos de atraso — por isso a bolsa não leva selo de ao vivo.",
+};
 
 const PARES = "USD-BRL,EUR-BRL,GBP-BRL,XAU-BRL,BTC-BRL,ETH-BRL,SOL-BRL";
 const INTERVALO = 20000; // 20s
@@ -191,6 +204,9 @@ export default function CadernoPulso() {
         oficial do Banco Central (PTAX) fica no caderno do Banco Central — ele muda só algumas vezes
         ao dia.
       </p>
+
+      <SeloFonte fonte={FONTE_CAMBIO} />
+      <SeloFonte fonte={FONTE_BOLSA} />
     </div>
   );
 }

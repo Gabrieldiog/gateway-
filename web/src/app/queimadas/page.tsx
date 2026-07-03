@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { Kpi } from "@/components/Kpi";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
@@ -110,11 +111,14 @@ export default function CadernoQueimadas() {
         </div>
       </div>
 
-      <div className="mb-3">
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <BadgeFrescor
           rotulo="satélite · atualiza ao longo do dia"
           detalhe={offset === 0 ? "o dia de hoje ainda está enchendo" : undefined}
         />
+        <span className="num text-xs uppercase tracking-wider text-muted">
+          <Termo t="focos">o que é um foco?</Termo>
+        </span>
       </div>
 
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">

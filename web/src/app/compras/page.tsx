@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
@@ -94,6 +95,9 @@ function Licitacoes() {
             <option key={u}>{u}</option>
           ))}
         </Seletor>
+        <span className="num text-xs uppercase tracking-wider text-muted">
+          <Termo t="pregao">pregão?</Termo> · <Termo t="dispensa">dispensa?</Termo>
+        </span>
         <Carimbo fonte="PNCP" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 

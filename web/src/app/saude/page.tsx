@@ -5,11 +5,18 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
 import type { Estabelecimento, NormalizedResponse } from "@/lib/types";
+
+const FONTE_CNES = {
+  nome: "Ministério da Saúde — CNES",
+  url: "https://cnes.datasus.gov.br/",
+  nota: "O Cadastro Nacional de Estabelecimentos de Saúde: os 350 mil+ hospitais, UBS e clínicas do país, servidos pela API de dados abertos do Ministério da Saúde.",
+};
 
 // os tipos mais procurados do CNES; o código é o que o filtro espera
 const TIPOS = [
@@ -154,6 +161,8 @@ export default function CadernoSaude() {
           </button>
         </div>
       )}
+
+      <SeloFonte fonte={FONTE_CNES} />
     </div>
   );
 }

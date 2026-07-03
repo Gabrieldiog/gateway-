@@ -5,11 +5,18 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Carimbo } from "@/components/Carimbo";
 import { AzulejoGlifo } from "@/components/Azulejo";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
 import type { Estado, Municipio, NormalizedResponse } from "@/lib/types";
+
+const FONTE_IBGE = {
+  nome: "IBGE — API de Localidades",
+  url: "https://servicodados.ibge.gov.br/api/docs/localidades",
+  nota: "Estados e municípios oficiais do Brasil. Na fonte, a UF de um município mora três níveis abaixo do aninhamento — o Balcão aplaina e devolve com sigla e região no primeiro nível.",
+};
 
 type Modo = "estados" | "municipios";
 
@@ -56,6 +63,8 @@ export default function CadernoIbge() {
       </div>
 
       {modo === "estados" ? <Estados /> : <Municipios uf={uf} />}
+
+      <SeloFonte fonte={FONTE_IBGE} />
     </div>
   );
 }

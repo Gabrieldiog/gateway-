@@ -4,10 +4,17 @@ import { useEffect, useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import type { DatasetCKAN, NormalizedResponse } from "@/lib/types";
+
+const FONTE_CKAN = {
+  nome: "dados.gov.br e portais CKAN dos órgãos (ANEEL, ANTT, MME)",
+  url: "https://dados.gov.br/",
+  nota: "Catálogos oficiais de dados abertos, consultados direto na API CKAN de cada órgão.",
+};
 
 const PORTAIS = [
   { id: "aneel", nome: "ANEEL", sub: "energia elétrica" },
@@ -130,6 +137,8 @@ export default function CadernoDados() {
           )}
         </div>
       </div>
+
+      <SeloFonte fonte={FONTE_CKAN} />
     </div>
   );
 }
