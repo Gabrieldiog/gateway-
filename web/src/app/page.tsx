@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AgoraBrasil } from "@/components/AgoraBrasil";
 import { BuscaUnificada } from "@/components/BuscaUnificada";
 import { Escala } from "@/components/Escala";
 import { TEMAS } from "@/lib/cadernos";
@@ -22,9 +23,11 @@ export default function Capa() {
         e quando foi atualizado.
       </p>
 
-      <div className="regua-dupla desenha-regua my-7" />
+      <div className="my-7">
+        <AgoraBrasil />
+      </div>
 
-      <section>
+      <section className="mt-12">
         <p className="kicker mb-3 flex items-center gap-2">
           <AzulejoGlifo size={14} className="text-accent-2/60" />
           Comece perguntando
@@ -59,11 +62,12 @@ export default function Capa() {
                 )}
               </div>
               <div className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-3">
-                {g.cadernos.map((c) => (
+                {g.cadernos.map((c, i) => (
                   <Link
                     key={c.href}
                     href={c.href}
-                    className="group flex items-baseline gap-3 bg-surface p-4 transition-colors hover:bg-surface-2"
+                    className="imprime group flex items-baseline gap-3 bg-surface p-4 transition-colors hover:bg-surface-2"
+                    style={{ animationDelay: `${i * 60}ms` }}
                   >
                     <span className="num shrink-0 text-sm text-accent">{c.num}</span>
                     <span className="min-w-0">

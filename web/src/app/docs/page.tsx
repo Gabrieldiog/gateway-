@@ -1,6 +1,7 @@
 import { CadernoHeader } from "@/components/Caderno";
 import { AzulejoGlifo } from "@/components/Azulejo";
 import { Configurador } from "@/components/Configurador";
+import { PromptIA } from "@/components/PromptIA";
 
 // uma linha de exemplo: curl + url com o path em tinta e a query em destaque
 function Linha({ nota, url }: { nota?: string; url: string }) {
@@ -54,6 +55,33 @@ export default function CadernoDocs() {
         titulo="Como chamar o Balcão"
         resumo="Tudo que o jornal mostra sai desta API — e ela é sua também. Uma URL para cada coisa, todas no mesmo formato: você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."
       />
+
+      <section className="mb-6 rounded-lg border border-accent/30 bg-accent/5 p-6">
+        <p className="kicker mb-3 flex items-center gap-2 text-accent">
+          <AzulejoGlifo size={14} className="text-accent/60" />
+          Comece em 30 segundos
+        </p>
+        <ol className="flex flex-col gap-2.5 font-editorial text-[1.02rem] leading-relaxed text-ink/85">
+          <li>
+            <span className="num mr-2 text-accent">1.</span>
+            Pergunte à API o que ela sabe fazer:{" "}
+            <code className="num text-sm text-accent">curl localhost:8000/v1/fontes</code> — vêm
+            as 25 fontes, cada uma com seus recursos e filtros.
+          </li>
+          <li>
+            <span className="num mr-2 text-accent">2.</span>
+            Chame um recurso:{" "}
+            <code className="num text-sm text-accent">curl &quot;localhost:8000/v1/bacen/selic?ultimos=5&quot;</code>
+            . Sem chave, sem cadastro, sem SDK.
+          </li>
+          <li>
+            <span className="num mr-2 text-accent">3.</span>
+            Leia o envelope: <code className="num text-sm">dados</code> é sempre uma lista
+            normalizada, <code className="num text-sm">meta</code> conta a história (cache,
+            paginação, fonte oficial). Só isso.
+          </li>
+        </ol>
+      </section>
 
       <section className="mb-2 rounded-lg border border-line bg-surface p-6">
         <p className="kicker mb-4 flex items-center gap-2">
@@ -152,6 +180,78 @@ export default function CadernoDocs() {
           </li>
         </ul>
       </section>
+
+      <section className="mt-6 rounded-lg border border-line bg-surface p-6">
+        <p className="kicker mb-3 flex items-center gap-2">
+          <AzulejoGlifo size={14} className="text-accent-2/60" />
+          Quando algo dá errado
+        </p>
+        <p className="mb-4 max-w-[64ch] font-editorial text-[1.02rem] leading-relaxed text-ink/80">
+          Todo erro volta como JSON com a chave <code className="num text-sm">erro</code> em
+          português e, quando faz sentido, um <code className="num text-sm">detalhes</code> com o
+          caminho da correção. Os códigos:
+        </p>
+        <div className="flex flex-col gap-2">
+          <Erro codigo="400" nome="filtro inválido">
+            você mandou um parâmetro que o recurso não aceita — a resposta lista os aceitos.
+            Corrija e repita.
+          </Erro>
+          <Erro codigo="404" nome="não existe">
+            fonte, recurso ou dado inexistente — inclusive quando o órgão ainda não publicou o
+            arquivo daquele dia.
+          </Erro>
+          <Erro codigo="429" nome="calma">
+            passou de 100 chamadas por minuto. Espere alguns segundos; para varreduras, use o
+            cache a seu favor (chamadas idênticas nem contam contra a fonte).
+          </Erro>
+          <Erro codigo="502" nome="fonte fora do ar">
+            a API do órgão caiu — comum e passageiro. O gateway já tentou 3 vezes com backoff;
+            se tiver cópia recente, responde 200 com <code className="num text-xs">meta.cache: &quot;stale&quot;</code>.
+            Tente de novo em instantes.
+          </Erro>
+          <Erro codigo="503" nome="falta chave">
+            essa fonte exige chave de API (grátis) que não está configurada no servidor —
+            veja o <code className="num text-xs">.env.example</code> do repositório.
+          </Erro>
+        </div>
+        <p className="mt-4 border-t border-line pt-3 font-editorial text-sm italic text-muted">
+          Tudo é GET e idempotente: repetir uma chamada nunca muda nada. TTL do cache: 10
+          minutos (dados ao vivo não são cacheados).
+        </p>
+      </section>
+
+      <section className="mt-6">
+        <p className="kicker mb-2 flex items-center gap-2">
+          <AzulejoGlifo size={14} className="text-accent-2/60" />
+          Quer uma ajudinha nossa?
+        </p>
+        <p className="mb-4 max-w-[64ch] font-editorial text-[1.05rem] leading-relaxed text-ink/80">
+          Se você for usar uma IA (Claude, ChatGPT, Gemini…) pra explorar o Balcão, não
+          precisa explicar nada pra ela: copie o prompt abaixo e cole na conversa. Ele ensina a
+          API inteira e — a parte boa — instrui a IA a <em>narrar o que está fazendo</em> a
+          cada passo: o que vai buscar, o que veio, e o que aconteceu quando der erro. Você
+          nunca fica no escuro.
+        </p>
+        <PromptIA />
+      </section>
+    </div>
+  );
+}
+
+function Erro({
+  codigo,
+  nome,
+  children,
+}: {
+  codigo: string;
+  nome: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-baseline gap-3 rounded-md border border-line bg-bg px-4 py-2.5">
+      <span className="num shrink-0 text-sm font-semibold text-accent">{codigo}</span>
+      <span className="num shrink-0 text-xs uppercase tracking-wider text-muted">{nome}</span>
+      <span className="text-sm leading-relaxed text-ink/80">{children}</span>
     </div>
   );
 }
