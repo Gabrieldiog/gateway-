@@ -11,7 +11,9 @@ não os 300MB de um json.load), servindo qualquer deputado instantâneo depois. 
 
 import asyncio
 import io
+import time
 from dataclasses import dataclass
+from datetime import date
 
 import httpx
 import ijson
@@ -58,22 +60,33 @@ def _monta(votos_bytes: bytes, votacoes_bytes: bytes, ano: int) -> IndiceAno:
 class ArquivoVotos:
     BASE = "https://dadosabertos.camara.leg.br/arquivos"
     MAX_ANOS = 2  # quantos anos manter indexados em memória
+    # o arquivo do ano corrente cresce a cada sessão do plenário: o índice
+    # dele vence e é remontado sozinho. Ano fechado é história — não vence.
+    FRESCOR_ANO_CORRENTE = 6 * 3600.0
 
-    def __init__(self, client: httpx.AsyncClient):
+    def __init__(self, client: httpx.AsyncClient, relogio=time.monotonic):
         self.client = client
-        self._cache: dict[int, IndiceAno] = {}
+        self._relogio = relogio
+        self._cache: dict[int, tuple[IndiceAno, float]] = {}
         self._locks: dict[int, asyncio.Lock] = {}
 
+    def _vencido(self, ano: int, montado_em: float) -> bool:
+        if ano < date.today().year:
+            return False
+        return self._relogio() - montado_em > self.FRESCOR_ANO_CORRENTE
+
     async def indice(self, ano: int) -> IndiceAno:
-        if ano in self._cache:
-            return self._cache[ano]
+        guardado = self._cache.get(ano)
+        if guardado and not self._vencido(ano, guardado[1]):
+            return guardado[0]
         # o lock evita dois requests baixarem o mesmo arquivo de 70MB ao mesmo tempo
         lock = self._locks.setdefault(ano, asyncio.Lock())
         async with lock:
-            if ano in self._cache:
-                return self._cache[ano]
+            guardado = self._cache.get(ano)
+            if guardado and not self._vencido(ano, guardado[1]):
+                return guardado[0]
             idx = await self._baixa_e_monta(ano)
-            self._cache[ano] = idx
+            self._cache[ano] = (idx, self._relogio())
             while len(self._cache) > self.MAX_ANOS:  # descarta o ano mais antigo
                 del self._cache[next(iter(self._cache))]
             return idx
