@@ -38,6 +38,7 @@ ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8/orientacoes", "camara_orientacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8", "camara_votacao_detalhe"),
     ("https://brasilapi.com.br/api/cnpj/v1/", "brasilapi_cnpj"),
+    ("https://api.obrasgov.gestao.gov.br/obrasgov/api/execucao-financeira", "obrasgov_execucao"),
     ("https://api.obrasgov.gestao.gov.br/obrasgov/api/projeto-investimento", "obrasgov_obras"),
     ("https://api.queridodiario.ok.org.br/gazettes", "qd_gazettes"),
     ("https://api.queridodiario.ok.org.br/cities", "qd_cities"),

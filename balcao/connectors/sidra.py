@@ -67,13 +67,13 @@ FONTE_CENSO = {
 
 FONTE_PIB = {
     "nome": "IBGE — PIB dos Municípios",
-    "url": "https://www.ibge.gov.br/estatisticas/economicas/contas-nacionais/9088-produto-interno-bruto-dos-municipios.html",
+    "url": "https://sidra.ibge.gov.br/pesquisa/pib-munic",
     "nota": "As contas municipais oficiais, publicadas com cerca de dois anos de defasagem — o retrato mais recente que existe.",
 }
 
 FONTE_TRIMESTRAIS = {
     "nome": "IBGE — pesquisas trimestrais do abate e do leite",
-    "url": "https://sidra.ibge.gov.br/pesquisa/abate-de-animais",
+    "url": "https://sidra.ibge.gov.br/pesquisa/abate",
     "nota": "Declaração obrigatória de frigoríficos e laticínios sob inspeção sanitária, consolidada por trimestre.",
 }
 

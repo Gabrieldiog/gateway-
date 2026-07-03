@@ -1,0 +1,26 @@
+{
+ "content": [
+  {
+   "nrNotaEmpenho": null,
+   "numeroNotaEmpenhoGerada": "2025NE000300",
+   "fonteRecurso": "0100",
+   "naturezaDespesa": "449051",
+   "ugEmitente": 160017,
+   "nomeFavorecido": "CONSTRUTORA EXEMPLO LTDA",
+   "valorEmpenho": 4891825.69,
+   "idProjetoInvestimento": "33266.16-49"
+  },
+  {
+   "nrNotaEmpenho": null,
+   "numeroNotaEmpenhoGerada": null,
+   "fonteRecurso": "0100",
+   "naturezaDespesa": "449051",
+   "ugEmitente": 160017,
+   "nomeFavorecido": "CONSTRUTORA EXEMPLO LTDA",
+   "valorEmpenho": 1000000.0,
+   "idProjetoInvestimento": "33266.16-49"
+  }
+ ],
+ "totalElements": 2,
+ "last": true
+}
