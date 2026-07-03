@@ -41,6 +41,7 @@ export const GRUPOS: Grupo[] = [
       { num: "XX", nome: "Comércio Exterior", sub: "balança comercial e parceiros", href: "/comercio" },
       { num: "XXI", nome: "Combustíveis", sub: "gasolina, etanol e gás por estado", href: "/combustiveis" },
       { num: "XXII", nome: "Títulos Públicos", sub: "Tesouro Direto: taxa e preço do dia", href: "/titulos" },
+      { num: "XXXII", nome: "Consumidor", sub: "os bancos que mais geram reclamação", href: "/consumidor" },
       { num: "IV", nome: "Banco Central", sub: "séries econômicas", href: "/bacen" },
       { num: "X", nome: "IPEADATA", sub: "séries da economia", href: "/ipeadata" },
     ],

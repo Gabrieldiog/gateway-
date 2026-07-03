@@ -886,3 +886,18 @@ class MedicaoReservatorio(BaseModel):
     cota: float | None = None  # nível da água, em metros
     afluencia: float | None = None  # m³/s entrando
     defluencia: float | None = None  # m³/s saindo
+
+
+class RankingReclamacao(BaseModel):
+    """Uma instituição no ranking oficial de reclamações do Banco Central."""
+
+    fonte: str = "bacen"
+    posicao: int | None = None  # só quem tem índice entra na fila
+    instituicao: str
+    indice: float | None = None  # reclamações procedentes por 1 milhão de clientes
+    top15: bool = False  # o BC destaca os 15 grandes (mais de 4 mi de clientes)
+    reclamacoes_procedentes: int | None = None
+    reclamacoes_respondidas: int | None = None
+    reclamacoes_analisadas: int | None = None
+    clientes: int | None = None
+    periodo: str

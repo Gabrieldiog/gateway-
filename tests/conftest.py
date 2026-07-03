@@ -112,6 +112,13 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # BCB Olinda — ranking de juros por banco (taxaJuros v2)
     if "servico/taxaJuros" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_juros"))
+    # BCB rdrweb — ranking de reclamações: o CSV é latin-1 (header mente UTF-8)
+    # e consórcio fala outro dialeto de colunas
+    if "rdrweb/rest/ext/ranking/arquivo" in url:
+        arquivo = "bacen_reclamacoes_consorcio.csv" if "Consorcios" in url else "bacen_reclamacoes.csv"
+        return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
+    if "rdrweb/rest/ext/ranking" in url:
+        return httpx.Response(200, json=carrega_fixture("bacen_reclamacoes_lista"))
     # ANA/SAR — última medição é JSON; lista e histórico são páginas HTML
     if "ana.gov.br/sar/restportal" in url:
         return httpx.Response(200, json=carrega_fixture("ana_ultima"))
