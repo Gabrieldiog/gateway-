@@ -6,6 +6,7 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
@@ -18,6 +19,18 @@ import type {
   VotoDeputado,
   VotosParlamentarOut,
 } from "@/lib/types";
+
+const FONTE_CAMARA = {
+  nome: "Câmara dos Deputados — Dados Abertos",
+  url: "https://dadosabertos.camara.leg.br/",
+  nota: "Cada voto nominal de cada deputado, direto da API oficial da Câmara.",
+};
+
+const FONTE_SENADO = {
+  nome: "Senado Federal — Dados Abertos Legislativos",
+  url: "https://legis.senado.leg.br/dadosabertos/",
+  nota: "As votações nominais do plenário do Senado, direto da API oficial.",
+};
 
 // ordem e cor de cada tipo de voto
 const ORDEM = ["Sim", "Não", "Abstenção", "Obstrução"];
@@ -465,6 +478,8 @@ function PorParlamentar() {
           ) : null}
         </div>
       </div>
+
+      <SeloFonte fonte={casa === "camara" ? FONTE_CAMARA : FONTE_SENADO} />
     </div>
   );
 }

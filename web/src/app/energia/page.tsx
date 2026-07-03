@@ -5,6 +5,7 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { BadgeAoVivo } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useTicker } from "@/hooks/useTicker";
@@ -111,7 +112,9 @@ function MixFontes({ sin }: { sin: GeracaoEnergia }) {
 function Subsistemas({ regioes }: { regioes: GeracaoEnergia[] }) {
   return (
     <div className="mt-6">
-      <p className="kicker mb-3">por subsistema</p>
+      <p className="kicker mb-3">
+        por subsistema do <Termo t="sin">SIN</Termo>
+      </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {regioes.map((r) => (
           <Card key={r.regiao} className="p-4 pt-5">

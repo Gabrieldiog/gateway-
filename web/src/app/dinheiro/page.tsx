@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
@@ -98,6 +99,10 @@ function Emendas() {
         >
           filtrar
         </button>
+        <span className="num text-xs uppercase tracking-wider text-muted">
+          <Termo t="emenda">o que é emenda?</Termo> · <Termo t="empenhado">empenhado</Termo> vs{" "}
+          <Termo t="pago">pago</Termo>
+        </span>
         <Carimbo fonte="CGU" ms={r.ms} erro={!!r.erro} />
       </form>
 
@@ -192,8 +197,8 @@ function Sancoes() {
 
       {!consultado ? (
         <Vazio>
-          digite um CNPJ ou CPF pra saber se está no CEIS (impedidos de contratar) ou no CNEP
-          (punidos pela Lei Anticorrupção).
+          digite um CNPJ ou CPF pra saber se está no <Termo t="ceis">CEIS</Termo> (impedidos de
+          contratar) ou no <Termo t="cnep">CNEP</Termo> (punidos pela Lei Anticorrupção).
         </Vazio>
       ) : r.erro ? (
         <ErroBox erro={r.erro} aoTentar={r.recarregar} />

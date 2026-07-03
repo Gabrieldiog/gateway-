@@ -7,6 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
@@ -114,7 +115,9 @@ export default function CadernoDengue() {
                   <p className="num text-3xl font-semibold text-ink">{inteiro(atual.casos)}</p>
                 </div>
                 <div>
-                  <p className="kicker mb-1">Rt</p>
+                  <p className="kicker mb-1">
+                    <Termo t="rt">Rt</Termo>
+                  </p>
                   <p className={`num text-3xl font-semibold ${(atual.rt ?? 0) > 1 ? "text-rose-600" : "text-ink"}`}>
                     {atual.rt?.toFixed(2) ?? "—"}
                   </p>
@@ -140,8 +143,8 @@ export default function CadernoDengue() {
               })}
             </div>
             <p className="mt-4 border-t border-line pt-3 font-editorial text-sm italic text-muted">
-              As semanas recentes são estimativa (nowcast) — o modelo corrige o atraso de notificação,
-              então os números se ajustam a cada atualização.
+              As semanas recentes são estimativa (<Termo t="nowcast">nowcast</Termo>) — o modelo
+              corrige o atraso de notificação, então os números se ajustam a cada atualização.
             </p>
           </Card>
         </EmTransicao>

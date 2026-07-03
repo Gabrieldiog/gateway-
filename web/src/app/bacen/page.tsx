@@ -6,10 +6,17 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { SerieChart } from "@/components/SerieChart";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoSerie } from "@/lib/types";
+
+const FONTE_BACEN = {
+  nome: "Banco Central — Sistema Gerenciador de Séries (SGS)",
+  url: "https://www3.bcb.gov.br/sgspub/",
+  nota: "As séries oficiais do Banco Central — Selic, IPCA, câmbio e mais de 190 indicadores. O Balcão entrega os pontos já normalizados, com data em ISO.",
+};
 
 const SERIES = [
   { id: "selic", nome: "Selic", unidade: "% a.a." },
@@ -116,6 +123,8 @@ export default function CadernoBacen() {
           )}
         </Card>
       )}
+
+      <SeloFonte fonte={FONTE_BACEN} />
     </div>
   );
 }

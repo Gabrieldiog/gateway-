@@ -6,11 +6,18 @@ import { CadernoHeader } from "@/components/Caderno";
 import { Carimbo } from "@/components/Carimbo";
 import { AzulejoGlifo } from "@/components/Azulejo";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
 import type { NormalizedResponse, Senador } from "@/lib/types";
+
+const FONTE_SENADO = {
+  nome: "Senado Federal — Dados Abertos Legislativos",
+  url: "https://legis.senado.leg.br/dadosabertos/",
+  nota: "Lista oficial de senadores em exercício, direto da API do Senado. O Balcão pede JSON, desembrulha o envelope triplo e aplica os filtros de UF e partido.",
+};
 
 export default function CadernoSenado() {
   const [uf, setUf] = useState("");
@@ -87,6 +94,8 @@ export default function CadernoSenado() {
           ))}
         </div>
       )}
+
+      <SeloFonte fonte={FONTE_SENADO} />
     </div>
   );
 }

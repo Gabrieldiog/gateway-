@@ -8,12 +8,20 @@ import { Carimbo } from "@/components/Carimbo";
 import { Kpi } from "@/components/Kpi";
 import { BarrasGasto } from "@/components/BarrasGasto";
 import { Seletor } from "@/components/Seletor";
+import { SeloFonte } from "@/components/SeloFonte";
+import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { apiGet, caminho, formataBRL } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
 import { PARTIDOS } from "@/lib/partidos";
 import type { Deputado, GastosOut, NormalizedResponse } from "@/lib/types";
+
+const FONTE_CAMARA = {
+  nome: "Câmara dos Deputados — Dados Abertos",
+  url: "https://dadosabertos.camara.leg.br/",
+  nota: "Deputados em exercício e a cota parlamentar (CEAP) de cada um, agregada por tipo de despesa — direto da API oficial da Câmara.",
+};
 
 // "todos" agrega o mandato inteiro (legislatura 57)
 type AnoSel = number | "todos";
@@ -136,7 +144,9 @@ export default function CadernoCamara() {
         {/* painel de gastos do selecionado */}
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <p className="kicker">Cota parlamentar</p>
+            <p className="kicker">
+              <Termo t="ceap">Cota parlamentar</Termo>
+            </p>
             <div className="flex gap-1">
               {OPCOES_ANO.map((a) => (
                 <button
@@ -161,6 +171,8 @@ export default function CadernoCamara() {
           )}
         </div>
       </div>
+
+      <SeloFonte fonte={FONTE_CAMARA} />
     </div>
   );
 }
