@@ -60,7 +60,11 @@ class BaseConnector(ABC):
         headers: dict | None = None,
     ) -> httpx.Response:
         if self.breaker.aberto:
-            raise ErroUpstream(self.name, circuito_aberto=True)
+            raise ErroUpstream(
+                self.name,
+                circuito_aberto=True,
+                tente_em_s=max(1, round(self.breaker.restante)),
+            )
         # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar.
         # headers extras servem pras fontes com chave (Transparencia, brapi)
         extra: dict = {} if timeout is None else {"timeout": timeout}

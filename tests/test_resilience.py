@@ -50,11 +50,14 @@ async def test_breaker_abre_e_para_de_chamar_a_fonte():
     assert breaker.aberto
     chamadas_antes = contagem["chamadas"]
 
-    # circuito aberto: erro imediato, sem nem tentar a fonte
+    # circuito aberto: erro imediato, sem nem tentar a fonte — e o erro
+    # ja diz em quantos segundos vale voltar
     with pytest.raises(ErroUpstream) as exc:
         await conector.fetch("deputados")
     assert contagem["chamadas"] == chamadas_antes
     assert exc.value.detalhes.get("circuito") == "aberto"
+    assert exc.value.detalhes.get("passageiro") is True
+    assert 0 < exc.value.detalhes.get("tente_em_s") <= 30
 
 
 async def test_breaker_fecha_depois_do_cooldown():
@@ -99,6 +102,8 @@ async def test_fonte_caida_serve_do_cache_stale():
         assert segunda.status_code == 200
         assert segunda.json()["meta"]["cache"] == "stale"
         assert "aviso" in segunda.json()["meta"]
+        # o carimbo de honestidade: de quando e o dado servido do arquivo
+        assert "salvo_em" in segunda.json()["meta"]
         assert segunda.json()["dados"] == primeira.json()["dados"]
         await morto.aclose()
     await cliente_fake.aclose()
@@ -127,3 +132,18 @@ async def test_fonte_caida_sem_stale_da_erro_limpo(api):
     corpo = resp.json()
     assert "erro" in corpo
     assert corpo["detalhes"]["fonte"] == "senado"
+    # a falha se declara passageira e sugere quando tentar de novo
+    assert corpo["detalhes"]["passageiro"] is True
+    assert corpo["detalhes"]["tente_em_s"] > 0
+
+
+def test_breaker_informa_quanto_falta():
+    relogio = {"agora": 0.0}
+    breaker = CircuitBreaker(limite_falhas=1, cooldown=30.0, timer=lambda: relogio["agora"])
+    assert breaker.restante == 0.0
+    breaker.registra_falha()
+    assert breaker.aberto
+    relogio["agora"] = 12.0
+    assert breaker.restante == 18.0
+    relogio["agora"] = 31.0
+    assert breaker.restante == 0.0
