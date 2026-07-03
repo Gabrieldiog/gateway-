@@ -19,6 +19,7 @@ export const NOME_FONTE: Record<string, string> = {
   infodengue: "o InfoDengue (Fiocruz)",
   inpe: "o INPE",
   ipeadata: "o IPEADATA",
+  loterias: "as Loterias CAIXA",
   mme: "o Ministério de Minas e Energia",
   obrasgov: "o Obrasgov (Ministério da Gestão)",
   ons: "o ONS",

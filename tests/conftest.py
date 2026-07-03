@@ -119,6 +119,19 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     if "rdrweb/rest/ext/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_reclamacoes_lista"))
+    # Loterias CAIXA — resultado por jogo
+    if "servicebus2.caixa.gov.br/portaldeloterias" in url:
+        arquivo = "loterias_duplasena" if "/duplasena" in url else "loterias_megasena"
+        return httpx.Response(200, json=carrega_fixture(arquivo))
+    # IBGE Nomes (Censo 2010) — ranking, por UF e por década; nome raro = []
+    if "censos/nomes/ranking" in url:
+        return httpx.Response(200, json=carrega_fixture("nomes_ranking"))
+    if "censos/nomes/" in url:
+        if "ZZZ" in url.upper():
+            return httpx.Response(200, json=[])
+        if "groupBy=UF" in url:
+            return httpx.Response(200, json=carrega_fixture("nomes_gabriel_uf"))
+        return httpx.Response(200, json=carrega_fixture("nomes_gabriel"))
     # ANA/SAR — última medição é JSON; lista e histórico são páginas HTML
     if "ana.gov.br/sar/restportal" in url:
         return httpx.Response(200, json=carrega_fixture("ana_ultima"))

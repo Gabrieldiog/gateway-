@@ -1,0 +1,21 @@
+[
+ {
+  "nome": "GABRIEL",
+  "sexo": null,
+  "localidade": "BR",
+  "res": [
+   {
+    "periodo": "1930[",
+    "frequencia": 1267
+   },
+   {
+    "periodo": "[1990,2000[",
+    "frequencia": 271405
+   },
+   {
+    "periodo": "[2000,2010[",
+    "frequencia": 584024
+   }
+  ]
+ }
+]

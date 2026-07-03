@@ -1,0 +1,32 @@
+[
+ {
+  "localidade": "53",
+  "res": [
+   {
+    "populacao": 2570160,
+    "frequencia": 17035,
+    "proporcao": 662.8
+   }
+  ]
+ },
+ {
+  "localidade": "35",
+  "res": [
+   {
+    "populacao": 41262199,
+    "frequencia": 256498,
+    "proporcao": 621.64
+   }
+  ]
+ },
+ {
+  "localidade": "99",
+  "res": [
+   {
+    "populacao": 1,
+    "frequencia": 1,
+    "proporcao": 1.0
+   }
+  ]
+ }
+]

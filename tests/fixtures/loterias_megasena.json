@@ -1,0 +1,35 @@
+{
+ "numero": 3026,
+ "dataApuracao": "02/07/2026",
+ "listaDezenas": [
+  "14",
+  "19",
+  "42",
+  "45",
+  "48",
+  "54"
+ ],
+ "acumulado": true,
+ "valorArrecadado": 61969305.0,
+ "valorAcumuladoProximoConcurso": 25866273.14,
+ "valorEstimadoProximoConcurso": 33000000.0,
+ "dataProximoConcurso": "04/07/2026",
+ "listaRateioPremio": [
+  {
+   "descricaoFaixa": "6 acertos",
+   "numeroDeGanhadores": 0,
+   "valorPremio": 0.0
+  },
+  {
+   "descricaoFaixa": "5 acertos",
+   "numeroDeGanhadores": 40,
+   "valorPremio": 37029.54
+  },
+  {
+   "descricaoFaixa": "4 acertos",
+   "numeroDeGanhadores": 2517,
+   "valorPremio": 970.0
+  }
+ ],
+ "listaMunicipioUFGanhadores": []
+}

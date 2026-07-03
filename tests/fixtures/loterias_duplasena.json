@@ -1,0 +1,36 @@
+{
+ "numero": 2977,
+ "dataApuracao": "01/07/2026",
+ "listaDezenas": [
+  "02",
+  "06",
+  "20",
+  "26",
+  "49",
+  "50"
+ ],
+ "listaDezenasSegundoSorteio": [
+  "05",
+  "17",
+  "22",
+  "26",
+  "36",
+  "38"
+ ],
+ "acumulado": false,
+ "valorEstimadoProximoConcurso": 4700000.0,
+ "listaRateioPremio": [
+  {
+   "descricaoFaixa": "Sena 1º sorteio",
+   "numeroDeGanhadores": 1,
+   "valorPremio": 3521958.35
+  }
+ ],
+ "listaMunicipioUFGanhadores": [
+  {
+   "municipio": "GOIANIA",
+   "uf": "GO",
+   "ganhadores": 1
+  }
+ ]
+}

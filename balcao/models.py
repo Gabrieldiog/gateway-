@@ -901,3 +901,51 @@ class RankingReclamacao(BaseModel):
     reclamacoes_analisadas: int | None = None
     clientes: int | None = None
     periodo: str
+
+
+class SorteioLoteria(BaseModel):
+    """Um concurso das Loterias CAIXA, com rateio e a estimativa do próximo."""
+
+    fonte: str = "loterias"
+    jogo: str
+    nome_jogo: str
+    concurso: int
+    data: date | None = None
+    dezenas: list[str] = []
+    dezenas_2: list[str] | None = None  # a Dupla Sena sorteia duas vezes
+    extra: str | None = None  # Mês da Sorte / Time do Coração
+    acumulado: bool = False
+    premios: list[dict] = []  # faixa, ganhadores, valor
+    cidades_ganhadoras: list[dict] = []
+    arrecadacao: Decimal | None = None
+    acumulado_proximo: Decimal | None = None
+    estimativa_proximo: Decimal | None = None
+    data_proximo: date | None = None
+
+
+class FrequenciaNome(BaseModel):
+    """Quantos brasileiros nasceram com um nome numa década (Censo 2010)."""
+
+    fonte: str = "ibge"
+    nome: str
+    decada: str  # "1990" ou "até 1930"
+    frequencia: int
+
+
+class NomeNoEstado(BaseModel):
+    """A força de um nome em cada estado, por 100 mil habitantes."""
+
+    fonte: str = "ibge"
+    nome: str
+    uf: str
+    frequencia: int
+    por_100k: float | None = None
+
+
+class RankingNome(BaseModel):
+    """Uma posição no ranking dos nomes mais comuns do Brasil (Censo 2010)."""
+
+    fonte: str = "ibge"
+    posicao: int
+    nome: str
+    frequencia: int
