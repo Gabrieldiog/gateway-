@@ -5,6 +5,7 @@ todos aqui: valores em formato brasileiro ("8.000,00"), datas dd/mm/aaaa,
 paginação por número fixo e rate limit que muda por horário."""
 
 import asyncio
+from datetime import date, timedelta
 from typing import Any
 
 from balcao.config import get_settings
@@ -154,11 +155,28 @@ class TransparenciaConnector(BaseConnector):
         ibge = so_digitos(str(params.get("municipio", "")))
         if not ibge or len(ibge) != 7:
             raise ParametroInvalido(recurso, ["municipio"], ["municipio = código IBGE de 7 dígitos"])
-        mes = so_digitos(str(params.get("mes", "")))
-        if not mes or len(mes) != 6:
-            raise ParametroInvalido(recurso, ["mes"], ["mes = AAAAMM, ex 202605"])
-        consulta = {"codigoIbge": ibge, "mesAno": mes, "pagina": pagina}
-        bruto = await self._api("/novo-bolsa-familia-por-municipio", consulta)
+        mes_bruto = str(params.get("mes", "")).strip()
+        mes = so_digitos(mes_bruto) or ""
+        if mes_bruto and len(mes) != 6:
+            raise ParametroInvalido(
+                recurso, ["mes"], ["mes = AAAAMM (ex 202605) ou vazio pro mais recente"]
+            )
+        pedido_automatico = not mes
+        if mes:
+            consulta = {"codigoIbge": ibge, "mesAno": mes, "pagina": pagina}
+            bruto = await self._api("/novo-bolsa-familia-por-municipio", consulta)
+        else:
+            # walk-back: a folha fecha com ~2 meses de atraso e mes nao
+            # publicado volta 200 com lista vazia — recua ate achar dados
+            cursor = date.today().replace(day=1)
+            bruto = []
+            for _ in range(8):
+                mes = f"{cursor.year}{cursor.month:02d}"
+                consulta = {"codigoIbge": ibge, "mesAno": mes, "pagina": pagina}
+                bruto = await self._api("/novo-bolsa-familia-por-municipio", consulta)
+                if isinstance(bruto, list) and bruto:
+                    break
+                cursor = (cursor - timedelta(days=1)).replace(day=1)
 
         itens = []
         for b in bruto if isinstance(bruto, list) else []:
@@ -175,7 +193,12 @@ class TransparenciaConnector(BaseConnector):
                     valor=valor_br(b.get("valor")) or 0,
                 ).model_dump(mode="json")
             )
-        meta = {"municipio": ibge, "mes": mes, "fonte": FONTE}
+        meta = {
+            "municipio": ibge,
+            "mes": mes,
+            "mes_automatico": pedido_automatico,
+            "fonte": FONTE,
+        }
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )

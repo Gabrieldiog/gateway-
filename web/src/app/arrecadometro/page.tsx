@@ -9,6 +9,7 @@ import { SeloFonte } from "@/components/SeloFonte";
 import { useBalcao } from "@/hooks/useBalcao";
 import { useArrecadometro } from "@/hooks/useArrecadometro";
 import { caminho, escalaReais, formataReaisCompacto } from "@/lib/api";
+import { ANO_ATUAL } from "@/lib/datas";
 import { UFS, CAPITAIS } from "@/lib/ufs";
 import type { Arrecadacao, Municipio, NormalizedResponse } from "@/lib/types";
 
@@ -24,7 +25,7 @@ export default function CadernoArrecadometro() {
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS["GO"]);
   const [metrica, setMetrica] = useState("arrecadacao"); // arrecadacao | impostos | <sigla>
-  const [baseAno, setBaseAno] = useState(2025);
+  const [baseAno, setBaseAno] = useState(ANO_ATUAL);
 
   function escolheNivel(n: Nivel) {
     setNivel(n);
@@ -46,10 +47,13 @@ export default function CadernoArrecadometro() {
   const fin = arr.dados?.ente ?? null;
   const impostos = arr.dados?.impostos ?? [];
 
-  // ao trocar de ente tenta de novo o ano mais recente; se não houver, cai pra 2024
-  useEffect(() => setBaseAno(2025), [ente]);
+  // ao trocar de ente tenta de novo o ano corrente; se as contas ainda não
+  // fecharam, cai pro anterior — sem ano cravado, vira com o calendário
+  useEffect(() => setBaseAno(ANO_ATUAL), [ente]);
   useEffect(() => {
-    if (arr.dados && baseAno === 2025 && !arr.dados.ente?.arrecadacao_total) setBaseAno(2024);
+    if (arr.dados && baseAno === ANO_ATUAL && !arr.dados.ente?.arrecadacao_total) {
+      setBaseAno(ANO_ATUAL - 1);
+    }
   }, [arr.dados, baseAno]);
 
   // valor anual base conforme a métrica escolhida
@@ -76,7 +80,7 @@ export default function CadernoArrecadometro() {
         numero="XIII"
         kicker="ao vivo · estimado"
         titulo="Arrecadômetro"
-        resumo="Quanto o Brasil (ou um estado, ou uma cidade) já arrecadou em 2026, subindo a cada instante. Igual ao painel da Associação Comercial de SP: é o valor oficial do último ano projetado no tempo — estimativa, não medição por segundo (esse dado não existe)."
+        resumo={`Quanto o Brasil (ou um estado, ou uma cidade) já arrecadou em ${ANO_ATUAL}, subindo a cada instante. Igual ao painel da Associação Comercial de SP: é o valor oficial do último ano projetado no tempo — estimativa, não medição por segundo (esse dado não existe).`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -193,7 +197,7 @@ function Painel({
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
         </span>
         <span className="num text-xs uppercase tracking-wider text-muted">
-          {ente} · {metrica} · acumulado de 2026
+          {ente} · {metrica} · acumulado de {ANO_ATUAL}
         </span>
       </div>
 

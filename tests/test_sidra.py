@@ -30,6 +30,16 @@ async def test_rebanho(api):
     assert dados[0]["unidade"] == "Cabeças"
 
 
+async def test_sem_ano_pede_o_mais_recente(api):
+    # sem ano o conector consulta /p/last e o ano vem das proprias linhas
+    resp = await api.get("/v1/sidra/producao?produto=soja")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    assert corpo["meta"]["ano_automatico"] is True
+    assert corpo["meta"]["ano"] == 2023
+    assert corpo["dados"][0]["ano"] == 2023
+
+
 async def test_produto_invalido_da_400(api):
     resp = await api.get("/v1/sidra/producao?produto=banana")
     assert resp.status_code == 400

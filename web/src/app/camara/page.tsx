@@ -13,6 +13,7 @@ import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
 import { apiGet, caminho, formataBRL } from "@/lib/api";
+import { ANO_ATUAL, anos } from "@/lib/datas";
 import { UFS } from "@/lib/ufs";
 import { PARTIDOS } from "@/lib/partidos";
 import type { Deputado, GastosOut, NormalizedResponse } from "@/lib/types";
@@ -23,16 +24,17 @@ const FONTE_CAMARA = {
   nota: "Deputados em exercício e a cota parlamentar (CEAP) de cada um, agregada por tipo de despesa — direto da API oficial da Câmara.",
 };
 
-// "todos" agrega o mandato inteiro (legislatura 57)
+// "todos" agrega o mandato inteiro (legislatura 57, que começou em 2023);
+// as listas seguem o calendário sozinhas
 type AnoSel = number | "todos";
-const OPCOES_ANO: AnoSel[] = ["todos", 2026, 2025, 2024, 2023];
-const ANOS_MANDATO = [2023, 2024, 2025, 2026];
+const OPCOES_ANO: AnoSel[] = ["todos", ...anos(ANO_ATUAL, 2023)];
+const ANOS_MANDATO = anos(2023, ANO_ATUAL);
 
 export default function CadernoCamara() {
   const [uf, setUf] = useState("SP");
   const [partido, setPartido] = useState("");
   const [sel, setSel] = useState<Deputado | null>(null);
-  const [ano, setAno] = useState<AnoSel>(2024);
+  const [ano, setAno] = useState<AnoSel>(ANO_ATUAL);
 
   const lista = useBalcao<NormalizedResponse<Deputado>>(
     caminho("camara/deputados", { uf, partido: partido || undefined, itens: 30 }),
