@@ -13,6 +13,7 @@ import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataBRL, formataData, formataReaisCompacto } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
 import type {
+  ArquivoCompra,
   ContratoPublico,
   FonteDado,
   ItemCompra,
@@ -99,6 +100,30 @@ function Vencedor({ controle, item }: { controle: string; item: number }) {
             {v.data && <span className="ml-2">· {formataData(v.data)}</span>}
           </p>
         </div>
+      ))}
+    </div>
+  );
+}
+
+// os documentos da compra — o edital em PDF é o "ler tudo" de verdade
+function ArquivosDaCompra({ controle }: { controle: string }) {
+  const r = useBalcao<NormalizedResponse<ArquivoCompra>>(caminho("pncp/arquivos", { controle }));
+  const arquivos = r.dados?.dados ?? [];
+  if (r.erro || (r.carregando && !r.dados)) return null;
+  if (!arquivos.length) return null;
+  return (
+    <div className="mb-3 flex flex-wrap items-center gap-2">
+      <span className="kicker">documentos</span>
+      {arquivos.map((a, i) => (
+        <a
+          key={i}
+          href={a.url}
+          target="_blank"
+          rel="noreferrer"
+          className="num rounded-md border border-accent px-3 py-1 text-xs uppercase tracking-wider text-accent transition-colors hover:bg-accent hover:text-surface"
+        >
+          {a.titulo} (PDF) →
+        </a>
       ))}
     </div>
   );
@@ -261,6 +286,7 @@ function Licitacoes() {
                 </p>
                 {aberta === l.numero_controle && (
                   <div className="mt-3 border-t border-line/60 pt-3">
+                    <ArquivosDaCompra controle={l.numero_controle} />
                     <ItensDaCompra controle={l.numero_controle} />
                   </div>
                 )}

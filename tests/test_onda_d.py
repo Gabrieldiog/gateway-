@@ -135,3 +135,30 @@ async def test_ficha_do_fornecedor_junta_quatro_fontes(api):
     assert len(corpo["sancoes"]) == 2
     assert len(corpo["contratos"]) == 2
     assert corpo["erros"] == {}
+
+
+async def test_votacao_detalhe_conta_a_historia(api):
+    resp = await api.get("/v1/camara/votacoes/2629954-8")
+    v = resp.json()["dados"][0]
+    # "Aprovado o Parecer" deixa de ser enigma: o parecer e a PEC vêm juntos
+    assert v["parecer"].startswith("Parecer do Relator")
+    assert v["proposicoes"][0]["titulo"] == "PEC 231/2019"
+    assert "art. 159" in v["proposicoes"][0]["ementa"]
+
+
+async def test_proposicao_dossie(api):
+    resp = await api.get("/v1/camara/proposicoes/2234666")
+    p = resp.json()["dados"][0]
+    assert p["situacao"] == "Pronta para Pauta no Plenário"
+    assert p["orgao"] == "PLEN"
+    assert p["url_inteiro_teor"].startswith("https://www.camara.leg.br")
+    assert p["ementa_detalhada"].startswith("Aumenta")
+
+
+async def test_pncp_arquivos_da_compra(api):
+    resp = await api.get("/v1/pncp/arquivos?controle=76205699000198-1-000072/2026")
+    corpo = resp.json()
+    # só o ativo entra, com o nome legível do tipo (não o código)
+    assert corpo["total"] == 1
+    assert corpo["dados"][0]["titulo"] == "Edital"
+    assert corpo["dados"][0]["url"].endswith("/arquivos/1")

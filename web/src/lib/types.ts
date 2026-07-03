@@ -669,6 +669,47 @@ export interface PrecoAgro {
   valor_kg: number | null;
 }
 
+export interface ProposicaoResumo {
+  fonte: string;
+  id: number;
+  titulo: string; // "PEC 231/2019"
+  ementa: string | null;
+}
+
+export interface VotacaoCompleta {
+  fonte: string;
+  id: string;
+  data: string | null;
+  orgao: string | null;
+  descricao: string;
+  aprovada: boolean | null;
+  parecer: string | null; // o que exatamente foi votado
+  proposicoes: ProposicaoResumo[];
+}
+
+export interface ProposicaoDetalhe {
+  fonte: string;
+  id: number;
+  tipo: string;
+  numero: number | null;
+  ano: number | null;
+  ementa: string;
+  ementa_detalhada: string | null;
+  situacao: string | null;
+  tramitacao: string | null;
+  orgao: string | null;
+  regime: string | null;
+  despacho: string | null;
+  url_inteiro_teor: string | null;
+  keywords: string | null;
+}
+
+export interface ArquivoCompra {
+  fonte: string;
+  titulo: string;
+  url: string;
+}
+
 export interface TodasEsferasOut {
   ano: number;
   uniao: string;

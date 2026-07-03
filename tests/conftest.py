@@ -39,6 +39,7 @@ ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8", "camara_votacao_detalhe"),
     ("https://brasilapi.com.br/api/cnpj/v1/", "brasilapi_cnpj"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes", "camara_votacoes"),
+    ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/2234666", "camara_proposicao_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
     ("https://servicodados.ibge.gov.br/api/v1/localidades/estados/SP/municipios", "ibge_municipios_sp"),
@@ -106,10 +107,12 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     if "portaldeinformacoes.conab.gov.br" in url:
         arquivo = "conab_levantamento.txt" if "LevantamentoGraos" in url else "conab_precos.txt"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
-    # PNCP operacional (/api/pncp): itens da compra e resultado por item
+    # PNCP operacional (/api/pncp): itens, resultado por item e arquivos
     if "pncp.gov.br/api/pncp/v1/orgaos" in url:
         if "/resultados" in url:
             return httpx.Response(200, json=carrega_fixture("pncp_resultado"))
+        if "/arquivos" in url:
+            return httpx.Response(200, json=carrega_fixture("pncp_arquivos"))
         return httpx.Response(200, json=carrega_fixture("pncp_itens"))
     if "api.portaldatransparencia.gov.br" in url:
         if not request.headers.get("chave-api-dados"):

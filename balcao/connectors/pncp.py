@@ -11,7 +11,7 @@ from typing import Any
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import ContratoPublico, ItemCompra, Licitacao, VencedorItem
+from balcao.models import ArquivoCompra, ContratoPublico, ItemCompra, Licitacao, VencedorItem
 from balcao.normalize import limpa_texto, para_data, so_digitos
 
 # enum de modalidades da Lei 14.133 (manual do PNCP); o cliente usa o slug
@@ -59,6 +59,7 @@ class PncpConnector(BaseConnector):
         "contratos": "contratos assinados no período (params: de, ate, cnpj do órgão, pagina)",
         "itens": "o que está sendo comprado numa contratação, item a item (params: controle = numeroControlePNCP)",
         "resultado": "quem venceu um item: fornecedor, porte, valor homologado (params: controle, item)",
+        "arquivos": "os documentos da compra — edital e anexos em PDF (params: controle)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -70,6 +71,8 @@ class PncpConnector(BaseConnector):
                 return await self._contratos(recurso, params)
             case ["itens"]:
                 return await self._itens(recurso, params)
+            case ["arquivos"]:
+                return await self._arquivos(recurso, params)
             case ["resultado"]:
                 return await self._resultado(recurso, params)
             case _:
@@ -116,6 +119,34 @@ class PncpConnector(BaseConnector):
                 ).model_dump(mode="json")
             )
         meta = {"controle": controle, "pagina": pagina, "fonte": FONTE}
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _arquivos(self, recurso: str, params: dict) -> NormalizedResponse:
+        """Os documentos publicados junto da compra — o edital em PDF é a
+        leitura completa que a listagem não dá."""
+        self._valida(recurso, params, {"controle"})
+        controle = str(params.get("controle", ""))
+        cnpj, ano, seq = self._parse_controle(recurso, controle)
+        bruto = await self.get_json(
+            f"https://pncp.gov.br/api/pncp/v1/orgaos/{cnpj}/compras/{ano}/{seq}/arquivos",
+            params={"pagina": 1, "tamanhoPagina": 20},
+        )
+        itens = []
+        for a in bruto if isinstance(bruto, list) else []:
+            url = a.get("url") or a.get("uri")
+            if not url or a.get("statusAtivo") is False:
+                continue
+            # o campo titulo costuma ser um codigo; o nome legivel esta no tipo
+            tipo = limpa_texto(a.get("tipoDocumentoNome"))
+            itens.append(
+                ArquivoCompra(
+                    titulo=tipo or limpa_texto(a.get("titulo")) or "documento",
+                    url=url,
+                ).model_dump(mode="json")
+            )
+        meta = {"controle": controle, "fonte": FONTE}
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )

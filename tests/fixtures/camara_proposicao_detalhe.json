@@ -1,0 +1,21 @@
+{
+ "dados": {
+  "id": 2234666,
+  "siglaTipo": "PEC",
+  "numero": 231,
+  "ano": 2019,
+  "ementa": "Altera o art. 159 da Constituição Federal para disciplinar a distribuição de recursos pelos fundos de participação.",
+  "ementaDetalhada": "Aumenta em um ponto percentual o repasse ao Fundo de Participação dos Municípios.",
+  "keywords": "Constituição, FPM, municípios, repasse",
+  "urlInteiroTeor": "https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=999",
+  "statusProposicao": {
+   "descricaoSituacao": "Pronta para Pauta no Plenário",
+   "descricaoTramitacao": "Apresentação de Proposição",
+   "siglaOrgao": "PLEN",
+   "regime": "Especial (Art. 202 c/c 191, I, RICD)",
+   "despacho": "À CCJC",
+   "dataHora": "2026-06-03T12:00"
+  }
+ },
+ "links": []
+}

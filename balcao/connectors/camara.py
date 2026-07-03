@@ -13,7 +13,10 @@ from balcao.models import (
     OrientacaoBancada,
     PerfilDeputado,
     Proposicao,
+    ProposicaoDetalhe,
+    ProposicaoResumo,
     Votacao,
+    VotacaoCompleta,
     VotoDeputado,
 )
 from balcao.normalize import limpa_texto, normaliza_uf, para_data, so_digitos
@@ -70,7 +73,8 @@ class CamaraConnector(BaseConnector):
         "deputados/{id}/despesas": f"despesas CEAP com a nota fiscal; filtros: {', '.join(PARAMS_DESPESAS)}",
         "deputados/{id}/discursos": "discursos com sumário e transcrição (params: de, ate = AAAA-MM-DD, itens)",
         "votacoes": f"votações; filtros: {', '.join(PARAMS_VOTACOES)}",
-        "votacoes/{id}": "detalhe de uma votação (placar, data, órgão)",
+        "votacoes/{id}": "a história da votação: parecer votado e proposições afetadas com ementa",
+        "proposicoes/{id}": "dossiê de um projeto: situação, onde está, regime e o texto integral",
         "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
         "votacoes/{id}/orientacoes": "como cada partido/bloco (e Governo/Oposição) orientou; só nas nominais",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
@@ -99,6 +103,8 @@ class CamaraConnector(BaseConnector):
                 return await self._votacao_detalhe(recurso, vid)
             case ["proposicoes"]:
                 return await self._proposicoes(recurso, params)
+            case ["proposicoes", pid] if pid.isdigit():
+                return await self._proposicao_detalhe(recurso, int(pid))
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
 
@@ -228,11 +234,64 @@ class CamaraConnector(BaseConnector):
 
     async def _votacao_detalhe(self, recurso: str, vid: str) -> NormalizedResponse:
         bruto = await self.get_json(f"/votacoes/{vid}")
-        dado = bruto.get("dados", {})
+        dado = bruto.get("dados", {}) or {}
+        base = self._norm_votacao(dado)
+        parecer = limpa_texto(
+            (dado.get("ultimaApresentacaoProposicao") or {}).get("descricao")
+        )
+        proposicoes = []
+        # afetadas contam a historia; sem elas, os objetos com ementa quebram o galho
+        candidatas = dado.get("proposicoesAfetadas") or [
+            p for p in (dado.get("objetosPossiveis") or []) if p.get("ementa")
+        ]
+        for p in candidatas[:5]:
+            ano = p.get("ano") or ""
+            titulo = f"{p.get('siglaTipo') or ''} {p.get('numero') or ''}".strip()
+            if ano and int(ano or 0) > 0:
+                titulo = f"{titulo}/{ano}"
+            try:
+                proposicoes.append(
+                    ProposicaoResumo(
+                        id=p["id"], titulo=titulo, ementa=limpa_texto(p.get("ementa")) or None
+                    )
+                )
+            except (ValidationError, KeyError):
+                continue
+        completa = VotacaoCompleta(
+            **base.model_dump(),
+            parecer=parecer or None,
+            proposicoes=proposicoes,
+        )
         return NormalizedResponse(
             fonte=self.name,
             recurso=recurso,
-            dados=[self._norm_votacao(dado).model_dump(mode="json")],
+            dados=[completa.model_dump(mode="json")],
+            total=1,
+        )
+
+    async def _proposicao_detalhe(self, recurso: str, pid: int) -> NormalizedResponse:
+        bruto = await self.get_json(f"/proposicoes/{pid}")
+        d = bruto.get("dados", {}) or {}
+        status = d.get("statusProposicao") or {}
+        detalhe = ProposicaoDetalhe(
+            id=d["id"],
+            tipo=d.get("siglaTipo") or "",
+            numero=d.get("numero"),
+            ano=d.get("ano") or None,
+            ementa=limpa_texto(d.get("ementa")),
+            ementa_detalhada=limpa_texto(d.get("ementaDetalhada")) or None,
+            situacao=limpa_texto(status.get("descricaoSituacao")) or None,
+            tramitacao=limpa_texto(status.get("descricaoTramitacao")) or None,
+            orgao=status.get("siglaOrgao") or None,
+            regime=limpa_texto(status.get("regime")) or None,
+            despacho=limpa_texto(status.get("despacho")) or None,
+            url_inteiro_teor=d.get("urlInteiroTeor") or None,
+            keywords=limpa_texto(d.get("keywords")) or None,
+        )
+        return NormalizedResponse(
+            fonte=self.name,
+            recurso=recurso,
+            dados=[detalhe.model_dump(mode="json")],
             total=1,
         )
 
