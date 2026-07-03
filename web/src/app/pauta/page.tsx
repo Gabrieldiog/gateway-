@@ -91,7 +91,7 @@ function MateriaDaVotacao({ id }: { id: string }) {
               href={`https://www.camara.leg.br/propostas-legislativas/${p.id}`}
               target="_blank"
               rel="noreferrer"
-              className="font-normal text-muted transition-colors hover:text-accent"
+              className="rounded-md border border-accent/50 px-2.5 py-0.5 font-normal text-accent transition-colors hover:bg-accent hover:text-surface"
             >
               tramitação completa →
             </a>
@@ -387,7 +387,7 @@ function Proposicoes({ dias }: { dias: number }) {
                     href={`https://www.camara.leg.br/propostas-legislativas/${p.id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-normal text-muted transition-colors hover:text-accent"
+                    className="rounded-md border border-accent/50 px-2.5 py-0.5 font-normal text-accent transition-colors hover:bg-accent hover:text-surface"
                   >
                     ver a tramitação na Câmara →
                   </a>

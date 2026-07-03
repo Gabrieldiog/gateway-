@@ -623,6 +623,26 @@ export interface VinculosEmpresa {
   flags: Record<string, boolean>;
 }
 
+export interface CensoCidade {
+  fonte: string;
+  municipio: string;
+  ibge: number | null;
+  ano: number;
+  populacao: number | null;
+  variacao_desde_2010: number | null;
+  crescimento_aa_pct: number | null;
+  domicilios: number | null;
+  moradores_por_domicilio: number | null;
+}
+
+export interface PibCidade {
+  fonte: string;
+  municipio: string;
+  ibge: number | null;
+  ano: number;
+  pib: string | null; // em reais
+}
+
 export interface SafraMensal {
   fonte: string;
   produto: string;

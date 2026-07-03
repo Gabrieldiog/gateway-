@@ -1,0 +1,21 @@
+[
+ {
+  "D1C": "Cód",
+  "D1N": "Local",
+  "D2C": "Var (Código)",
+  "D2N": "Variável",
+  "D3C": "Ano (Código)",
+  "D3N": "Ano",
+  "V": "Valor",
+  "MN": "Unidade"
+ },
+ {
+  "D1C": "3550308",
+  "D1N": "São Paulo (SP)",
+  "D2C": "37",
+  "D2N": "Produto Interno Bruto a preços correntes",
+  "D3C": "2023",
+  "V": "1066825105",
+  "MN": "Mil Reais"
+ }
+]
