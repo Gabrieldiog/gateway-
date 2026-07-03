@@ -19,6 +19,7 @@ export const NOME_FONTE: Record<string, string> = {
   inpe: "o INPE",
   ipeadata: "o IPEADATA",
   mme: "o Ministério de Minas e Energia",
+  obrasgov: "o Obrasgov (Ministério da Gestão)",
   ons: "o ONS",
   pncp: "o PNCP",
   senado: "o Senado Federal",

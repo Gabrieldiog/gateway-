@@ -59,6 +59,7 @@ export const GRUPOS: Grupo[] = [
     desc: "A máquina funcionando: a geração de energia do país em tempo real e os dados abertos de transporte.",
     cadernos: [
       { num: "XV", nome: "Energia", sub: "geração do país ao vivo", href: "/energia" },
+      { num: "XXX", nome: "Obras Públicas", sub: "as federais — inclusive as paradas", href: "/obras" },
       { num: "XI", nome: "Dados Abertos", sub: "energia, transporte (CKAN)", href: "/dados" },
     ],
   },
