@@ -53,7 +53,9 @@ class ChaveFaltando(BalcaoError):
 
 
 class ErroUpstream(BalcaoError):
-    """A fonte upstream falhou ou respondeu algo inesperado."""
+    """A fonte upstream falhou ou respondeu algo inesperado. Alem da mensagem,
+    os detalhes dizem ao cliente se a falha e passageira e quando vale tentar
+    de novo — e o que o ErroBox da view usa pra contagem regressiva."""
 
     status_code = 502
 
@@ -62,20 +64,31 @@ class ErroUpstream(BalcaoError):
         fonte: str,
         upstream_status: int | None = None,
         circuito_aberto: bool = False,
+        tente_em_s: int | None = None,
     ):
         detalhes: dict = {"fonte": fonte}
         if upstream_status == 404:
             # nao encontrado na fonte e um 404 nosso, nao falha de gateway
             self.status_code = 404
-            mensagem = f"nao encontrado na fonte {fonte!r}"
+            mensagem = (
+                f"nao encontrado na fonte {fonte!r} — o dado pode nao existir "
+                "ou o orgao ainda nao publicou esse recorte"
+            )
         elif circuito_aberto:
             mensagem = (
-                f"a fonte {fonte!r} esta suspensa por instabilidade, "
-                "tente de novo em instantes"
+                f"a fonte {fonte!r} falhou varias vezes seguidas e esta em pausa "
+                "pra nao sobrecarregar o orgao; em instantes tentamos de novo"
             )
             detalhes["circuito"] = "aberto"
+            detalhes["passageiro"] = True
+            detalhes["tente_em_s"] = tente_em_s or 30
         else:
-            mensagem = f"a fonte {fonte!r} esta indisponivel ou respondeu com erro"
+            mensagem = (
+                f"a fonte oficial {fonte!r} esta fora do ar ou respondeu com erro "
+                "— e comum em API de governo e costuma se resolver sozinho em minutos"
+            )
+            detalhes["passageiro"] = True
+            detalhes["tente_em_s"] = tente_em_s or 15
         if upstream_status:
             detalhes["status_upstream"] = upstream_status
         super().__init__(mensagem, detalhes)

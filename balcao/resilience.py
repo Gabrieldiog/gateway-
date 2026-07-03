@@ -53,6 +53,14 @@ class CircuitBreaker:
             return False
         return True
 
+    @property
+    def restante(self) -> float:
+        """Segundos ate a proxima sondagem — vira o 'tente de novo em Xs'
+        que o cliente mostra pro leitor."""
+        if self._aberto_em is None:
+            return 0.0
+        return max(0.0, self.cooldown - (self._timer() - self._aberto_em))
+
     def registra_sucesso(self) -> None:
         self._falhas = 0
         self._aberto_em = None

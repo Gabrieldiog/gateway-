@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Request
 
 from balcao.cache import CacheRespostas
@@ -34,13 +36,25 @@ async def consulta_fonte(fonte: str, recurso: str, request: Request) -> Normaliz
     try:
         resposta = await conector.fetch(recurso, **params)
     except ErroUpstream as exc:
-        # fonte caida: dado velho e melhor que erro, quando existir
-        velha = cache.pega_velho(chave)
-        if velha is None:
+        # fonte caida: dado velho e melhor que erro, quando existir — mas o
+        # leitor merece saber de quando ele e (salvo_em)
+        guardado = cache.pega_velho(chave)
+        if guardado is None:
             raise
+        velha, salvo_epoch = guardado
+        salvo_em = datetime.fromtimestamp(salvo_epoch).astimezone().isoformat(
+            timespec="seconds"
+        )
         request.state.cache = "stale"
         return velha.model_copy(
-            update={"meta": {**velha.meta, "cache": "stale", "aviso": exc.mensagem}}
+            update={
+                "meta": {
+                    **velha.meta,
+                    "cache": "stale",
+                    "aviso": exc.mensagem,
+                    "salvo_em": salvo_em,
+                }
+            }
         )
     cache.guarda(chave, resposta)
     return resposta
