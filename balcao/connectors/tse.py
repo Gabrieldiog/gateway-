@@ -11,6 +11,7 @@ import io
 import os
 import tempfile
 import zipfile
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,12 @@ from balcao.exceptions import ErroUpstream, ParametroInvalido, RecursoNaoEncontr
 from balcao.models import DoacaoAgregada
 from balcao.normalize import UFS, limpa_texto, valor_br
 
-ANOS = {2022, 2024}  # eleições gerais e municipais com prestação consolidada
+
+def anos_de_eleicao() -> set[int]:
+    """Eleicao a cada dois anos desde 2022. O ano corrente ja entra na lista:
+    quando o TSE publicar o arquivo da eleicao nova, funciona sem mexer em
+    codigo — ate la, o download responde erro limpo de nao publicado."""
+    return {a for a in range(2022, date.today().year + 1) if a % 2 == 0}
 NIVEIS = {"candidato", "partido", "doador", "origem"}
 
 PARAMS = {"ano", "uf", "por", "limit"}
@@ -71,9 +77,14 @@ class TseConnector(BaseConnector):
         uf = str(params.get("uf", "")).strip().upper()
         if uf not in UFS:
             raise ParametroInvalido(recurso, ["uf"], ["sigla de UF (obrigatória)"])
-        ano = params.get("ano", 2022)
-        if not str(ano).isdigit() or int(ano) not in ANOS:
-            raise ParametroInvalido(recurso, ["ano"], sorted(str(a) for a in ANOS))
+        # padrao: a ultima eleicao ja consolidada (a prestacao fecha no ano
+        # seguinte ao pleito); a eleicao do ano corrente pode ser pedida
+        # explicitamente assim que o TSE publicar
+        anos = anos_de_eleicao()
+        consolidadas = [a for a in anos if a < date.today().year] or [2022]
+        ano = params.get("ano", max(consolidadas))
+        if not str(ano).isdigit() or int(ano) not in anos:
+            raise ParametroInvalido(recurso, ["ano"], sorted(str(a) for a in anos))
         ano = int(ano)
         por = str(params.get("por", "candidato")).lower()
         if por not in NIVEIS:

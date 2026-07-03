@@ -39,11 +39,23 @@ async def test_tse_doacoes_por_candidato(api):
 
 
 async def test_tse_doacoes_por_doador_traz_documento(api):
-    resp = await api.get("/v1/tse/doacoes?uf=GO&por=doador")
+    resp = await api.get("/v1/tse/doacoes?uf=GO&por=doador&ano=2022")
     top = resp.json()["dados"][0]
     assert top["nome"] == "JOÃO DOADOR"
     assert top["detalhe"] == "00903149133"
     assert top["total"] == "21000.50"
+
+
+def test_tse_anos_de_eleicao_rolam_com_o_calendario():
+    from datetime import date
+
+    from balcao.connectors.tse import anos_de_eleicao
+
+    anos = anos_de_eleicao()
+    assert 2022 in anos and 2024 in anos
+    assert all(a % 2 == 0 for a in anos)
+    # nunca oferece eleição do futuro
+    assert max(anos) <= date.today().year
 
 
 async def test_tse_sem_uf_da_400(api):
