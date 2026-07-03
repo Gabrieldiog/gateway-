@@ -655,6 +655,45 @@ class FichaEmpresa(BaseModel):
     socios: list[str] = []
 
 
+class ProposicaoResumo(BaseModel):
+    """Uma proposição citada dentro de uma votação — o 'sobre o quê'."""
+
+    fonte: str = "camara"
+    id: int
+    titulo: str  # "PEC 231/2019"
+    ementa: str | None = None
+
+
+class VotacaoCompleta(Votacao):
+    """O detalhe que conta a história: o parecer votado e as proposições
+    afetadas com ementa — 'Aprovado o Parecer' deixa de ser enigma."""
+
+    parecer: str | None = None
+    proposicoes: list[ProposicaoResumo] = []
+
+
+class ProposicaoDetalhe(Proposicao):
+    """O dossiê de um projeto: onde está, com quem, em que regime e o link
+    pro texto integral."""
+
+    ementa_detalhada: str | None = None
+    situacao: str | None = None  # "Transformado em Norma Jurídica"
+    tramitacao: str | None = None
+    orgao: str | None = None  # onde está agora (sigla)
+    regime: str | None = None
+    despacho: str | None = None
+    url_inteiro_teor: str | None = None
+    keywords: str | None = None
+
+
+class ArquivoCompra(BaseModel):
+    """Um documento publicado junto da contratação no PNCP (edital, anexos)."""
+
+    fonte: str = "pncp"
+    titulo: str
+    url: str
+
+
 class SafraMensal(BaseModel):
     """A estimativa do LSPA/IBGE pra safra em curso — revisada todo mês."""
 

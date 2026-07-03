@@ -5,6 +5,22 @@
   "dataHoraRegistro": "2026-06-03T12:10:37",
   "siglaOrgao": "PLEN",
   "descricao": "Aprovado o Requerimento de Urgência (Art. 155 do RICD). Sim: 311; Não: 135; Abstenção: 2; Total: 448.",
-  "aprovacao": 1
+  "aprovacao": 1,
+  "ultimaApresentacaoProposicao": {
+   "dataHoraRegistro": "2026-06-03T12:00",
+   "descricao": "Parecer do Relator, Dep. Fulano (PP-GO), pela aprovação da PEC 231/19, na forma do substitutivo.",
+   "uriProposicaoCitada": null
+  },
+  "proposicoesAfetadas": [
+   {
+    "id": 2234666,
+    "siglaTipo": "PEC",
+    "numero": 231,
+    "ano": 2019,
+    "codTipo": 136,
+    "ementa": "Altera o art. 159 da Constituição Federal para disciplinar a distribuição de recursos pelos fundos de participação."
+   }
+  ],
+  "objetosPossiveis": []
  }
 }

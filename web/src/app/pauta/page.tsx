@@ -9,7 +9,13 @@ import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { LerMais } from "@/components/LerMais";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
-import type { NormalizedResponse, Votacao, VotoDeputado } from "@/lib/types";
+import type {
+  NormalizedResponse,
+  ProposicaoDetalhe,
+  Votacao,
+  VotacaoCompleta,
+  VotoDeputado,
+} from "@/lib/types";
 
 const FONTE_CAMARA = {
   nome: "Câmara dos Deputados — Dados Abertos",
@@ -47,6 +53,60 @@ function dataISO(diasAtras: number): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const dia = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${m}-${dia}`;
+}
+
+// a história por trás da votação: o parecer que foi votado e a(s)
+// proposição(ões) afetada(s), com ementa — "Aprovado o Parecer" deixa de
+// ser enigma
+function MateriaDaVotacao({ id }: { id: string }) {
+  const r = useBalcao<NormalizedResponse<VotacaoCompleta>>(caminho(`camara/votacoes/${id}`));
+  const v = r.dados?.dados?.[0];
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !v) return <Esqueleto linhas={2} />;
+  if (!v || (!v.parecer && !v.proposicoes.length)) {
+    return (
+      <p className="font-editorial text-sm italic text-muted">
+        a Câmara não detalhou a matéria desta votação.
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      {v.parecer && (
+        <div>
+          <p className="kicker mb-1">o que foi votado</p>
+          <LerMais
+            texto={v.parecer}
+            limite={260}
+            className="font-editorial text-sm leading-relaxed text-ink/90"
+          />
+        </div>
+      )}
+      {v.proposicoes.map((p) => (
+        <div key={p.id} className="rounded-md border border-line bg-surface p-3">
+          <p className="num flex flex-wrap items-baseline gap-x-3 text-xs font-semibold uppercase tracking-wider text-accent">
+            <span>{p.titulo}</span>
+            <a
+              href={`https://www.camara.leg.br/propostas-legislativas/${p.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="font-normal text-muted transition-colors hover:text-accent"
+            >
+              tramitação completa →
+            </a>
+          </p>
+          {p.ementa && (
+            <LerMais
+              texto={p.ementa}
+              limite={280}
+              className="mt-1 font-editorial text-sm leading-relaxed text-ink/85"
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 // o voto a voto de uma votação, aberto sob demanda — placar, quem foi a
@@ -171,12 +231,16 @@ function Votacoes({ dias }: { dias: number }) {
                       aria-expanded={aberta === v.id}
                       className="uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
                     >
-                      {aberta === v.id ? "fechar ▴" : "quem votou? ▸"}
+                      {aberta === v.id ? "fechar ▴" : "ler mais: a matéria e os votos ▸"}
                     </button>
                   </p>
                   {aberta === v.id && (
-                    <div className="mt-3 border-t border-line pt-3">
-                      <VotosDaVotacao id={v.id} />
+                    <div className="mt-3 flex flex-col gap-4 border-t border-line pt-3">
+                      <MateriaDaVotacao id={v.id} />
+                      <div>
+                        <p className="kicker mb-2">quem votou</p>
+                        <VotosDaVotacao id={v.id} />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -191,10 +255,70 @@ function Votacoes({ dias }: { dias: number }) {
   );
 }
 
+// o dossiê de um projeto: onde está, com quem, em que regime e o texto
+// integral — aberto sob demanda
+function DossieProposicao({ id }: { id: number }) {
+  const r = useBalcao<NormalizedResponse<ProposicaoDetalhe>>(caminho(`camara/proposicoes/${id}`));
+  const p = r.dados?.dados?.[0];
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !p) return <Esqueleto linhas={2} />;
+  if (!p) return null;
+  return (
+    <div className="flex flex-col gap-2">
+      {p.ementa_detalhada && (
+        <LerMais
+          texto={p.ementa_detalhada}
+          limite={300}
+          className="font-editorial text-sm leading-relaxed text-ink/90"
+        />
+      )}
+      <div className="flex flex-wrap gap-2">
+        {p.situacao && (
+          <span className="num rounded-full border border-accent-2/40 bg-accent-2/10 px-2.5 py-0.5 text-xs text-accent-2">
+            {p.situacao}
+          </span>
+        )}
+        {p.orgao && (
+          <span className="num rounded-full border border-line bg-surface px-2.5 py-0.5 text-xs text-ink/80">
+            está em: {p.orgao}
+          </span>
+        )}
+        {p.regime && (
+          <span className="num rounded-full border border-line bg-surface px-2.5 py-0.5 text-xs text-muted">
+            {p.regime}
+          </span>
+        )}
+      </div>
+      {p.despacho && (
+        <LerMais
+          texto={`Despacho: ${p.despacho}`}
+          limite={200}
+          className="font-editorial text-xs leading-relaxed text-muted"
+        />
+      )}
+      {p.keywords && (
+        <p className="num text-xs text-muted">temas: {p.keywords.toLowerCase()}</p>
+      )}
+      {p.url_inteiro_teor && (
+        <a
+          href={p.url_inteiro_teor}
+          target="_blank"
+          rel="noreferrer"
+          className="num w-fit rounded-md border border-accent px-3 py-1 text-xs uppercase tracking-wider text-accent transition-colors hover:bg-accent hover:text-surface"
+        >
+          ler o projeto na íntegra (PDF) →
+        </a>
+      )}
+    </div>
+  );
+}
+
 function Proposicoes({ dias }: { dias: number }) {
   const [tipo, setTipo] = useState("");
   const [busca, setBusca] = useState("");
   const [buscaAplicada, setBuscaAplicada] = useState("");
+  const [abertaProp, setAbertaProp] = useState<number | null>(null);
 
   const r = useBalcao<NormalizedResponse<Proposicao>>(
     caminho("camara/proposicoes", {
@@ -267,12 +391,24 @@ function Proposicoes({ dias }: { dias: number }) {
                   >
                     ver a tramitação na Câmara →
                   </a>
+                  <button
+                    onClick={() => setAbertaProp(abertaProp === p.id ? null : p.id)}
+                    aria-expanded={abertaProp === p.id}
+                    className="font-normal text-accent transition-colors hover:text-accent-2"
+                  >
+                    {abertaProp === p.id ? "fechar ▴" : "ler mais ▸"}
+                  </button>
                 </p>
                 <LerMais
                   texto={p.ementa}
                   limite={260}
                   className="mt-1 font-editorial text-sm leading-snug text-ink/90"
                 />
+                {abertaProp === p.id && (
+                  <div className="mt-3 border-t border-line pt-3">
+                    <DossieProposicao id={p.id} />
+                  </div>
+                )}
               </div>
             ))}
           </Card>

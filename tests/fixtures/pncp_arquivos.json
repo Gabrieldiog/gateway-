@@ -1,0 +1,16 @@
+[
+ {
+  "uri": "https://pncp.gov.br/pncp-api/v1/orgaos/76205699000198/compras/2026/72/arquivos/1",
+  "url": "https://pncp.gov.br/pncp-api/v1/orgaos/76205699000198/compras/2026/72/arquivos/1",
+  "statusAtivo": true,
+  "titulo": "98940305900872026000",
+  "tipoDocumentoNome": "Edital"
+ },
+ {
+  "uri": "https://pncp.gov.br/pncp-api/v1/orgaos/76205699000198/compras/2026/72/arquivos/2",
+  "url": "https://pncp.gov.br/pncp-api/v1/orgaos/76205699000198/compras/2026/72/arquivos/2",
+  "statusAtivo": false,
+  "titulo": "cancelado",
+  "tipoDocumentoNome": "Anexo"
+ }
+]
