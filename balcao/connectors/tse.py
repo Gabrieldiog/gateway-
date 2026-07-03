@@ -10,6 +10,7 @@ import csv
 import io
 import os
 import tempfile
+import time
 import zipfile
 from datetime import date
 from decimal import Decimal
@@ -112,14 +113,25 @@ class TseConnector(BaseConnector):
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )
 
+    def _zip_fresco(self, caminho: Path, ano: int) -> bool:
+        """Eleicao consolidada e imutavel: o ZIP baixado vale pra sempre. A
+        eleicao do ano corrente (campanha em andamento, o TSE atualiza o
+        arquivo) revalida a cada 24h pelo mtime."""
+        if not caminho.exists():
+            return False
+        if ano < date.today().year:
+            return True
+        return (time.time() - caminho.stat().st_mtime) < 24 * 3600
+
     async def _garante_zip(self, ano: int) -> Path:
-        """Baixa o ZIP do ano uma única vez, por streaming direto pro disco."""
+        """Baixa o ZIP do ano por streaming direto pro disco — uma vez pra
+        eleicao fechada, com revalidacao diaria pra eleicao em curso."""
         caminho = self.pasta / f"prestacao-{ano}.zip"
-        if caminho.exists():
+        if self._zip_fresco(caminho, ano):
             return caminho
         lock = self._locks.setdefault(ano, asyncio.Lock())
         async with lock:
-            if caminho.exists():
+            if self._zip_fresco(caminho, ano):
                 return caminho
             self.pasta.mkdir(parents=True, exist_ok=True)
             url = f"{self.base_url}/prestacao_de_contas_eleitorais_candidatos_{ano}.zip"
