@@ -1,4 +1,5 @@
 import re
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -54,7 +55,6 @@ FUNCAO = re.compile(r"^\d{2} - ")
 # "Prefeitura Municipal de Goiânia - GO" -> "Goiânia"
 PREFEITURA = re.compile(r"^Prefeitura Municipal d[aeo]s?\s+")
 SUFIXO_UF = re.compile(r"\s*-\s*[A-Z]{2}\s*$")
-ANO_PADRAO = 2023
 # o SICONFI responde devagar e manda relatórios grandes
 TIMEOUT = 45.0
 
@@ -124,7 +124,9 @@ class TesouroConnector(BaseConnector):
         return int(ibge)
 
     def _ano(self, recurso: str, params: dict) -> int:
-        ano = str(params.get("ano", ANO_PADRAO))
+        # contas anuais fecham no exercicio seguinte: sem parametro, o ano
+        # mais provavel de existir e o anterior ao corrente
+        ano = str(params.get("ano", date.today().year - 1))
         if not ano.isdigit():
             raise ParametroInvalido(recurso, ["ano"], ["ano"])
         return int(ano)
