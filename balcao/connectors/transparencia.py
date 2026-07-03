@@ -5,13 +5,14 @@ todos aqui: valores em formato brasileiro ("8.000,00"), datas dd/mm/aaaa,
 paginação por número fixo e rate limit que muda por horário."""
 
 import asyncio
+import json
 from datetime import date, timedelta
 from typing import Any
 
 from balcao.config import get_settings
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ChaveFaltando, ErroUpstream, ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import BeneficioSocial, ContratoFederal, DocumentoEmenda, Emenda, Sancao
+from balcao.models import BeneficioSocial, ContratoFederal, DocumentoEmenda, DocumentoSiafi, Emenda, Sancao
 from balcao.normalize import limpa_texto, para_data, so_digitos, valor_br
 
 FONTE = {
@@ -41,6 +42,10 @@ class TransparenciaConnector(BaseConnector):
         "sancoes": "CEIS + CNEP juntos: quem está punido (params: documento = CNPJ ou CPF, pagina)",
         "contratos": "contratos federais de um fornecedor (params: documento = CNPJ ou CPF, pagina)",
         "vinculos": "dossiê-relâmpago de um CNPJ: flags de relação com o governo federal (params: cnpj)",
+        "documento": (
+            "o detalhe de um documento do SIAFI: favorecido com CNPJ, valor e autor da "
+            "emenda (params: codigo = UG + gestão + nota, ex 175004000012019NE802642)"
+        ),
         "bolsa-familia": "folha do Novo Bolsa Família num município (params: municipio = código IBGE, mes = AAAAMM)",
     }
 
@@ -69,6 +74,8 @@ class TransparenciaConnector(BaseConnector):
                 return await self._contratos(recurso, params)
             case ["vinculos"]:
                 return await self._vinculos(recurso, params)
+            case ["documento"]:
+                return await self._documento(recurso, params)
             case ["bolsa-familia"] | ["bolsa_familia"]:
                 return await self._bolsa(recurso, params)
             case _:
@@ -78,6 +85,56 @@ class TransparenciaConnector(BaseConnector):
         return await self.get_json(
             path, params=consulta, timeout=30, headers={"chave-api-dados": self.chave}
         )
+
+    async def _documento(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._valida(recurso, params, {"codigo"})
+        codigo = str(params.get("codigo", "")).strip().upper()
+        exemplo = ["codigo = UG(6) + gestão(5) + nota (ex 175004000012019NE802642)"]
+        if len(codigo) < 17 or not codigo[:11].isdigit():
+            raise ParametroInvalido(recurso, ["codigo"], exemplo)
+        # documento inexistente (ou gestão errada no código) responde 200 com
+        # corpo VAZIO — vira aviso, não erro de parse
+        corpo = await self.get_text(
+            f"/despesas/documentos/{codigo}", timeout=30,
+            headers={"chave-api-dados": self.chave},
+        )
+        if not corpo.strip():
+            return NormalizedResponse(
+                fonte=self.name, recurso=recurso, dados=[], total=0,
+                meta={"codigo": codigo, "aviso": "documento não encontrado no SIAFI", "fonte": FONTE},
+            )
+        try:
+            bruto = json.loads(corpo)
+        except ValueError as exc:
+            raise ErroUpstream(self.name) from exc
+        # CPF de pessoa física vem mascarado ("***.680.938-**") e códigos
+        # internos vêm como "-1" ou "RB0000050" — fragmento não é documento
+        digitos = so_digitos(bruto.get("codigoFavorecido"))
+        item = DocumentoSiafi(
+            documento=codigo,
+            fase=limpa_texto(bruto.get("fase")) or None,
+            data=para_data(bruto.get("data")),
+            favorecido=limpa_texto(bruto.get("nomeFavorecido")) or None,
+            favorecido_doc=digitos if digitos and len(digitos) in (11, 14) else None,
+            uf_favorecido=limpa_texto(bruto.get("ufFavorecido")) or None,
+            valor=valor_br(bruto.get("valor")),
+            orgao=limpa_texto(bruto.get("orgao")) or None,
+            modalidade=limpa_texto(bruto.get("modalidade")) or None,
+            autor_emenda=self._autor(bruto.get("autor")),
+            observacao=limpa_texto(bruto.get("observacao")) or None,
+        ).model_dump(mode="json")
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=[item], total=1,
+            meta={"codigo": codigo, "fonte": FONTE},
+        )
+
+    @staticmethod
+    def _autor(valor: Any) -> str | None:
+        # o autor da emenda vem "3081 - DANIEL VILELA"; fica só o nome
+        texto = limpa_texto(valor)
+        if not texto or texto.upper().startswith("SEM "):
+            return None
+        return texto.split(" - ", 1)[-1].strip() or None
 
     async def _emendas(self, recurso: str, params: dict) -> NormalizedResponse:
         self._valida(recurso, params, PARAMS_EMENDAS)

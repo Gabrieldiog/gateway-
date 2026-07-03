@@ -1,0 +1,29 @@
+{
+ "content": [
+  {
+   "idUnico": "11370.52-41",
+   "nome": "Recapeamento de ruas e avenidas no Município de Doverlândia - GO",
+   "descricao": "Recapeamento de ruas e avenidas no Município de Doverlândia - GO",
+   "uf": "GO",
+   "situacao": "Paralisada",
+   "especie": "Recuperação",
+   "dataInicialPrevista": "2019-12-31",
+   "dataFinalPrevista": "2027-03-30",
+   "qdtEmpregosGerados": 10,
+   "populacaoBeneficiada": 7892,
+   "valorInvestimentoPrevisto": null,
+   "fontesDeRecurso": [
+    {"origem": "Federal", "valorInvestimentoPrevisto": 477500.0},
+    {"origem": "Estadual", "valorInvestimentoPrevisto": 19100.0}
+   ],
+   "executores": [
+    {"nome": "MUNICIPIO DE DOVERLANDIA", "codigo": 78790000128}
+   ],
+   "repassadores": [
+    {"nome": "MINISTÉRIO DAS CIDADES", "codigo": 308798}
+   ]
+  }
+ ],
+ "totalElements": 1,
+ "last": true
+}

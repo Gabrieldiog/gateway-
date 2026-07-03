@@ -16,6 +16,7 @@ from balcao.search import (
     arrecadacao_ente,
     arrecadacao_todas_esferas,
     busca_unificada,
+    dinheiro_da_obra,
     gastos_deputado,
     ranking_arrecadacao,
     votos_deputado,
@@ -209,6 +210,47 @@ async def fornecedor(request: Request, cnpj: str) -> FornecedorOut:
         },
     )
     if not erros:
+        cache.guarda(chave, resposta)
+    return resposta
+
+
+class ObraDinheiroOut(BaseModel):
+    """O follow-the-money de uma obra: empenhos com o favorecido resolvido em
+    cascata (Obrasgov → regra orçamentária → CSV SICONV → SIAFI) e o contrato
+    final — quem de fato construiu, com CNPJ."""
+
+    id: str
+    obra: dict | None = None
+    empenhos: list[dict] = Field(default_factory=list)
+    total_empenhado: str = "0"
+    tem_mais_empenhos: bool = False
+    contratos: list[dict] = Field(default_factory=list)  # a empreiteira (SICONV)
+    erros: dict[str, str] = Field(default_factory=dict)
+    meta: dict = Field(default_factory=dict)
+
+
+@router.get("/obra/dinheiro", response_model=ObraDinheiroOut)
+async def obra_dinheiro(
+    request: Request,
+    id: str = Query(..., description="idUnico da obra no Obrasgov (ex: 11370.52-41)"),
+) -> ObraDinheiroOut:
+    id_obra = id.strip()
+    if not id_obra:
+        raise ParametroInvalido("obra/dinheiro", ["id"], ["idUnico da obra (ex: 11370.52-41)"])
+
+    cache = request.app.state.cache
+    chave = cache.chave("_obra_dinheiro", id_obra, {})
+    guardada = cache.pega(chave)
+    if guardada is not None:
+        request.state.cache = "hit"
+        return guardada
+
+    request.state.cache = "miss"
+    resultado = await dinheiro_da_obra(
+        request.app.state.connectors, request.app.state.siconv, id_obra
+    )
+    resposta = ObraDinheiroOut(**resultado)
+    if not resposta.erros:
         cache.guarda(chave, resposta)
     return resposta
 

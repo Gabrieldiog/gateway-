@@ -11,6 +11,7 @@ from balcao.connectors.base import BaseConnector
 from balcao.connectors.tesouro import CAPITAIS, FONTE as FONTE_TESOURO, UF_IBGE
 from balcao.exceptions import (
     BalcaoError,
+    ChaveFaltando,
     FonteNaoEncontrada,
     ParametroInvalido,
     RecursoNaoEncontrado,
@@ -410,5 +411,159 @@ async def arrecadacao_todas_esferas(tesouro: BaseConnector, ano: int) -> dict:
                 "capitais; municipios fora das capitais nao entram (nao ha "
                 "agregado oficial)"
             ),
+        },
+    }
+
+
+# modalidade de aplicação = dígitos 3-4 da natureza da despesa (MTO). Nos
+# repasses a ente, o favorecido do empenho É o executor da obra — resolve
+# sem nenhuma chamada externa.
+MODALIDADES_REPASSE = {
+    "30": "transferência a estado",
+    "31": "transferência a estado (fundo a fundo)",
+    "32": "transferência a estado (convênio)",
+    "35": "transferência a estado (delegação)",
+    "36": "transferência a estado",
+    "40": "transferência a município",
+    "41": "transferência a município (fundo a fundo)",
+    "42": "transferência a município (convênio)",
+    "45": "transferência a município (delegação)",
+    "46": "transferência a município",
+}
+MODALIDADES_INTERNAS = {"91", "92", "93", "94", "95", "96"}
+# quantos empenhos por obra enriquecer no SIAFI — protege o rate limit da CGU
+MAX_CONSULTAS_SIAFI = 8
+
+
+def _modalidade(natureza: str | None) -> str | None:
+    n = (natureza or "").strip()
+    return n[2:4] if len(n) >= 4 else None
+
+
+async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra: str) -> dict:
+    """O follow-the-money de uma obra: os empenhos com favorecido resolvido
+    em cascata (Obrasgov → regra orçamentária → CSV SICONV → SIAFI) e o
+    contrato final — a empreiteira que o ente contratou."""
+    obrasgov = conectores["obrasgov"]
+
+    async def tenta(coro):
+        try:
+            return await coro, None
+        except BalcaoError as exc:
+            return None, exc.mensagem
+
+    (obra_r, e_obra), (exec_r, e_exec), (emp_csv, e_csv), (contratos, e_contratos) = (
+        await asyncio.gather(
+            tenta(obrasgov.fetch("obras", id=id_obra)),
+            tenta(obrasgov.fetch("execucao", id=id_obra)),
+            tenta(siconv.empenhos(id_obra)),
+            tenta(siconv.contratos(id_obra)),
+        )
+    )
+    erros = {
+        nome: msg
+        for nome, msg in (
+            ("obra", e_obra), ("empenhos", e_exec), ("siconv", e_csv or e_contratos),
+        )
+        if msg
+    }
+
+    obra = obra_r.dados[0] if obra_r and obra_r.dados else None
+    empenhos = [dict(e) for e in exec_r.dados] if exec_r else []
+    executor = (obra or {}).get("executor")
+    executor_codigo = (obra or {}).get("executor_codigo") or ""
+
+    # o CSV do SICONV tem a nota que o Obrasgov esconde: casa por UG + valor
+    # (numérico — o CSV diz "477500" e o Obrasgov "477500.0")
+    def mesmo_valor(a, b):
+        return bool(a and b) and Decimal(a) == Decimal(b)
+
+    sobras_csv = list(emp_csv or [])
+    for e in empenhos:
+        if e.get("nota"):
+            continue
+        for linha in sobras_csv:
+            # natureza entra no predicado: dois empenhos de mesma UG e mesmo
+            # valor (um repasse, um interno) não podem trocar de nota
+            if (
+                linha["ug"] == e.get("ug")
+                and (
+                    not linha.get("natureza")
+                    or not e.get("natureza")
+                    or linha["natureza"] == e["natureza"]
+                )
+                and mesmo_valor(linha["valor"], e.get("valor"))
+            ):
+                e["nota"] = linha["nota"]
+                e["data"] = linha["data"]
+                sobras_csv.remove(linha)
+                break
+
+    # com UG + nota dá pra pedir o detalhe no SIAFI (gestão 00001, a da
+    # administração direta — UG com gestão própria volta vazio e segue a vida)
+    transparencia = conectores.get("transparencia")
+
+    async def detalhe_siafi(e: dict) -> dict | None:
+        try:
+            r = await transparencia.fetch("documento", codigo=f"{e['ug']}00001{e['nota']}")
+            return r.dados[0] if r.dados else None
+        except ChaveFaltando:
+            return None  # fonte desativada por config: a regra de repasse resolve
+        except BalcaoError as exc:
+            erros.setdefault("transparencia", exc.mensagem)
+            return None
+
+    # o orçamento de consultas vale só pra quem TEM ug+nota — empenho sem nota
+    # não gasta vaga, e empenho consultável depois da 8ª posição não fica de fora
+    elegiveis = [
+        i for i, e in enumerate(empenhos) if transparencia and e.get("ug") and e.get("nota")
+    ][:MAX_CONSULTAS_SIAFI]
+    consultados = await asyncio.gather(*(detalhe_siafi(empenhos[i]) for i in elegiveis))
+    docs: list[dict | None] = [None] * len(empenhos)
+    for i, doc in zip(elegiveis, consultados):
+        docs[i] = doc
+
+    total = Decimal(0)
+    for e, doc in zip(empenhos, docs):
+        mod = _modalidade(e.get("natureza"))
+        if e.get("valor"):
+            total += Decimal(e["valor"])
+        if doc:
+            e["autor_emenda"] = doc.get("autor_emenda")
+            e.setdefault("data", doc.get("data"))
+        if e.get("favorecido"):
+            e["origem"] = "obrasgov"
+        elif doc and doc.get("favorecido"):
+            e["favorecido"] = doc["favorecido"]
+            e["favorecido_doc"] = doc.get("favorecido_doc")
+            e["origem"] = "siafi"
+        elif mod in MODALIDADES_REPASSE and executor:
+            e["favorecido"] = executor
+            # o codigo do executor é o CNPJ sem zeros à esquerda — SÓ em repasse
+            e["favorecido_doc"] = executor_codigo.zfill(14) if executor_codigo.isdigit() else None
+            e["origem"] = "repasse"
+        elif mod in MODALIDADES_INTERNAS:
+            e["origem"] = "interno"
+        else:
+            e["origem"] = None
+        e["modalidade"] = MODALIDADES_REPASSE.get(mod) or (
+            "aplicação direta" if mod == "90" else ("movimentação interna" if mod in MODALIDADES_INTERNAS else None)
+        )
+
+    return {
+        "id": id_obra,
+        "obra": obra,
+        "empenhos": empenhos,
+        "total_empenhado": str(total),
+        "tem_mais_empenhos": bool(exec_r and exec_r.meta.get("tem_proxima")),
+        "contratos": contratos or [],
+        "erros": erros,
+        "meta": {
+            "fontes_consultadas": ["obrasgov", "siconv", "transparencia"],
+            "fonte_contratos": {
+                "nome": "SICONV/Transferegov — contratos das transferências",
+                "url": "https://portaldatransparencia.gov.br/download-de-dados",
+                "nota": "CSV oficial diário que liga a obra ao contrato assinado pelo ente — a empreiteira, com CNPJ e valor.",
+            },
         },
     }
