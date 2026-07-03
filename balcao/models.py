@@ -694,6 +694,28 @@ class ArquivoCompra(BaseModel):
     url: str
 
 
+class ObraPublica(BaseModel):
+    """Uma obra/projeto de investimento federal no Obrasgov — inclusive as
+    paradas, que são a pauta."""
+
+    fonte: str = "obrasgov"
+    id: str
+    nome: str
+    descricao: str | None = None
+    uf: str | None = None
+    endereco: str | None = None
+    situacao: str | None = None  # Paralisada, Em execução, Concluída...
+    especie: str | None = None  # Construção, Reforma...
+    valor_previsto: Decimal | None = None  # a fonte deixa vazio com frequência
+    inicio_previsto: date | None = None
+    fim_previsto: date | None = None
+    inicio_efetivo: date | None = None
+    fim_efetivo: date | None = None
+    empregos: int | None = None
+    populacao_beneficiada: int | None = None
+    atrasada: bool = False  # fim previsto no passado e obra não concluída
+
+
 class DiarioOficial(BaseModel):
     """Um diário oficial municipal achado pela busca do Querido Diário,
     com os trechos onde o termo aparece."""

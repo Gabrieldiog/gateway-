@@ -1,0 +1,58 @@
+{
+ "content": [
+  {
+   "idUnico": "33266.16-49",
+   "nome": "Construção da Ponte sobre o Rio Exemplo",
+   "descricao": "Ponte de 240m ligando os bairros norte e sul",
+   "uf": "GO",
+   "endereco": "Rodovia GO-020, km 12",
+   "situacao": "Paralisada",
+   "especie": "Construção",
+   "natureza": "Obra",
+   "valorInvestimentoPrevisto": 12500000.5,
+   "dataInicialPrevista": "2022-03-01",
+   "dataFinalPrevista": "2024-06-30",
+   "dataInicialEfetiva": "2022-05-10",
+   "dataFinalEfetiva": null,
+   "qdtEmpregosGerados": 120,
+   "populacaoBeneficiada": 45000
+  },
+  {
+   "idUnico": "44444.20-01",
+   "nome": "Reforma da Escola Municipal Central",
+   "descricao": null,
+   "uf": "GO",
+   "endereco": null,
+   "situacao": "Concluída",
+   "especie": "Reforma",
+   "natureza": "Obra",
+   "valorInvestimentoPrevisto": null,
+   "dataInicialPrevista": "2023-01-01",
+   "dataFinalPrevista": "2023-12-01",
+   "dataInicialEfetiva": "2023-01-15",
+   "dataFinalEfetiva": "2023-11-20",
+   "qdtEmpregosGerados": null,
+   "populacaoBeneficiada": null
+  },
+  {
+   "idUnico": "55555.21-02",
+   "nome": "Creche do Bairro Novo",
+   "descricao": "",
+   "uf": "GO",
+   "endereco": "",
+   "situacao": "Paralisada",
+   "especie": "Construção",
+   "natureza": "Obra",
+   "valorInvestimentoPrevisto": "",
+   "dataInicialPrevista": "2021-01-01",
+   "dataFinalPrevista": "2022-01-01",
+   "dataInicialEfetiva": null,
+   "dataFinalEfetiva": null,
+   "qdtEmpregosGerados": "",
+   "populacaoBeneficiada": ""
+  }
+ ],
+ "totalElements": 2,
+ "last": false,
+ "totalPages": 9
+}

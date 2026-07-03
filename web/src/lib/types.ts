@@ -623,6 +623,25 @@ export interface VinculosEmpresa {
   flags: Record<string, boolean>;
 }
 
+export interface ObraPublica {
+  fonte: string;
+  id: string;
+  nome: string;
+  descricao: string | null;
+  uf: string | null;
+  endereco: string | null;
+  situacao: string | null;
+  especie: string | null;
+  valor_previsto: string | null;
+  inicio_previsto: string | null;
+  fim_previsto: string | null;
+  inicio_efetivo: string | null;
+  fim_efetivo: string | null;
+  empregos: number | null;
+  populacao_beneficiada: number | null;
+  atrasada: boolean;
+}
+
 export interface DiarioOficial {
   fonte: string;
   municipio: string;

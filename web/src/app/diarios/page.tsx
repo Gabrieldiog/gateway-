@@ -155,21 +155,28 @@ export default function CadernoDiarios() {
                     …{t.trim()}…
                   </blockquote>
                 ))}
+                {/* via /api/arquivo: a fonte serve octet-stream e o celular
+                    não abre; o proxy corrige o tipo e o visualizador nativo
+                    (iOS/Android) assume */}
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
-                    href={d.url}
+                    href={`/api/arquivo?url=${encodeURIComponent(d.url)}&nome=${encodeURIComponent(
+                      `diario-${d.municipio.toLowerCase().replace(/\s+/g, "-")}-${d.data ?? ""}.pdf`,
+                    )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="num rounded-md border border-accent px-3 py-1 text-xs uppercase tracking-wider text-accent transition-colors hover:bg-accent hover:text-surface"
+                    className="num inline-flex min-h-9 items-center rounded-md border border-accent px-3.5 py-1.5 text-xs uppercase tracking-wider text-accent transition-colors hover:bg-accent hover:text-surface"
                   >
                     abrir o diário (PDF) →
                   </a>
                   {d.url_texto && (
                     <a
-                      href={d.url_texto}
+                      href={`/api/arquivo?url=${encodeURIComponent(d.url_texto)}&nome=${encodeURIComponent(
+                        `diario-${d.municipio.toLowerCase().replace(/\s+/g, "-")}-${d.data ?? ""}.txt`,
+                      )}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="num rounded-md border border-line px-3 py-1 text-xs uppercase tracking-wider text-muted transition-colors hover:border-accent hover:text-accent"
+                      className="num inline-flex min-h-9 items-center rounded-md border border-line px-3.5 py-1.5 text-xs uppercase tracking-wider text-muted transition-colors hover:border-accent hover:text-accent"
                     >
                       texto puro
                     </a>
