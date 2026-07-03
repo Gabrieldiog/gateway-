@@ -842,3 +842,28 @@ class ContratoFederal(BaseModel):
     fim: date | None = None
     situacao: str | None = None
     modalidade: str | None = None
+
+
+class Reservatorio(BaseModel):
+    """Um reservatório monitorado pela ANA (SIN, Nordeste ou Cantareira)."""
+
+    fonte: str = "ana"
+    codigo: str
+    nome: str
+    sistema: str  # sin | nordeste | cantareira
+    uf: str | None = None  # a ANA só informa nos açudes do Nordeste
+
+
+class MedicaoReservatorio(BaseModel):
+    """Uma medição diária de reservatório: quanto tem e quanto entra/sai."""
+
+    fonte: str = "ana"
+    codigo: str
+    reservatorio: str
+    sistema: str | None = None
+    data: date | None = None
+    volume_util_pct: float | None = None
+    volume_hm3: float | None = None  # só a série do Cantareira informa
+    cota: float | None = None  # nível da água, em metros
+    afluencia: float | None = None  # m³/s entrando
+    defluencia: float | None = None  # m³/s saindo

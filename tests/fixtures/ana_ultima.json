@@ -1,0 +1,10 @@
+{
+  "reservatorio": "ITAIPU",
+  "data": "02/07/2026",
+  "afluencia": 9284.22,
+  "defluencia": 10076.0,
+  "cota": 220.26,
+  "vazaoTransferida": null,
+  "volumeUtil": "98.32",
+  "tipo": 5
+}
