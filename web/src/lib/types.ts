@@ -623,6 +623,18 @@ export interface VinculosEmpresa {
   flags: Record<string, boolean>;
 }
 
+export interface DiarioOficial {
+  fonte: string;
+  municipio: string;
+  uf: string | null;
+  data: string | null;
+  edicao: string | null;
+  extra: boolean;
+  trechos: string[];
+  url: string;
+  url_texto: string | null;
+}
+
 export interface CensoCidade {
   fonte: string;
   municipio: string;

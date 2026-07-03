@@ -694,6 +694,30 @@ class ArquivoCompra(BaseModel):
     url: str
 
 
+class DiarioOficial(BaseModel):
+    """Um diário oficial municipal achado pela busca do Querido Diário,
+    com os trechos onde o termo aparece."""
+
+    fonte: str = "diarios"
+    municipio: str
+    uf: str | None = None
+    data: date | None = None
+    edicao: str | None = None
+    extra: bool = False
+    trechos: list[str] = []
+    url: str  # o PDF oficial
+    url_texto: str | None = None  # o texto puro extraído
+
+
+class CidadeDiario(BaseModel):
+    """Um município no radar do Querido Diário (cobertura)."""
+
+    fonte: str = "diarios"
+    ibge: int
+    nome: str
+    uf: str | None = None
+
+
 class CensoCidade(BaseModel):
     """O retrato do Censo 2022 pra um município: gente e moradia."""
 

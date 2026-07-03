@@ -1,0 +1,31 @@
+{
+ "total_gazettes": 2687,
+ "gazettes": [
+  {
+   "territory_id": "5208707",
+   "date": "2026-07-02",
+   "url": "https://data.queridodiario.ok.org.br/5208707/2026-07-02/abc.pdf",
+   "txt_url": "https://data.queridodiario.ok.org.br/5208707/2026-07-02/abc.txt",
+   "territory_name": "Goiânia",
+   "state_code": "GO",
+   "edition": "8811",
+   "is_extra_edition": false,
+   "excerpts": [
+    "...fica autorizada a DISPENSA DE LICITAÇÃO para contratação emergencial de serviços de limpeza urbana..."
+   ]
+  },
+  {
+   "territory_id": "5208707",
+   "date": "2026-07-01",
+   "url": "https://data.queridodiario.ok.org.br/5208707/2026-07-01/def.pdf",
+   "txt_url": null,
+   "territory_name": "Goiânia",
+   "state_code": "GO",
+   "edition": "8810",
+   "is_extra_edition": true,
+   "excerpts": [
+    "...processo de dispensa de licitação nº 123/2026, contratada a empresa EXEMPLO LTDA..."
+   ]
+  }
+ ]
+}
