@@ -669,6 +669,16 @@ export interface PrecoAgro {
   valor_kg: number | null;
 }
 
+export interface TodasEsferasOut {
+  ano: number;
+  uniao: string;
+  estados: string;
+  capitais: string;
+  total: string;
+  entes_somados: number;
+  meta: Record<string, unknown>;
+}
+
 export interface FornecedorOut {
   cnpj: string;
   cadastro: FichaEmpresa | null;

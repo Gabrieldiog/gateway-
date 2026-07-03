@@ -11,17 +11,18 @@ import { useArrecadometro } from "@/hooks/useArrecadometro";
 import { caminho, escalaReais, formataReaisCompacto } from "@/lib/api";
 import { ANO_ATUAL } from "@/lib/datas";
 import { UFS, CAPITAIS } from "@/lib/ufs";
-import type { Arrecadacao, Municipio, NormalizedResponse } from "@/lib/types";
+import type { Arrecadacao, Municipio, NormalizedResponse, TodasEsferasOut } from "@/lib/types";
 
-type Nivel = "uniao" | "estado" | "municipio";
+type Nivel = "todas" | "uniao" | "estado" | "municipio";
 const NIVEIS: [Nivel, string][] = [
-  ["uniao", "Brasil"],
+  ["todas", "Todas as esferas"],
+  ["uniao", "União"],
   ["estado", "Estado"],
   ["municipio", "Cidade"],
 ];
 
 export default function CadernoArrecadometro() {
-  const [nivel, setNivel] = useState<Nivel>("uniao");
+  const [nivel, setNivel] = useState<Nivel>("todas");
   const [uf, setUf] = useState("GO");
   const [ibge, setIbge] = useState(CAPITAIS["GO"]);
   const [metrica, setMetrica] = useState("arrecadacao"); // arrecadacao | impostos | <sigla>
@@ -42,8 +43,15 @@ export default function CadernoArrecadometro() {
   );
   const municipios = munis.dados?.dados ?? [];
 
-  const ente = nivel === "uniao" ? "brasil" : nivel === "estado" ? uf : ibge;
-  const arr = useBalcao<Arrecadacao>(ente ? caminho("arrecadacao", { ente, ano: baseAno }) : null);
+  const ente = nivel === "todas" ? "todas" : nivel === "uniao" ? "brasil" : nivel === "estado" ? uf : ibge;
+  const arr = useBalcao<Arrecadacao>(
+    nivel !== "todas" && ente ? caminho("arrecadacao", { ente, ano: baseAno }) : null,
+  );
+  // o modo "todas as esferas" soma de verdade os 55 balanços do SICONFI
+  // (União + estados + capitais) — a consulta é pesada, o gateway cacheia
+  const geral = useBalcao<TodasEsferasOut>(
+    nivel === "todas" ? caminho("arrecadacao/geral", { ano: baseAno }) : null,
+  );
   const fin = arr.dados?.ente ?? null;
   const impostos = arr.dados?.impostos ?? [];
 
@@ -51,15 +59,21 @@ export default function CadernoArrecadometro() {
   // fecharam, cai pro anterior — sem ano cravado, vira com o calendário
   useEffect(() => setBaseAno(ANO_ATUAL), [ente]);
   useEffect(() => {
-    if (arr.dados && baseAno === ANO_ATUAL && !arr.dados.ente?.arrecadacao_total) {
+    if (baseAno !== ANO_ATUAL) return;
+    const semEnte = arr.dados && !arr.dados.ente?.arrecadacao_total;
+    const semGeral = geral.dados && !Number(geral.dados.total);
+    if (nivel === "todas" ? semGeral : semEnte) {
       setBaseAno(ANO_ATUAL - 1);
     }
-  }, [arr.dados, baseAno]);
+  }, [arr.dados, geral.dados, nivel, baseAno]);
 
   // valor anual base conforme a métrica escolhida
   let base = 0;
   let rotuloMetrica = "Arrecadação total";
-  if (metrica === "impostos") {
+  if (nivel === "todas") {
+    base = Number(geral.dados?.total ?? 0);
+    rotuloMetrica = "União + estados + capitais";
+  } else if (metrica === "impostos") {
     base = Number(fin?.receita_impostos ?? 0);
     rotuloMetrica = "Impostos";
   } else if (metrica !== "arrecadacao") {
@@ -72,7 +86,8 @@ export default function CadernoArrecadometro() {
 
   const vivo = useArrecadometro(base);
   const aviso = arr.dados?.meta?.aviso as string | undefined;
-  const carregandoVazio = arr.carregando && !arr.dados;
+  const carregandoVazio =
+    nivel === "todas" ? geral.carregando && !geral.dados : arr.carregando && !arr.dados;
 
   return (
     <div>
@@ -99,7 +114,7 @@ export default function CadernoArrecadometro() {
           ))}
         </div>
 
-        {nivel !== "uniao" && (
+        {nivel !== "uniao" && nivel !== "todas" && (
           <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
             UF
             <Seletor value={uf} onChange={(e) => escolheUf(e.target.value)}>
@@ -134,6 +149,7 @@ export default function CadernoArrecadometro() {
           </label>
         )}
 
+        {nivel !== "todas" && (
         <label className="num flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
           Contar
           <Seletor
@@ -152,9 +168,32 @@ export default function CadernoArrecadometro() {
               ))}
           </Seletor>
         </label>
+        )}
       </div>
 
-      {arr.erro ? (
+      {nivel === "todas" ? (
+        geral.erro ? (
+          <ErroBox erro={geral.erro} aoTentar={geral.recarregar} />
+        ) : carregandoVazio ? (
+          <div>
+            <p className="num mb-3 text-xs uppercase tracking-wider text-muted">
+              somando os 55 balanços oficiais (União + 27 estados + 27 capitais)…
+            </p>
+            <Esqueleto linhas={3} />
+          </div>
+        ) : geral.dados && base > 0 ? (
+          <Painel
+            ente="Brasil"
+            metrica={rotuloMetrica}
+            vivo={vivo}
+            base={base}
+            baseAno={baseAno}
+            esferas={geral.dados}
+          />
+        ) : (
+          <Vazio>as contas de {baseAno} ainda não fecharam no SICONFI.</Vazio>
+        )
+      ) : arr.erro ? (
         <ErroBox erro={arr.erro} aoTentar={arr.recarregar} />
       ) : carregandoVazio ? (
         <Esqueleto linhas={3} />
@@ -170,7 +209,17 @@ export default function CadernoArrecadometro() {
         <Vazio>{aviso ?? "sem base de arrecadação pra esse ente."}</Vazio>
       )}
 
-      <SeloFonte fonte={arr.dados?.fonte} />
+      <SeloFonte
+        fonte={
+          nivel === "todas"
+            ? {
+                nome: "Tesouro Nacional — SICONFI (55 balanços somados)",
+                url: "https://siconfi.tesouro.gov.br",
+                nota: "União + 27 estados + 27 capitais, balanço a balanço. Os municípios fora das capitais não entram: não existe agregado oficial deles.",
+              }
+            : arr.dados?.fonte
+        }
+      />
     </div>
   );
 }
@@ -181,12 +230,14 @@ function Painel({
   vivo,
   base,
   baseAno,
+  esferas,
 }: {
   ente: string;
   metrica: string;
   vivo: number;
   base: number;
   baseAno: number;
+  esferas?: TodasEsferasOut;
 }) {
   const baseEsc = escalaReais(base);
   return (
@@ -209,11 +260,36 @@ function Painel({
         ≈ {formataReaisCompacto(vivo)}
       </p>
 
+      {esferas && (
+        <div className="num mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <span className="text-ink/85">
+            <span className="kicker mr-1.5">união</span>
+            {formataReaisCompacto(esferas.uniao)}
+          </span>
+          <span className="text-ink/85">
+            <span className="kicker mr-1.5">27 estados</span>
+            {formataReaisCompacto(esferas.estados)}
+          </span>
+          <span className="text-ink/85">
+            <span className="kicker mr-1.5">27 capitais</span>
+            {formataReaisCompacto(esferas.capitais)}
+          </span>
+        </div>
+      )}
+
       <p className="mt-5 max-w-[64ch] border-t border-line pt-3 font-editorial text-sm italic text-muted">
         Estimativa ao vivo: o total oficial de <strong className="not-italic">{baseAno}</strong> (R${" "}
         {baseEsc.valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} {baseEsc.unidade})
         projetado nos segundos do ano — a mesma lógica do Impostômetro. O dado é real; o movimento
         por segundo é projeção, porque arrecadação por segundo não existe em lugar nenhum.
+        {esferas && (
+          <>
+            {" "}
+            Aqui somamos, balanço a balanço, {esferas.entes_somados} contas oficiais do SICONFI;
+            os municípios fora das capitais ficam de fora porque não existe agregado oficial deles
+            — painéis como o Impostômetro os estimam por cima.
+          </>
+        )}
       </p>
     </Card>
   );

@@ -6,9 +6,10 @@ import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
+import { LerMais } from "@/components/LerMais";
 import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData } from "@/lib/api";
-import type { NormalizedResponse, Votacao } from "@/lib/types";
+import type { NormalizedResponse, Votacao, VotoDeputado } from "@/lib/types";
 
 const FONTE_CAMARA = {
   nome: "Câmara dos Deputados — Dados Abertos",
@@ -48,11 +49,85 @@ function dataISO(diasAtras: number): string {
   return `${d.getFullYear()}-${m}-${dia}`;
 }
 
+// o voto a voto de uma votação, aberto sob demanda — placar, quem foi a
+// favor e quem foi contra (votação simbólica avisa que não tem)
+function VotosDaVotacao({ id }: { id: string }) {
+  const r = useBalcao<NormalizedResponse<VotoDeputado>>(caminho(`camara/votacoes/${id}/votos`));
+  const votos = r.dados?.dados ?? [];
+  const aviso = r.dados?.meta?.aviso as string | undefined;
+  const placar = (r.dados?.meta?.placar as Record<string, number> | undefined) ?? {};
+  const sim = votos.filter((v) => v.voto === "Sim");
+  const nao = votos.filter((v) => v.voto === "Não");
+  const outros = votos.length - sim.length - nao.length;
+
+  if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
+  if (r.carregando && !r.dados) return <Esqueleto linhas={3} />;
+  if (aviso || !votos.length) {
+    return (
+      <p className="font-editorial text-sm italic text-muted">
+        {aviso ?? "sem voto individual registrado."}
+      </p>
+    );
+  }
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {Object.entries(placar).map(([voto, n]) => (
+          <span
+            key={voto}
+            className={`num rounded-full border px-2.5 py-0.5 text-xs ${
+              voto === "Sim"
+                ? "border-ok/40 bg-ok/10 text-ok"
+                : voto === "Não"
+                  ? "border-erro/40 bg-erro/10 text-erro"
+                  : "border-line bg-surface text-muted"
+            }`}
+          >
+            {voto}: {n}
+          </span>
+        ))}
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="kicker mb-1.5 text-ok">a favor ({sim.length})</p>
+          <ul className="max-h-56 overflow-y-auto pr-1 text-sm leading-relaxed text-ink/85">
+            {sim.map((v) => (
+              <li key={v.deputado_id}>
+                {v.deputado}
+                <span className="num ml-1.5 text-xs text-muted">
+                  {[v.partido, v.uf].filter(Boolean).join("·")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p className="kicker mb-1.5 text-erro">contra ({nao.length})</p>
+          <ul className="max-h-56 overflow-y-auto pr-1 text-sm leading-relaxed text-ink/85">
+            {nao.map((v) => (
+              <li key={v.deputado_id}>
+                {v.deputado}
+                <span className="num ml-1.5 text-xs text-muted">
+                  {[v.partido, v.uf].filter(Boolean).join("·")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      {outros > 0 && (
+        <p className="num mt-2 text-xs text-muted">+ {outros} abstenções/obstruções/outros</p>
+      )}
+    </div>
+  );
+}
+
 function Votacoes({ dias }: { dias: number }) {
   const r = useBalcao<NormalizedResponse<Votacao>>(
     caminho("camara/votacoes", { data_inicio: dataISO(dias), data_fim: dataISO(0), itens: 30 }),
   );
   const votacoes = r.dados?.dados ?? [];
+  const [aberta, setAberta] = useState<string | null>(null);
 
   return (
     <div>
@@ -80,12 +155,30 @@ function Votacoes({ dias }: { dias: number }) {
                 >
                   {v.aprovada === true ? "aprovada" : v.aprovada === false ? "rejeitada" : "registro"}
                 </span>
-                <div className="min-w-0">
-                  <p className="font-editorial text-sm leading-snug text-ink/90">{v.descricao}</p>
-                  <p className="num mt-1 text-xs text-muted">
-                    {formataData(v.data)}
-                    {v.orgao && ` · ${v.orgao}`}
+                <div className="min-w-0 flex-1">
+                  <LerMais
+                    texto={v.descricao}
+                    limite={200}
+                    className="font-editorial text-sm leading-snug text-ink/90"
+                  />
+                  <p className="num mt-1 flex flex-wrap items-center gap-x-3 text-xs text-muted">
+                    <span>
+                      {formataData(v.data)}
+                      {v.orgao && ` · ${v.orgao}`}
+                    </span>
+                    <button
+                      onClick={() => setAberta(aberta === v.id ? null : v.id)}
+                      aria-expanded={aberta === v.id}
+                      className="uppercase tracking-wider text-accent transition-colors hover:text-accent-2"
+                    >
+                      {aberta === v.id ? "fechar ▴" : "quem votou? ▸"}
+                    </button>
                   </p>
+                  {aberta === v.id && (
+                    <div className="mt-3 border-t border-line pt-3">
+                      <VotosDaVotacao id={v.id} />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -162,10 +255,24 @@ function Proposicoes({ dias }: { dias: number }) {
           <Card className="divide-y divide-line p-0">
             {proposicoes.map((p) => (
               <div key={p.id} className="px-5 py-3">
-                <p className="num text-xs font-semibold uppercase tracking-wider text-accent">
-                  {p.tipo} {p.numero}/{p.ano}
+                <p className="num flex flex-wrap items-baseline gap-x-3 text-xs font-semibold uppercase tracking-wider text-accent">
+                  <span>
+                    {p.tipo} {p.numero}/{p.ano}
+                  </span>
+                  <a
+                    href={`https://www.camara.leg.br/propostas-legislativas/${p.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-normal text-muted transition-colors hover:text-accent"
+                  >
+                    ver a tramitação na Câmara →
+                  </a>
                 </p>
-                <p className="mt-1 font-editorial text-sm leading-snug text-ink/90">{p.ementa}</p>
+                <LerMais
+                  texto={p.ementa}
+                  limite={260}
+                  className="mt-1 font-editorial text-sm leading-snug text-ink/90"
+                />
               </div>
             ))}
           </Card>
