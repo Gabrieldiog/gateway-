@@ -1,0 +1,76 @@
+{
+ "anos": [
+  {
+   "ano": "2025",
+   "periodicidades": [
+    {
+     "periodicidade": "TRIMESTRAL",
+     "periodos": [
+      {
+       "periodo": 1,
+       "tipos": [
+        {
+         "tipo": "Bancos e financeiras"
+        },
+        {
+         "tipo": "Consorcios"
+        }
+       ]
+      },
+      {
+       "periodo": 2,
+       "tipos": [
+        {
+         "tipo": "Bancos e financeiras"
+        },
+        {
+         "tipo": "Consorcios"
+        }
+       ]
+      },
+      {
+       "periodo": 3,
+       "tipos": [
+        {
+         "tipo": "Bancos e financeiras"
+        },
+        {
+         "tipo": "Consorcios"
+        }
+       ]
+      },
+      {
+       "periodo": 4,
+       "tipos": [
+        {
+         "tipo": "Bancos e financeiras"
+        },
+        {
+         "tipo": "Consorcios"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "ano": "2026",
+   "periodicidades": [
+    {
+     "periodicidade": "TRIMESTRAL",
+     "periodos": [
+      {
+       "periodo": 1,
+       "tipos": [
+        {
+         "tipo": "Bancos e financeiras"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

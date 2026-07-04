@@ -1,4 +1,6 @@
 import asyncio
+import csv
+import io
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -6,8 +8,8 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ErroUpstream, ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import IndicadorEconomico, PontoSerie, TaxaJurosBanco
-from balcao.normalize import data_br, limpa_texto, para_data
+from balcao.models import IndicadorEconomico, PontoSerie, RankingReclamacao, TaxaJurosBanco
+from balcao.normalize import data_br, limpa_texto, para_data, valor_br
 
 # atalhos pros codigos de serie mais pedidos do SGS
 SERIES = {
@@ -51,6 +53,21 @@ FONTE = {
 
 PARAMS_SERIE = {"data_inicio", "data_fim", "ultimos"}
 
+# o ranking de reclamações vive no rdrweb, outro host do BCB
+RECLAMACOES_URL = "https://www3.bcb.gov.br/rdrweb/rest/ext/ranking"
+TIPOS_RECLAMACOES = {"bancos": "Bancos e financeiras", "consorcios": "Consorcios"}
+ROTULO_PERIODO = {"TRIMESTRAL": "trimestre", "SEMESTRAL": "semestre", "MENSAL": "mês", "BIMESTRAL": "bimestre"}
+
+FONTE_RECLAMACOES = {
+    "nome": "Banco Central — Ranking de Reclamações",
+    "url": "https://www.bcb.gov.br/estabilidadefinanceira/rankingreclamacoes",
+    "nota": (
+        "Reclamações de clientes registradas no BC e julgadas procedentes, por "
+        "milhão de clientes de cada instituição. O BC destaca os grandes (Top 15); "
+        "instituição pequena aparece sem índice quando os números não sustentam a conta."
+    ),
+}
+
 
 @register
 class BacenConnector(BaseConnector):
@@ -61,6 +78,11 @@ class BacenConnector(BaseConnector):
     resources = {
         "inflacao": "painel de custo de vida: IPCA, IGP-M, INPC, Selic, CDI, poupança e dólar (valor mais recente)",
         "juros-bancos": "ranking oficial: quanto cada banco cobra numa modalidade de crédito (params: modalidade, limit)",
+        "reclamacoes": (
+            "ranking oficial de reclamações contra bancos e consórcios "
+            "(params: ano, periodo, tipo = bancos|consorcios, grupo = top15|todos, busca, limit; "
+            "sem ano vem o mais recente)"
+        ),
         "serie/{codigo}": f"pontos de uma série do SGS; filtros: {', '.join(sorted(PARAMS_SERIE))}",
         **{
             apelido: f"atalho pra série {codigo} do SGS"
@@ -75,6 +97,8 @@ class BacenConnector(BaseConnector):
                 return await self._painel(recurso)
             case ["juros-bancos"] | ["juros"]:
                 return await self._juros_bancos(recurso, params)
+            case ["reclamacoes"]:
+                return await self._reclamacoes(recurso, params)
             case [apelido] if apelido in SERIES:
                 return await self._serie(recurso, SERIES[apelido], params, nome=apelido)
             case ["serie", codigo] if codigo.isdigit():
@@ -246,6 +270,165 @@ class BacenConnector(BaseConnector):
         meta: dict = {"serie": codigo}
         if descartados:
             meta["descartados"] = descartados
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    async def _reclamacoes(self, recurso: str, params: dict) -> NormalizedResponse:
+        """O ranking que responde "meu banco é ruim?": reclamações procedentes
+        por milhão de clientes. Quirks: o CSV chega latin-1 com o header HTTP
+        mentindo charset=UTF-8; o índice usa vírgula e vem vazio pra
+        instituição pequena; e o nome da coluna de clientes carrega um
+        caractere de controle — as colunas são achadas por prefixo."""
+        aceitos = {"ano", "periodo", "tipo", "busca", "limit", "grupo"}
+        invalidos = sorted(set(params) - aceitos)
+        if invalidos:
+            raise ParametroInvalido(recurso, invalidos, sorted(aceitos))
+        tipo = str(params.get("tipo", "bancos")).lower()
+        if tipo not in TIPOS_RECLAMACOES:
+            raise ParametroInvalido(recurso, ["tipo"], sorted(TIPOS_RECLAMACOES))
+        limit = str(params.get("limit", 20))
+        if not limit.isdigit() or not (1 <= int(limit) <= 500):
+            raise ParametroInvalido(recurso, ["limit"], ["limit entre 1 e 500"])
+        busca = str(params.get("busca", "")).strip().casefold()
+
+        ano = str(params.get("ano", "")).strip()
+        periodo = str(params.get("periodo", "")).strip()
+        if ano and not ano.isdigit():
+            raise ParametroInvalido(recurso, ["ano"], ["ano com 4 dígitos"])
+        if periodo and not periodo.isdigit():
+            raise ParametroInvalido(recurso, ["periodo"], ["número do período (ex: 1 = 1º trimestre)"])
+
+        # sem ano/período, o listing da fonte diz qual é o mais novo QUE TEM o
+        # tipo pedido — consórcio sai depois dos bancos, então pode ser preciso
+        # recuar um período (ou um ano)
+        lista = await self.get_json(RECLAMACOES_URL, timeout=30)
+        anos = lista.get("anos", []) if isinstance(lista, dict) else []
+        candidatos = [e for e in anos if not ano or str(e.get("ano")) == ano]
+        if not candidatos:
+            raise ParametroInvalido(recurso, ["ano"], sorted(str(a.get("ano")) for a in anos))
+
+        def periodos_com_tipo(entrada: dict):
+            periodicidades = {p.get("periodicidade"): p for p in entrada.get("periodicidades", [])}
+            for nome in ("TRIMESTRAL", "SEMESTRAL", "ANUAL", "MENSAL", "BIMESTRAL"):
+                per = periodicidades.get(nome)
+                if not per:
+                    continue
+                nums = [
+                    int(x.get("periodo"))
+                    for x in per.get("periodos", [])
+                    if any(tp.get("tipo") == TIPOS_RECLAMACOES[tipo] for tp in x.get("tipos", []))
+                ]
+                if nums:
+                    return per, nums
+            return None, []
+
+        per, disponiveis, alvo = None, [], None
+        for entrada in reversed(candidatos):  # do ano mais novo pro mais velho
+            per, disponiveis = periodos_com_tipo(entrada)
+            if disponiveis:
+                alvo = entrada
+                break
+        if alvo is None or per is None:
+            raise ParametroInvalido(recurso, ["tipo"], ["sem ranking publicado pra esse tipo/ano"])
+        ano = str(alvo.get("ano"))
+        if periodo and int(periodo) not in disponiveis:
+            raise ParametroInvalido(recurso, ["periodo"], [str(p) for p in sorted(disponiveis)])
+        periodo = int(periodo) if periodo else max(disponiveis)
+
+        resp = await self._request(
+            "GET",
+            f"{RECLAMACOES_URL}/arquivo",
+            params={
+                "ano": ano,
+                "periodicidade": per.get("periodicidade"),
+                "periodo": periodo,
+                "tipo": TIPOS_RECLAMACOES[tipo],
+            },
+            timeout=50,
+        )
+        texto = resp.content.decode("latin-1")
+        leitor = csv.DictReader(io.StringIO(texto), delimiter=";")
+        # bancos e consórcios falam dialetos diferentes: "Instituição
+        # financeira" vs "Administradora de consórcio", "reclamações
+        # procedentes" vs "reclamações reguladas procedentes", e o CSV de
+        # consórcio nem tem a coluna Categoria (o ranking é um só)
+        col = {}
+        for nome in leitor.fieldnames or []:
+            n = (nome or "").casefold()
+            if n.startswith("instituição") or n.startswith("administradora"):
+                col["instituicao"] = nome
+            elif n.startswith("índice"):
+                col["indice"] = nome
+            elif n.startswith("categoria"):
+                col["categoria"] = nome
+            elif n.startswith("quantidade total de reclamações respondidas"):
+                col["respondidas"] = nome
+            elif "procedentes extrapoladas" in n or "reguladas - outras" in n:
+                pass  # estimativa e miscelânea — ficam de fora
+            elif n.startswith("quantidade de reclamações reguladas procedentes") or n.startswith(
+                "quantidade de reclamações procedentes"
+            ):
+                col["procedentes"] = nome
+            elif n.startswith("quantidade total de reclamações analisadas"):
+                col["analisadas"] = nome
+            elif "clientes" in n and "quantidade" in n and "clientes" not in str(col.get("clientes", "")).casefold():
+                col.setdefault("clientes", nome)
+
+        def inteiro(linha: dict, chave: str) -> int | None:
+            bruto = (linha.get(col.get(chave, ""), "") or "").strip()
+            return int(bruto) if bruto.isdigit() else None
+
+        rotulo = ROTULO_PERIODO.get(per.get("periodicidade"), "período")
+        etiqueta = f"{periodo}º {rotulo} de {ano}"
+        itens = []
+        for linha in leitor:
+            nome = limpa_texto(linha.get(col.get("instituicao", ""), ""))
+            if not nome:
+                continue
+            indice = valor_br(linha.get(col.get("indice", ""), ""))
+            categoria = linha.get(col.get("categoria", ""), "") or ""
+            # sem coluna Categoria (consórcios) o ranking é um só: todo mundo
+            # com índice entra na fila
+            itens.append(
+                RankingReclamacao(
+                    instituicao=nome.replace(" (conglomerado)", ""),
+                    indice=float(indice) if indice is not None else None,
+                    top15=categoria.strip().startswith("Top") if "categoria" in col else True,
+                    reclamacoes_procedentes=inteiro(linha, "procedentes"),
+                    reclamacoes_respondidas=inteiro(linha, "respondidas"),
+                    reclamacoes_analisadas=inteiro(linha, "analisadas"),
+                    clientes=inteiro(linha, "clientes"),
+                    periodo=etiqueta,
+                ).model_dump(mode="json")
+            )
+        # o ranking OFICIAL é o Top 15 (instituições grandes): posição só vale
+        # lá dentro — comparar índice de banco de 400 clientes com o do Itaú
+        # seria estatística de mentira
+        itens.sort(key=lambda i: (not i["top15"], i["indice"] is None, -(i["indice"] or 0)))
+        pos = 0
+        for item in itens:
+            if item["top15"] and item["indice"] is not None:
+                pos += 1
+                item["posicao"] = pos
+        grupo = str(params.get("grupo", "todos")).lower()
+        if grupo not in {"todos", "top15"}:
+            raise ParametroInvalido(recurso, ["grupo"], ["todos", "top15"])
+        if grupo == "top15":
+            itens = [i for i in itens if i["top15"]]
+        if busca:
+            itens = [i for i in itens if busca in i["instituicao"].casefold()]
+        total_disponivel = len(itens)
+        itens = itens[: int(limit)]
+
+        meta = {
+            "ano": int(ano),
+            "periodo": periodo,
+            "periodicidade": per.get("periodicidade"),
+            "tipo": tipo,
+            "instituicoes_no_ranking": total_disponivel,
+            "fonte": FONTE_RECLAMACOES,
+        }
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )

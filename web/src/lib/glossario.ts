@@ -111,6 +111,11 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  indicereclamacoes: {
+    titulo: "Índice de reclamações",
+    texto:
+      "Reclamações julgadas PROCEDENTES pelo Banco Central a cada 1 milhão de clientes da instituição. Procedente = o banco realmente descumpriu uma regra. O BC só compara os grandes entre si (Top 15) — banco pequeno com poucos clientes inflaria o índice.",
+  },
   volumeutil: {
     titulo: "Volume útil",
     texto:

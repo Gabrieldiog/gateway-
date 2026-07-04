@@ -846,3 +846,16 @@ export interface MedicaoReservatorio {
   afluencia: number | null;
   defluencia: number | null;
 }
+
+export interface RankingReclamacao {
+  fonte: string;
+  posicao: number | null;
+  instituicao: string;
+  indice: number | null;
+  top15: boolean;
+  reclamacoes_procedentes: number | null;
+  reclamacoes_respondidas: number | null;
+  reclamacoes_analisadas: number | null;
+  clientes: number | null;
+  periodo: string;
+}
