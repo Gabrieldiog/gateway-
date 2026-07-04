@@ -859,3 +859,43 @@ export interface RankingReclamacao {
   clientes: number | null;
   periodo: string;
 }
+
+export interface SorteioLoteria {
+  fonte: string;
+  jogo: string;
+  nome_jogo: string;
+  concurso: number;
+  data: string | null;
+  dezenas: string[];
+  dezenas_2: string[] | null;
+  extra: string | null;
+  acumulado: boolean;
+  premios: { faixa: string | null; ganhadores: number; valor: string }[];
+  cidades_ganhadoras: { municipio: string | null; uf: string | null; ganhadores: number }[];
+  arrecadacao: string | null;
+  acumulado_proximo: string | null;
+  estimativa_proximo: string | null;
+  data_proximo: string | null;
+}
+
+export interface FrequenciaNome {
+  fonte: string;
+  nome: string;
+  decada: string;
+  frequencia: number;
+}
+
+export interface NomeNoEstado {
+  fonte: string;
+  nome: string;
+  uf: string;
+  frequencia: number;
+  por_100k: number | null;
+}
+
+export interface RankingNome {
+  fonte: string;
+  posicao: number;
+  nome: string;
+  frequencia: number;
+}
