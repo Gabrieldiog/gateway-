@@ -177,7 +177,7 @@ function CartaoHoje({ ind, destaque }: { ind: IndicadorEconomico; destaque?: boo
         <Termo t={ind.chave}>{ind.nome}</Termo>
       </p>
       <p
-        className={`num tabular-nums pl-4 text-3xl font-semibold leading-none tracking-tight ${
+        className={`num tabular-nums pl-4 text-2xl sm:text-3xl font-semibold leading-none tracking-tight ${
           destaque ? "text-accent" : "text-ink"
         }`}
       >
@@ -202,7 +202,7 @@ function CartaoFocus({ e }: { e: ExpectativaMercado }) {
   return (
     <Card className="p-4 pt-5">
       <p className="kicker mb-2 pl-4">{e.indicador}</p>
-      <p className="num tabular-nums pl-4 text-3xl font-semibold leading-none tracking-tight text-accent-2">
+      <p className="num tabular-nums pl-4 text-2xl sm:text-3xl font-semibold leading-none tracking-tight text-accent-2">
         {texto}
       </p>
       <div className="mt-2 space-y-0.5 pl-4">
@@ -263,7 +263,7 @@ export default function CadernoCustoDeVida() {
           (hoje.carregando && !hoje.dados ? (
             <Esqueleto linhas={4} />
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
               {indicadores.map((ind) => (
                 <CartaoHoje
                   key={ind.chave}
@@ -322,7 +322,7 @@ export default function CadernoCustoDeVida() {
             <Esqueleto linhas={3} />
           ) : (
             <EmTransicao ativo={focus.carregando}>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                 {expectativas.map((e) => (
                   <CartaoFocus key={e.indicador} e={e} />
                 ))}

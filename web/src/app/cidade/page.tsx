@@ -124,7 +124,7 @@ export default function CadernoCidade() {
           <Esqueleto linhas={3} />
         ) : c ? (
           <EmTransicao ativo={censo.carregando}>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <KpiCidade rotulo="população" valor={inteiro(c.populacao)} tom="text-accent" />
               <KpiCidade
                 rotulo="crescimento"
@@ -218,7 +218,7 @@ export default function CadernoCidade() {
                   {despesas.map((d, i) => (
                     <li key={d.funcao}>
                       <div className="mb-1 flex items-baseline justify-between gap-3">
-                        <span className="truncate text-sm text-ink/85">{d.funcao}</span>
+                        <span className="min-w-0 truncate text-sm text-ink/85">{d.funcao}</span>
                         <span className={`num shrink-0 text-sm ${i === 0 ? "text-accent" : "text-ink"}`}>
                           {formataReaisCompacto(d.valor)}
                         </span>

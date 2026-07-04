@@ -74,7 +74,7 @@ export default function CadernoDados() {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder="buscar conjunto…"
-            className="w-52 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
+            className="w-full min-w-0 sm:w-52 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
           />
           <button className="num rounded-md border border-line px-3 py-1.5 text-xs uppercase tracking-wider text-ink hover:bg-surface-2">
             buscar

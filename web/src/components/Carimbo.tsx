@@ -31,7 +31,7 @@ export function Carimbo({
 
   return (
     <span
-      className={`num inline-flex select-none items-center gap-1.5 rounded-sm border border-dashed px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.12em] ${cor} ${
+      className={`num inline-flex shrink-0 select-none items-center gap-1.5 rounded-sm border border-dashed px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.12em] ${cor} ${
         erro ? "carimbo-shake" : ""
       }`}
       style={{ transform: "rotate(-2deg)" }}

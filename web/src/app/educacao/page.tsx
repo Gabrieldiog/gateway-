@@ -96,7 +96,7 @@ function Ideb({ ibge }: { ibge: string }) {
         <Esqueleto linhas={5} />
       ) : (
         <EmTransicao ativo={r.carregando}>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {etapas.map((e) => (
               <Card key={e.etapa} className="p-5">
                 <p className="kicker">{e.etapa}</p>
@@ -162,13 +162,13 @@ function Censo({ ibge }: { ibge: string }) {
         <Esqueleto linhas={4} />
       ) : etapas.length ? (
         <EmTransicao ativo={r.carregando}>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {etapas.map((e) => (
               <Card key={e.etapa} className="p-5">
                 <p className="kicker">{e.etapa}</p>
                 {e.ultimo_valor != null ? (
                   <>
-                    <p className="num mt-1 font-display text-3xl font-semibold text-ink">
+                    <p className="num mt-1 font-display text-xl sm:text-2xl lg:text-3xl font-semibold text-ink">
                       {Math.round(e.ultimo_valor).toLocaleString("pt-BR")}
                     </p>
                     <p className="num mt-0.5 text-xs text-muted">

@@ -42,7 +42,7 @@ function Paginacao({
   muda: (p: number) => void;
 }) {
   return (
-    <div className="mt-4 flex items-center gap-3">
+    <div className="mt-4 flex flex-wrap items-center gap-3">
       <button
         onClick={() => muda(Math.max(1, pagina - 1))}
         disabled={pagina <= 1}

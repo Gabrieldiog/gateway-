@@ -168,7 +168,7 @@ export default function CadernoObras() {
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+        <div className="inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {SITUACOES.map(([v, label]) => (
             <button
               key={v}
@@ -268,7 +268,7 @@ export default function CadernoObras() {
               </Card>
             ))}
           </div>
-          <div className="mt-5 flex items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3 gap-y-2">
             <button
               onClick={() => setPagina((p) => Math.max(1, p - 1))}
               disabled={pagina <= 1}

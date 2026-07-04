@@ -171,7 +171,7 @@ function SafraAgora() {
             <ol className="flex flex-col gap-1.5 pl-4">
               {topo.map((c) => (
                 <li key={c.produto} className="flex items-baseline justify-between gap-3">
-                  <span className="truncate text-sm text-ink/85">{c.produto}</span>
+                  <span className="min-w-0 truncate text-sm text-ink/85">{c.produto}</span>
                   <span className="num shrink-0 text-sm text-ink">
                     {num((c.producao_mil_t ?? 0) * 1000)} t
                   </span>
@@ -214,7 +214,7 @@ function AbateLeite() {
         </div>
         <Carimbo fonte="IBGE" ms={bois.ms} erro={!!bois.erro} />
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cartoes.map(({ rotulo, r }) => {
           const a = r.dados?.dados?.[0];
           return (
@@ -363,7 +363,7 @@ function MunicipiosCampeoes() {
               {linhas.map((d, i) => (
                 <li key={d.localidade_id ?? d.localidade}>
                   <div className="mb-1 flex items-baseline justify-between gap-3">
-                    <span className="truncate text-sm text-ink/85">
+                    <span className="min-w-0 truncate text-sm text-ink/85">
                       <span className="num mr-2 text-xs text-muted">{i + 1}</span>
                       {d.localidade}
                     </span>
@@ -538,7 +538,7 @@ export default function CadernoAgro() {
                 {dados.slice(0, 15).map((d, i) => (
                   <li key={d.localidade_id ?? d.localidade}>
                     <div className="mb-1 flex items-baseline justify-between gap-3">
-                      <span className="truncate text-sm text-ink/85">{d.localidade}</span>
+                      <span className="min-w-0 truncate text-sm text-ink/85">{d.localidade}</span>
                       <span className={`num shrink-0 text-sm ${i === 0 ? "text-accent" : "text-ink"}`}>
                         {compacto(d.valor ?? 0, d.unidade)}
                       </span>

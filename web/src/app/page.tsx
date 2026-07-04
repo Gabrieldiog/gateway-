@@ -11,7 +11,7 @@ export default function Capa() {
   return (
     <div>
       <p className="kicker mb-3">Edição diária · dados abertos do Brasil</p>
-      <h1 className="compor max-w-[18ch] font-display text-5xl font-semibold leading-[1.02] tracking-tight text-ink sm:text-6xl">
+      <h1 className="compor max-w-[18ch] font-display text-3xl font-semibold leading-[1.02] tracking-tight text-ink sm:text-5xl md:text-6xl">
         O balcão único dos{" "}
         <span className="italic text-accent">dados públicos</span> brasileiros.
       </h1>

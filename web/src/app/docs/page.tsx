@@ -71,7 +71,7 @@ export default function CadernoDocs() {
           <li>
             <span className="num mr-2 text-accent">2.</span>
             Chame um recurso:{" "}
-            <code className="num text-sm text-accent">curl &quot;localhost:8000/v1/bacen/selic?ultimos=5&quot;</code>
+            <code className="num text-sm text-accent break-all">curl &quot;localhost:8000/v1/bacen/selic?ultimos=5&quot;</code>
             . Sem chave, sem cadastro, sem SDK.
           </li>
           <li>
@@ -248,10 +248,10 @@ function Erro({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-baseline gap-3 rounded-md border border-line bg-bg px-4 py-2.5">
+    <div className="flex flex-wrap items-baseline gap-3 rounded-md border border-line bg-bg px-4 py-2.5">
       <span className="num shrink-0 text-sm font-semibold text-accent">{codigo}</span>
       <span className="num shrink-0 text-xs uppercase tracking-wider text-muted">{nome}</span>
-      <span className="text-sm leading-relaxed text-ink/80">{children}</span>
+      <span className="min-w-0 text-sm leading-relaxed text-ink/80">{children}</span>
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function BadgeAoVivo({ atualizadoEm }: { atualizadoEm: number | null }) {
 
 export function BadgeFrescor({ rotulo, detalhe }: { rotulo: string; detalhe?: string }) {
   return (
-    <span className="inline-flex items-stretch overflow-hidden rounded-md border border-ink/35 shadow-[3px_3px_0_rgba(28,26,23,0.08)] dark:shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+    <span className="inline-flex items-start overflow-hidden rounded-md border border-ink/35 shadow-[3px_3px_0_rgba(28,26,23,0.08)] dark:shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
       <span className="flex items-center gap-1.5 bg-ink px-2.5 py-1.5 text-bg dark:bg-ink dark:text-bg">
         <RelogioIcone />
         <span className="num text-[0.68rem] font-semibold uppercase leading-none tracking-[0.16em]">
@@ -54,7 +54,7 @@ export function BadgeFrescor({ rotulo, detalhe }: { rotulo: string; detalhe?: st
         </span>
       </span>
       {detalhe && (
-        <span className="num flex items-center bg-surface px-2.5 text-xs leading-none text-muted">
+        <span className="num flex items-center bg-surface px-2.5 py-1.5 text-xs leading-tight text-muted">
           {detalhe}
         </span>
       )}

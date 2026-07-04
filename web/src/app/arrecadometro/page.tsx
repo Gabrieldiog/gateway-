@@ -99,7 +99,7 @@ export default function CadernoArrecadometro() {
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+        <div className="inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {NIVEIS.map(([v, label]) => (
             <button
               key={v}

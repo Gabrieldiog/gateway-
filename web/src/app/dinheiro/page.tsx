@@ -122,7 +122,7 @@ function Emendas() {
           value={autor}
           onChange={(e) => setAutor(e.target.value)}
           placeholder="filtrar por autor (ex: bancada)"
-          className={`${campo} w-64`}
+          className={`${campo} w-full sm:w-64`}
         />
         <button
           type="submit"
@@ -229,7 +229,7 @@ function Sancoes() {
           value={documento}
           onChange={(e) => setDocumento(e.target.value)}
           placeholder="CNPJ ou CPF (com ou sem máscara)"
-          className={`${campo} w-72`}
+          className={`${campo} w-full sm:w-72`}
         />
         <button
           type="submit"
@@ -392,7 +392,7 @@ export default function CadernoDinheiro() {
         resumo="Pra onde vai o dinheiro federal: as emendas que cada parlamentar destinou, as empresas e pessoas punidas pelo poder público, e quanto o Bolsa Família paga em cada cidade. Direto da Controladoria-Geral da União."
       />
 
-      <div className="mb-6 inline-flex gap-0.5 rounded-md border border-line p-0.5">
+      <div className="mb-6 inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
         {MODOS.map(([v, label]) => (
           <button
             key={v}

@@ -26,9 +26,9 @@ function corDe(tom: Tom): string {
 function NumeroAcervo({ valor, sufixo, rotulo, fonte, tom }: (typeof ACERVO)[number]) {
   const n = useContagem(valor, 1100);
   return (
-    <div className="flex flex-col bg-bg p-5">
+    <div className="flex flex-col bg-bg p-4 sm:p-5">
       <span
-        className={`font-display text-4xl font-semibold leading-none tracking-tight sm:text-[2.7rem] ${corDe(tom)}`}
+        className={`font-display text-3xl font-semibold leading-none tracking-tight sm:text-4xl md:text-[2.7rem] ${corDe(tom)}`}
       >
         {Math.round(n).toLocaleString("pt-BR")}
         {sufixo && <span className="align-top text-2xl">{sufixo}</span>}
@@ -61,7 +61,7 @@ export function Escala() {
         gasolina no seu estado.
       </p>
 
-      <div className="mt-7 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
+      <div className="mt-7 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 md:grid-cols-3">
         {ACERVO.map((item) => (
           <NumeroAcervo key={item.rotulo} {...item} />
         ))}

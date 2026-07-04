@@ -101,7 +101,7 @@ export default function CadernoDengue() {
                 <p className="kicker mb-2">
                   {atual.municipio} · semana de {formataData(atual.inicio_semana)}
                 </p>
-                <p className={`font-display text-5xl font-semibold uppercase leading-none tracking-tight ${cor.texto}`}>
+                <p className={`font-display text-4xl sm:text-5xl font-semibold uppercase leading-none tracking-tight ${cor.texto}`}>
                   {atual.alerta}
                 </p>
               </div>

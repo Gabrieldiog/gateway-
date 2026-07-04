@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Masthead } from "@/components/Masthead";
 import { Indice } from "@/components/Indice";
-import { IndiceMobile } from "@/components/IndiceMobile";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -47,7 +46,6 @@ export default function RootLayout({
         <ThemeProvider>
           <Masthead />
           <div className="mx-auto w-full max-w-310 px-4 md:px-6">
-            <IndiceMobile />
             <div className="flex">
               <Indice />
               <main className="min-w-0 flex-1 py-6 md:py-10 md:pl-8">{children}</main>

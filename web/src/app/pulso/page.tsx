@@ -80,7 +80,7 @@ function TickerCotacao({ c }: { c: Cotacao }) {
         </span>
       </div>
       <p
-        className={`num mt-2 font-display text-4xl font-semibold tracking-tight transition-colors duration-500 ${corValor}`}
+        className={`num mt-2 font-display text-3xl sm:text-4xl font-semibold tracking-tight transition-colors duration-500 ${corValor}`}
       >
         R$ {formataPreco(valor)}
       </p>
@@ -104,7 +104,7 @@ function CardAcao({ a }: { a: Acao }) {
           {positiva ? "▲" : "▼"} {Math.abs(variacao).toFixed(2)}%
         </span>
       </div>
-      <p className="num mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+      <p className="num mt-2 font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink">
         {indice
           ? preco.toLocaleString("pt-BR", { maximumFractionDigits: 0 })
           : `R$ ${preco.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}

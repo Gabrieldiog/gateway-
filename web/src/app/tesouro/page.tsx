@@ -111,7 +111,7 @@ export default function CadernoTesouro() {
             </button>
           ))}
         </div>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1 gap-y-2">
           {ANOS.map((a) => (
             <button
               key={a}
@@ -187,9 +187,9 @@ export default function CadernoTesouro() {
       </div>
 
       <Card className="p-5 pt-6">
-        <div className="flex items-start justify-between gap-3 pl-5">
-          <div>
-            <h2 className="font-display text-2xl leading-tight text-ink">
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 pl-5">
+          <div className="min-w-0">
+            <h2 className="font-display text-2xl leading-tight text-ink break-words">
               {titulo} · {ano}
             </h2>
             <p className="num text-xs text-muted">
