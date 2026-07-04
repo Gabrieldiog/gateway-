@@ -6,8 +6,8 @@ from pydantic import ValidationError
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
-from balcao.models import Abate, CensoCidade, IndicadorAgro, Leite, PibCidade, SafraMensal
-from balcao.normalize import normaliza_uf
+from balcao.models import Abate, CensoCidade, IndicadorAgro, IndicadorTrabalho, Leite, PibCidade, SafraMensal
+from balcao.normalize import limpa_texto, normaliza_uf
 
 # código IBGE de 2 dígitos de cada UF (o SIDRA usa no nível n3)
 UF_IBGE = {
@@ -83,6 +83,20 @@ REBANHOS = {
     "caprino": 2681, "ovino": 2677, "bubalino": 2675, "codorna": 2680,
 }
 
+# PNAD Contínua trimestral: desemprego (tabela 4099, variável 4099) aceita
+# Brasil e UF; rendimento (tabela 6390) é só nacional (5933 real, 5929 nominal)
+RENDIMENTO_VAR = {"real": 5933, "nominal": 5929}
+
+FONTE_PNAD = {
+    "nome": "IBGE — PNAD Contínua",
+    "url": "https://www.ibge.gov.br/estatisticas/sociais/trabalho/9173-pesquisa-nacional-por-amostra-de-domicilios-continua-trimestral.html",
+    "nota": (
+        "A pesquisa oficial do mercado de trabalho, por amostra de domicílios. "
+        "Os trimestres são móveis (jan-fev-mar, fev-mar-abr...); o rendimento real "
+        "está a preços do último período, pra comparar com o passado sem a inflação atrapalhar."
+    ),
+}
+
 @register
 class SidraConnector(BaseConnector):
     name = "sidra"
@@ -109,6 +123,8 @@ class SidraConnector(BaseConnector):
         ),
         "censo": "Censo 2022 de um município: população, crescimento, domicílios (param: municipio)",
         "pib": "PIB municipal mais recente publicado (param: municipio)",
+        "desemprego": "taxa de desocupação da PNAD Contínua (params: por=brasil|uf; ultimos=1..12)",
+        "rendimento": "rendimento médio do trabalho, nacional (params: tipo=real|nominal; ultimos=1..12)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -138,6 +154,10 @@ class SidraConnector(BaseConnector):
                 return await self._censo(recurso, params)
             case ["pib"]:
                 return await self._pib(recurso, params)
+            case ["desemprego"]:
+                return await self._desemprego(recurso, params)
+            case ["rendimento"]:
+                return await self._rendimento(recurso, params)
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
 
@@ -392,3 +412,63 @@ class SidraConnector(BaseConnector):
             return float(str(v).strip())
         except ValueError:
             return None
+
+    def _ultimos(self, recurso: str, params: dict) -> int:
+        ultimos = str(params.get("ultimos", 8))
+        if not ultimos.isdigit() or not (1 <= int(ultimos) <= 12):
+            raise ParametroInvalido(recurso, ["ultimos"], ["1..12"])
+        return int(ultimos)
+
+    def _linhas_pnad(self, bruto: Any, indicador: str, unidade: str, com_uf: bool) -> list[dict]:
+        # D1=localidade, D2=variável, D3=período; a 1ª linha é o cabeçalho
+        sigla = {v: k for k, v in UF_IBGE.items()}
+        linhas = []
+        for row in bruto[1:] if isinstance(bruto, list) else []:
+            uf = None
+            if com_uf:
+                uf = sigla.get(int(row.get("D1C") or 0))
+            linhas.append({
+                "item": IndicadorTrabalho(
+                    indicador=indicador, unidade=unidade,
+                    local=limpa_texto(row.get("D1N")) or "Brasil", uf=uf,
+                    periodo=limpa_texto(row.get("D3N")) or "", valor=self._numero(row.get("V")),
+                ).model_dump(mode="json"),
+                "ord": str(row.get("D3C") or ""),
+            })
+        return linhas
+
+    async def _desemprego(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._checa(recurso, params, {"por", "ultimos"})
+        por = str(params.get("por", "brasil")).lower()
+        if por not in {"brasil", "uf"}:
+            raise ParametroInvalido(recurso, ["por"], ["brasil", "uf"])
+        rotulo = "Taxa de desocupação"
+        if por == "uf":
+            bruto = await self.get_json("/values/t/4099/n3/all/v/4099/p/last 1")
+            linhas = self._linhas_pnad(bruto, rotulo, "%", com_uf=True)
+            itens = [x["item"] for x in linhas]
+            itens.sort(key=lambda i: i["valor"] if i["valor"] is not None else -1, reverse=True)
+            periodo = itens[0]["periodo"] if itens else None
+            meta = {"por": "uf", "periodo": periodo, "fonte": FONTE_PNAD}
+        else:
+            ultimos = self._ultimos(recurso, params)
+            bruto = await self.get_json(f"/values/t/4099/n1/all/v/4099/p/last {ultimos}")
+            linhas = sorted(self._linhas_pnad(bruto, rotulo, "%", com_uf=False), key=lambda x: x["ord"])
+            itens = [x["item"] for x in linhas]
+            periodo = itens[-1]["periodo"] if itens else None
+            meta = {"por": "brasil", "periodo": periodo, "fonte": FONTE_PNAD}
+        return NormalizedResponse(fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta)
+
+    async def _rendimento(self, recurso: str, params: dict) -> NormalizedResponse:
+        self._checa(recurso, params, {"tipo", "ultimos"})
+        tipo = str(params.get("tipo", "real")).lower()
+        if tipo not in RENDIMENTO_VAR:
+            raise ParametroInvalido(recurso, ["tipo"], sorted(RENDIMENTO_VAR))
+        ultimos = self._ultimos(recurso, params)
+        rotulo = f"Rendimento médio mensal {'real' if tipo == 'real' else 'nominal'}"
+        bruto = await self.get_json(f"/values/t/6390/n1/1/v/{RENDIMENTO_VAR[tipo]}/p/last {ultimos}")
+        linhas = sorted(self._linhas_pnad(bruto, rotulo, "R$", com_uf=False), key=lambda x: x["ord"])
+        itens = [x["item"] for x in linhas]
+        periodo = itens[-1]["periodo"] if itens else None
+        meta = {"tipo": tipo, "periodo": periodo, "fonte": FONTE_PNAD}
+        return NormalizedResponse(fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta)

@@ -38,6 +38,7 @@ export const GRUPOS: Grupo[] = [
       { num: "XIV", nome: "Custo de Vida", sub: "inflação e o que o mercado espera", href: "/custo-de-vida" },
       { num: "VI", nome: "Impostos", sub: "arrecadação · país, estados, cidades", href: "/tesouro" },
       { num: "XIII", nome: "Arrecadômetro", sub: "quanto o Brasil já arrecadou", href: "/arrecadometro" },
+      { num: "XXXVII", nome: "Trabalho e Renda", sub: "desemprego e salário pela PNAD", href: "/trabalho" },
       { num: "XX", nome: "Comércio Exterior", sub: "balança comercial e parceiros", href: "/comercio" },
       { num: "XXI", nome: "Combustíveis", sub: "gasolina, etanol e gás por estado", href: "/combustiveis" },
       { num: "XXII", nome: "Títulos Públicos", sub: "Tesouro Direto: taxa e preço do dia", href: "/titulos" },

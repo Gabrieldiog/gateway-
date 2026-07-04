@@ -987,3 +987,15 @@ class IndicadorEducacao(BaseModel):
     serie: list[dict] = []  # [{ano, valor}]
     ultimo_ano: int | None = None
     ultimo_valor: float | None = None
+
+
+class IndicadorTrabalho(BaseModel):
+    """Uma medida da PNAD Contínua: desemprego ou rendimento, nacional ou por UF."""
+
+    fonte: str = "sidra"
+    indicador: str  # "Taxa de desocupação", "Rendimento médio mensal real"...
+    unidade: str  # "%" ou "R$"
+    local: str = "Brasil"
+    uf: str | None = None
+    periodo: str  # "1º trimestre 2026" ou "mar-abr-mai 2026"
+    valor: float | None = None

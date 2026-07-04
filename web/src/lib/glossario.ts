@@ -111,6 +111,16 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  desocupacao: {
+    titulo: "Taxa de desocupação",
+    texto:
+      "O nome técnico do desemprego, medido pelo IBGE: entre as pessoas de 14 anos ou mais que querem e procuraram trabalho, quantas não acharam. Quem desistiu de procurar não entra na conta — por isso o número real de sem-trabalho costuma ser maior.",
+  },
+  rendimentoreal: {
+    titulo: "Rendimento real",
+    texto:
+      "Quanto as pessoas ganham do trabalho, já descontada a inflação e trazido a preços de hoje. É o que permite comparar o salário de agora com o de anos atrás sem a ilusão dos números maiores — se o real subiu, o poder de compra subiu de verdade.",
+  },
   ideb: {
     titulo: "IDEB",
     texto:
