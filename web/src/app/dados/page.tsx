@@ -190,9 +190,9 @@ function TabelaRecurso({
         <Vazio>recurso sem linhas.</Vazio>
       ) : (
         <EmTransicao ativo={linhas.carregando}>
-        <div className="overflow-x-auto">
+        <div className="max-h-[75vh] overflow-auto">
           <table className="w-full text-left text-xs">
-            <thead>
+            <thead className="grudento">
               <tr className="border-b border-line">
                 {campos.slice(0, 8).map((c) => (
                   <th key={c} className="num whitespace-nowrap py-1.5 pr-4 font-semibold text-muted">

@@ -75,9 +75,9 @@ export default function CadernoTitulos() {
         <Esqueleto linhas={10} />
       ) : titulos.length ? (
         <EmTransicao ativo={r.carregando}>
-          <Card className="overflow-x-auto p-0">
+          <Card className="max-h-[75vh] overflow-auto p-0">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="grudento">
                 <tr className="border-b border-line text-left">
                   <th className="kicker px-5 py-3 font-normal">título</th>
                   <th className="kicker px-3 py-3 text-right font-normal">vence em</th>
