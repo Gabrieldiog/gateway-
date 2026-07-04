@@ -190,8 +190,8 @@ function PorVotacao() {
           <Vazio>escolha uma votação.</Vazio>
         ) : (
           <Card className="p-5 pt-6">
-            <div className="flex items-start justify-between gap-3 pl-5">
-              <p className="max-w-[46ch] font-editorial text-[1.02rem] leading-snug text-ink">
+            <div className="flex flex-wrap items-start justify-between gap-3 gap-y-1 pl-5">
+              <p className="min-w-0 max-w-[46ch] font-editorial text-[1.02rem] leading-snug text-ink">
                 {sel.descricao}
               </p>
               <Carimbo
@@ -371,7 +371,7 @@ function PorParlamentar() {
           className="w-44 rounded-md border border-line bg-surface px-3 py-1.5 text-sm text-ink placeholder:text-muted"
         />
         {casa === "camara" && (
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             <span className="num text-xs uppercase tracking-wider text-muted">período</span>
             {["recente", "2026", "2025", "2024", "2023"].map((p) => (
               <button
@@ -456,8 +456,8 @@ function PorParlamentar() {
             </div>
           ) : res ? (
             <EmTransicao ativo={votos.carregando}>
-              <div className="mb-4 flex items-end justify-between gap-3">
-                <div>
+              <div className="mb-4 flex flex-wrap items-end justify-between gap-3 gap-y-1">
+                <div className="min-w-0">
                   <h2 className="font-display text-2xl leading-tight text-ink">{res.parlamentar.nome}</h2>
                   <p className="num text-xs text-muted">
                     {[res.parlamentar.partido, res.parlamentar.uf].filter(Boolean).join(" · ")} ·{" "}

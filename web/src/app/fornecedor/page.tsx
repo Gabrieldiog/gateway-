@@ -100,7 +100,7 @@ export default function CadernoFornecedor() {
           value={cnpj}
           onChange={(e) => setCnpj(e.target.value)}
           placeholder="CNPJ (com ou sem máscara)"
-          className="num w-72 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
+          className="num w-full sm:w-72 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
         />
         <button
           type="submit"

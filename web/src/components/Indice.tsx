@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CAPA, GRUPOS, cadernoAtivo, type Caderno } from "@/lib/cadernos";
+import { CAPA, GRUPOS, cadernoAtivo, numeroDoCaderno, type Caderno } from "@/lib/cadernos";
 
 // o sumário cresceu: cada tema agora é uma gaveta. A da página atual abre
 // sozinha; as outras ficam fechadas até o leitor querer.
@@ -97,7 +97,7 @@ function ItemCaderno({ c, ativo }: { c: Caderno; ativo: boolean }) {
       }`}
     >
       <span className={`num w-5 shrink-0 text-xs ${ativo ? "text-accent" : "text-muted"}`}>
-        {c.num}
+        {numeroDoCaderno(c.href)}
       </span>
       <span className="flex flex-col leading-tight">
         <span

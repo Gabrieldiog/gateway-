@@ -221,23 +221,25 @@ export default function CadernoAgua() {
           região — a <Termo t="cota">cota</Termo> e a evolução dos últimos 30 dias vêm juntas.
         </p>
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
-            {SISTEMAS.map(([v, label]) => (
-              <button
-                key={v}
-                onClick={() => {
-                  setSistema(v);
-                  setUf("");
-                  setCodigo("");
-                }}
-                aria-pressed={sistema === v}
-                className={`num rounded px-3 py-1 text-xs uppercase tracking-wider transition-colors ${
-                  sistema === v ? "bg-accent/15 font-semibold text-accent" : "text-muted hover:text-ink"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="-mx-1 overflow-x-auto px-1">
+            <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+              {SISTEMAS.map(([v, label]) => (
+                <button
+                  key={v}
+                  onClick={() => {
+                    setSistema(v);
+                    setUf("");
+                    setCodigo("");
+                  }}
+                  aria-pressed={sistema === v}
+                  className={`num shrink-0 whitespace-nowrap rounded px-3 py-1 text-xs uppercase tracking-wider transition-colors ${
+                    sistema === v ? "bg-accent/15 font-semibold text-accent" : "text-muted hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
           {sistema === "nordeste" && (
             <Seletor

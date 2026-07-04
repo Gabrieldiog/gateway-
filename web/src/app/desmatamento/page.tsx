@@ -52,7 +52,7 @@ export default function CadernoDesmatamento() {
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+        <div className="flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {BIOMAS.map(([v, label]) => (
             <button
               key={v}
@@ -102,7 +102,7 @@ export default function CadernoDesmatamento() {
           </div>
 
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+            <div className="flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
               {NIVEIS.map(([v, label]) => (
                 <button
                   key={v}

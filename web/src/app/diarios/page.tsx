@@ -90,7 +90,7 @@ export default function CadernoDiarios() {
           value={termo}
           onChange={(e) => setTermo(e.target.value)}
           placeholder="o que procurar no diário?"
-          className="w-64 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
+          className="w-full min-w-0 sm:w-64 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus:border-accent focus:outline-none"
         />
         <button
           type="submit"
@@ -150,7 +150,7 @@ export default function CadernoDiarios() {
                 {d.trechos.map((t, j) => (
                   <blockquote
                     key={j}
-                    className="mb-2 border-l-2 border-accent/40 pl-3 font-editorial text-sm italic leading-relaxed text-ink/80"
+                    className="mb-2 border-l-2 border-accent/40 pl-3 font-editorial text-sm italic leading-relaxed text-ink/80 wrap-anywhere"
                   >
                     …{t.trim()}…
                   </blockquote>
@@ -185,7 +185,7 @@ export default function CadernoDiarios() {
               </Card>
             ))}
           </div>
-          <div className="mt-5 flex items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3 gap-y-2">
             <button
               onClick={() => setPagina((p) => Math.max(1, p - 1))}
               disabled={pagina <= 1}

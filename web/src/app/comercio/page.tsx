@@ -198,7 +198,7 @@ function Rankings() {
   return (
     <section className="mt-10">
       <div className="mb-4 flex flex-wrap items-center gap-4">
-        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+        <div className="inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {DIMS.map(([v, label]) => (
             <button
               key={v}
@@ -212,7 +212,7 @@ function Rankings() {
             </button>
           ))}
         </div>
-        <div className="inline-flex gap-0.5 rounded-md border border-line p-0.5">
+        <div className="inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {(
             [
               ["exportacao", "o Brasil vende"],

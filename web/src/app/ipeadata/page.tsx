@@ -65,7 +65,7 @@ export default function CadernoIpea() {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="buscar série (ex: PIB, Selic, Desemprego)"
-          className="w-72 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
+          className="w-full sm:w-72 rounded-md border border-line bg-surface px-3 py-1.5 text-ink placeholder:text-muted"
         />
         <button className="num rounded-md border border-accent bg-accent px-3 py-1.5 text-xs uppercase tracking-wider text-surface">
           buscar

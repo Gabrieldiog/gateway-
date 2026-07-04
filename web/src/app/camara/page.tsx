@@ -156,7 +156,7 @@ export default function CadernoCamara() {
             <p className="kicker">
               <Termo t="ceap">Cota parlamentar</Termo>
             </p>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap justify-end gap-1">
               {OPCOES_ANO.map((a) => (
                 <button
                   key={a}
@@ -200,7 +200,7 @@ function PainelGastos({ deputado, ano }: { deputado: Deputado; ano: number }) {
 
   return (
     <Card className="p-5 pt-6">
-      <div className="flex items-start justify-between gap-3 pl-5">
+      <div className="flex items-start justify-between gap-3 pl-0 sm:pl-5">
         <div>
           <h2 className="font-display text-2xl leading-tight text-ink">{deputado.nome}</h2>
           <p className="num text-xs text-muted">
@@ -210,7 +210,7 @@ function PainelGastos({ deputado, ano }: { deputado: Deputado; ano: number }) {
         <Carimbo fonte="CÂMARA" ms={ms} erro={!!erro} />
       </div>
 
-      <div className="my-5 pl-5">
+      <div className="my-5 pl-0 sm:pl-5">
         {erro ? (
           <ErroBox erro={erro} aoTentar={recarregar} />
         ) : carregando && !dados ? (
@@ -263,7 +263,7 @@ function PainelTodosAnos({ deputado }: { deputado: Deputado }) {
 
   return (
     <Card className="p-5 pt-6">
-      <div className="flex items-start justify-between gap-3 pl-5">
+      <div className="flex items-start justify-between gap-3 pl-0 sm:pl-5">
         <div>
           <h2 className="font-display text-2xl leading-tight text-ink">{deputado.nome}</h2>
           <p className="num text-xs text-muted">
@@ -273,7 +273,7 @@ function PainelTodosAnos({ deputado }: { deputado: Deputado }) {
         <Carimbo fonte="CÂMARA" ms={null} />
       </div>
 
-      <div className="my-5 pl-5">
+      <div className="my-5 pl-0 sm:pl-5">
         {estado.carregando ? (
           <Esqueleto linhas={4} />
         ) : (
@@ -355,7 +355,7 @@ function PainelPerfil({ deputadoId }: { deputadoId: number }) {
         <Esqueleto linhas={3} />
       ) : perfil ? (
         <EmTransicao ativo={carregando}>
-          <Card className="p-4 pl-7">
+          <Card className="p-4 pl-4 sm:pl-7">
             <ul className="flex flex-col gap-1.5">
               {linhas.map(([rotulo, valor]) => (
                 <li key={rotulo} className="flex items-baseline gap-3">
@@ -411,7 +411,7 @@ function PainelNotas({ deputadoId, ano }: { deputadoId: number; ano: AnoSel }) {
         <Vazio>nenhuma nota nesse período.</Vazio>
       ) : (
         <EmTransicao ativo={carregando}>
-          <Card className="p-4 pl-7">
+          <Card className="p-4 pl-4 sm:pl-7">
             <ul className="flex flex-col divide-y divide-line">
               {notas.map((n, i) => (
                 <li key={`${n.data}-${n.valor}-${i}`} className="flex items-start justify-between gap-3 py-2 first:pt-0 last:pb-0">
@@ -467,7 +467,7 @@ function PainelDiscursos({ deputadoId }: { deputadoId: number }) {
         <Vazio>sem discursos recentes.</Vazio>
       ) : (
         <EmTransicao ativo={carregando}>
-          <Card className="p-4 pl-7">
+          <Card className="p-4 pl-4 sm:pl-7">
             <ul className="flex flex-col divide-y divide-line">
               {discursos.map((d, i) => (
                 <DiscursoItem key={`${d.data}-${i}`} discurso={d} />

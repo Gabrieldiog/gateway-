@@ -37,9 +37,9 @@ export default function CadernoExpediente() {
             <article key={f.nome} className="relative rounded-lg border border-line bg-surface p-5">
               <AzulejoGlifo size={14} className="absolute left-2 top-2 text-accent-2/35" />
               <div className="flex items-start justify-between gap-3 pl-5">
-                <div>
+                <div className="min-w-0">
                   <h2 className="font-display text-2xl capitalize leading-tight text-ink">{f.nome}</h2>
-                  <p className="num mt-0.5 text-xs text-accent-2">{f.base_url}</p>
+                  <p className="num mt-0.5 break-all text-xs text-accent-2">{f.base_url}</p>
                 </div>
                 <span
                   className={`num shrink-0 rounded-sm border px-2 py-0.5 text-[0.62rem] uppercase tracking-wider ${

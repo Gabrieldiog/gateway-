@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePulso } from "@/lib/pulso";
 import { TemaToggle } from "@/components/TemaToggle";
+import { MenuMobile } from "@/components/MenuMobile";
 import { apiGet, caminho } from "@/lib/api";
 import type { FontesOut } from "@/lib/types";
 
@@ -30,9 +31,10 @@ export function Masthead() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-ink/15 bg-bg/85 backdrop-blur-sm">
-      <div className="mx-auto flex w-full max-w-310 items-center gap-4 px-4 py-3 md:px-6">
+      <div className="mx-auto flex w-full max-w-310 items-center gap-3 px-4 py-3 md:gap-4 md:px-6">
+        <MenuMobile />
         <Link href="/" className="group flex items-baseline gap-2">
-          <span className="font-display text-2xl font-semibold tracking-[0.14em] text-ink">
+          <span className="font-display text-xl font-semibold tracking-[0.14em] text-ink sm:text-2xl">
             BALCÃO
           </span>
           <span className="hidden font-editorial text-sm italic text-muted sm:inline">
@@ -54,9 +56,12 @@ export function Masthead() {
           <TemaToggle />
         </div>
 
-        {/* versão compacta no mobile */}
+        {/* versão compacta no mobile — no celular estreito o pulso sai de cena
+            pra sobrar espaço; volta no sm+ */}
         <div className="ml-auto flex items-center gap-3 text-[0.7rem] lg:hidden">
-          <PulsoBadge ms={pulso?.ms ?? null} cache={pulso?.cache ?? null} />
+          <span className="hidden items-center sm:flex">
+            <PulsoBadge ms={pulso?.ms ?? null} cache={pulso?.cache ?? null} />
+          </span>
           <TemaToggle />
         </div>
       </div>

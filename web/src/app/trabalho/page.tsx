@@ -65,7 +65,7 @@ function IndicadorNacional({
 
   return (
     <Card className="p-5">
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
         <p className="kicker">{titulo}</p>
         <Carimbo fonte="IBGE" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={false} />
       </div>

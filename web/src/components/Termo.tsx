@@ -44,7 +44,7 @@ export function Termo({ t, children }: { t: string; children: React.ReactNode })
       {aberto && (
         <span
           role="note"
-          className="absolute left-1/2 top-full z-30 mt-2 block w-72 max-w-[80vw] -translate-x-1/2 rounded-md border border-line bg-surface p-3.5 text-left shadow-lg"
+          className="absolute left-1/2 top-full z-30 mt-2 block w-72 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-md border border-line bg-surface p-3.5 text-left shadow-lg"
         >
           <span className="block font-display text-sm font-semibold normal-case tracking-normal text-ink">
             {def.titulo}

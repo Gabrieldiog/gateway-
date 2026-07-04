@@ -107,3 +107,35 @@ export const CADERNOS: Caderno[] = [CAPA, ...GRUPOS.flatMap((g) => g.cadernos)];
 export function cadernoAtivo(path: string, href: string): boolean {
   return href === "/" ? path === "/" : path.startsWith(href);
 }
+
+// numeração romana por grupo: cada seção recomeça em I, II, III... como um
+// jornal de verdade (o número é a posição do caderno DENTRO do seu tema)
+const ROMANOS = [
+  "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+  "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX",
+];
+
+function romano(n: number): string {
+  return ROMANOS[n] ?? String(n);
+}
+
+// href -> numeral da posição no grupo (a Capa é a abertura, fica "I")
+const NUMERO_POR_HREF: Record<string, string> = { [CAPA.href]: "I" };
+for (const g of GRUPOS) {
+  g.cadernos.forEach((c, i) => {
+    NUMERO_POR_HREF[c.href] = romano(i + 1);
+  });
+}
+
+export function numeroDoCaderno(href: string): string {
+  return NUMERO_POR_HREF[href] ?? "";
+}
+
+// pra o cabeçalho de cada página achar seu número pelo pathname atual
+export function numeroDoPath(path: string): string {
+  if (path === "/") return "I";
+  const achado = [CAPA, ...GRUPOS.flatMap((g) => g.cadernos)].find(
+    (c) => c.href !== "/" && path.startsWith(c.href),
+  );
+  return achado ? numeroDoCaderno(achado.href) : "";
+}
