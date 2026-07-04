@@ -67,6 +67,7 @@ export default function CadernoCamara() {
         kicker="Câmara dos Deputados"
         titulo="Quem são e quanto gastam"
         resumo="A lista de deputados em exercício e, para cada um, a cota parlamentar (CEAP) agregada por tipo de despesa. Filtre por estado ou partido e escolha um nome."
+        referencia={ano === "todos" ? `mandato 2023–${ANO_ATUAL}` : `gastos de ${ano}`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

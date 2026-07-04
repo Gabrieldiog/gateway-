@@ -254,6 +254,7 @@ export default function CadernoAlmanaque() {
     caminho("loterias/resultado", { jogo }),
   );
   const fonteLoterias = r.dados?.meta?.fonte as FonteDado | undefined;
+  const s = r.dados?.dados?.[0];
 
   return (
     <div>
@@ -262,6 +263,7 @@ export default function CadernoAlmanaque() {
         kicker="Loterias CAIXA · IBGE"
         titulo="Almanaque"
         resumo="A parte do jornal que todo mundo abre primeiro: deu quanto na Mega? E o dado que ninguém sabia que queria: quantos brasileiros têm o seu nome — e quando ele esteve na moda."
+        referencia={s ? `concurso ${s.concurso}${s.data ? ` · ${formataData(s.data)}` : ""}` : undefined}
       />
 
       <section className="mb-10">

@@ -7,7 +7,7 @@ import { Carimbo } from "@/components/Carimbo";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
-import { caminho } from "@/lib/api";
+import { caminho, formataData } from "@/lib/api";
 import type { DatasetCKAN, NormalizedResponse } from "@/lib/types";
 
 const FONTE_CKAN = {
@@ -47,6 +47,7 @@ export default function CadernoDados() {
         kicker="Dados Abertos · CKAN"
         titulo="Os portais de dados abertos"
         resumo="ANEEL, MME e ANTT publicam em CKAN — o mesmo padrão atrás de um motor só no Balcão. Escolha o portal, busque um conjunto e abra as linhas reais (datastore)."
+        referencia={ds?.atualizado ? `atualizado em ${formataData(ds.atualizado.slice(0, 10))}` : undefined}
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">

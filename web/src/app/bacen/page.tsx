@@ -48,6 +48,7 @@ export default function CadernoBacen() {
         kicker="Banco Central · SGS"
         titulo="Séries econômicas"
         resumo="Selic, CDI, inflação e câmbio direto do Sistema Gerenciador de Séries do Banco Central. O Balcão fala ISO 8601 e traduz para o dd/mm/aaaa que a fonte exige."
+        referencia={ultimo ? `${serie.nome} até ${formataData(ultimo.data)}` : undefined}
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">

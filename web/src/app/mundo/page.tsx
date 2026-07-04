@@ -131,6 +131,9 @@ export default function CadernoMundo() {
   const painel = useBalcao<NormalizedResponse<IndicadorMundial>>(caminho("mundo/painel"));
   const cartoes = painel.dados?.dados ?? [];
   const fonte = painel.dados?.meta?.fonte as FonteDado | undefined;
+  const anoMax = cartoes.length
+    ? Math.max(...cartoes.map((c) => c.ano).filter(Boolean))
+    : undefined;
 
   return (
     <div>
@@ -139,6 +142,7 @@ export default function CadernoMundo() {
         kicker="Banco Mundial · WDI"
         titulo="Brasil no Mundo"
         resumo="Como o país se compara com os vizinhos, os BRICS e os ricos — PIB por pessoa, expectativa de vida, desigualdade, internet e carbono, tudo na mesma régua do Banco Mundial. O ano ao lado de cada número diz de quando é a medição."
+        referencia={anoMax ? `dados de ${anoMax}` : undefined}
       />
 
       <section className="mb-10">

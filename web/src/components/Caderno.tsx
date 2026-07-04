@@ -17,11 +17,15 @@ export function CadernoHeader({
   kicker,
   titulo,
   resumo,
+  referencia,
 }: {
   numero?: string;
   kicker: string;
   titulo: string;
   resumo?: string;
+  // a data/janela exata do dado carregado (ex.: "maio/2026"); quando a página
+  // sabe dizer, ela vira o detalhe do selo — senão fica o texto da cadência
+  referencia?: string;
 }) {
   const path = usePathname();
   const num = numeroDoPath(path) || numero || "";
@@ -51,7 +55,7 @@ export function CadernoHeader({
       </div>
       {fresco && (
         <div className="mt-3">
-          <BadgeFrescor rotulo={fresco.rotulo} detalhe={fresco.detalhe} />
+          <BadgeFrescor rotulo={fresco.rotulo} detalhe={referencia || fresco.detalhe} />
         </div>
       )}
     </header>

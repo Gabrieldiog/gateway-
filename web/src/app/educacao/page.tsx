@@ -200,6 +200,13 @@ export default function CadernoEducacao() {
   const cidades = useBalcao<NormalizedResponse<Municipio>>(caminho("ibge/municipios", { uf }));
   const municipios = cidades.dados?.dados ?? [];
 
+  // mesma chamada que o filho Censo faz com o tema default: o cache do gateway dedup,
+  // e daqui a gente pesca o ano do Censo mais recente pra carimbar no selo de frescor
+  const censo = useBalcao<NormalizedResponse<IndicadorEducacao>>(
+    caminho("educacao/censo", { municipio: ibge, tema: "matriculas" }),
+  );
+  const anoCenso = censo.dados?.dados?.find((e) => e.ultimo_ano != null)?.ultimo_ano ?? null;
+
   return (
     <div>
       <CadernoHeader
@@ -207,6 +214,7 @@ export default function CadernoEducacao() {
         kicker="INEP · IDEB e Censo Escolar"
         titulo="Educação"
         resumo="Como vai a escola da sua cidade: a nota do IDEB rede por rede, etapa por etapa, e o tamanho real da rede de ensino — quantas matrículas, quantos professores, quantas escolas. Traço no lugar da nota é ano que o INEP não divulgou."
+        referencia={anoCenso ? `Censo ${anoCenso}` : undefined}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

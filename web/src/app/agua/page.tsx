@@ -171,6 +171,7 @@ export default function CadernoAgua() {
   const grandes = principais.dados?.dados ?? [];
   const opcoes = lista.dados?.dados ?? [];
   const fonte = principais.dados?.meta?.fonte as FonteDado | undefined;
+  const dataMed = grandes.map((m) => m.data).filter(Boolean).sort().at(-1);
 
   return (
     <div>
@@ -179,6 +180,7 @@ export default function CadernoAgua() {
         kicker="ANA · Sala de Situação"
         titulo="Água"
         resumo="Quanta água tem nos reservatórios do país — das hidrelétricas que acendem a luz aos açudes do Semiárido e ao Cantareira que abastece São Paulo. Medição diária informada à ANA, reservatório por reservatório."
+        referencia={dataMed ? `medição de ${formataData(dataMed)}` : undefined}
       />
 
       <section className="mb-10">
