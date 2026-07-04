@@ -14,7 +14,7 @@ from balcao.connectors.base import connector_classes
 from balcao.exceptions import BalcaoError
 from balcao.http import cria_client
 from balcao.logs import configura_logging, loga
-from balcao.ratelimit import cria_limiter
+from balcao.ratelimit import cria_limiter, le_chaves
 from balcao.resilience import CircuitBreaker
 from balcao.routers import meta, sources, unified
 from balcao.seguranca import ArquivosSeguranca
@@ -63,7 +63,7 @@ def create_app() -> FastAPI:
     )
 
     # a variante ASGI e a unica que aceita exception handler async
-    app.state.limiter = cria_limiter(settings.rate_limit)
+    app.state.limiter = cria_limiter(settings.rate_limit, le_chaves(settings.api_keys))
     app.add_middleware(SlowAPIASGIMiddleware)
 
     # rotas exatas (/v1/fontes, /v1/buscar, /v1/gastos) antes da generica
