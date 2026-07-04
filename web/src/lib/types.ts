@@ -899,3 +899,14 @@ export interface RankingNome {
   nome: string;
   frequencia: number;
 }
+
+export interface IndicadorMundial {
+  fonte: string;
+  indicador: string;
+  codigo: string;
+  unidade: string;
+  pais: string;
+  iso3: string;
+  ano: number;
+  valor: number;
+}

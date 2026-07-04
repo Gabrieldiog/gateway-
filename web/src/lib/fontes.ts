@@ -21,6 +21,7 @@ export const NOME_FONTE: Record<string, string> = {
   ipeadata: "o IPEADATA",
   loterias: "as Loterias CAIXA",
   mme: "o Ministério de Minas e Energia",
+  mundo: "o Banco Mundial",
   obrasgov: "o Obrasgov (Ministério da Gestão)",
   ons: "o ONS",
   pncp: "o PNCP",
