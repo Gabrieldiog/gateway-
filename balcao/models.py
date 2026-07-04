@@ -949,3 +949,16 @@ class RankingNome(BaseModel):
     posicao: int
     nome: str
     frequencia: int
+
+
+class IndicadorMundial(BaseModel):
+    """Um valor de indicador do Banco Mundial pra um país num ano."""
+
+    fonte: str = "mundo"
+    indicador: str  # rótulo legível
+    codigo: str  # o id no Banco Mundial (NY.GDP.PCAP.CD)
+    unidade: str = ""
+    pais: str
+    iso3: str
+    ano: int
+    valor: float

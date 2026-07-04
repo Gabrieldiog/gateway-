@@ -54,6 +54,7 @@ export const GRUPOS: Grupo[] = [
       { num: "V", nome: "IBGE", sub: "estados e municípios", href: "/ibge" },
       { num: "XVI", nome: "Queimadas", sub: "focos de incêndio por estado e bioma", href: "/queimadas" },
       { num: "XXXI", nome: "Água", sub: "quanto têm os reservatórios, dia a dia", href: "/agua" },
+      { num: "XXXIV", nome: "Brasil no Mundo", sub: "o país comparado com o planeta", href: "/mundo" },
     ],
   },
   {

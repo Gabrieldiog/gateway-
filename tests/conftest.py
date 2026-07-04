@@ -119,6 +119,15 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     if "rdrweb/rest/ext/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_reclamacoes_lista"))
+    # Banco Mundial — a expectativa de vida chega com BOM UTF-8 na frente do
+    # JSON (como parte das respostas reais); indicador inexistente vira message
+    if "api.worldbank.org/v2/country" in url:
+        if "SP.DYN.LE00.IN" in url:
+            corpo = json.dumps(carrega_fixture("mundo_expectativa")).encode()
+            return httpx.Response(200, content=b"\xef\xbb\xbf" + corpo)
+        if "XX.BAD" in url:
+            return httpx.Response(200, json=[{"message": [{"id": "175", "key": "Invalid format"}]}])
+        return httpx.Response(200, json=carrega_fixture("mundo_pib"))
     # Loterias CAIXA — resultado por jogo
     if "servicebus2.caixa.gov.br/portaldeloterias" in url:
         arquivo = "loterias_duplasena" if "/duplasena" in url else "loterias_megasena"

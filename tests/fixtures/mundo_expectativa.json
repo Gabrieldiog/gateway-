@@ -1,0 +1,63 @@
+[
+ {
+  "page": 1,
+  "pages": 1,
+  "per_page": 100,
+  "total": 4,
+  "lastupdated": "2026-07-01"
+ },
+ [
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "CL",
+    "value": "Chile"
+   },
+   "countryiso3code": "CHL",
+   "date": "2024",
+   "value": 81.359
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BR",
+    "value": "Brazil"
+   },
+   "countryiso3code": "BRA",
+   "date": "2024",
+   "value": 76.023
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AR",
+    "value": "Argentina"
+   },
+   "countryiso3code": "ARG",
+   "date": "2024",
+   "value": 77.543
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "VE",
+    "value": "Venezuela"
+   },
+   "countryiso3code": "VEN",
+   "date": "2024",
+   "value": null
+  }
+ ]
+]
