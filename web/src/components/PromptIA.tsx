@@ -1,48 +1,85 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useBalcao } from "@/hooks/useBalcao";
+import { caminho } from "@/lib/api";
+import type { Fonte, FontesOut } from "@/lib/types";
 
-// o prompt pronto pra colar em qualquer assistente de IA: ensina a API
-// inteira e ainda instrui a IA a narrar o que está fazendo pro usuário
-// nunca ficar no escuro.
+// o prompt pronto pra colar em qualquer assistente de IA. Ensina a API
+// inteira — como chamar cada dado, como acender só as fontes que interessam,
+// como ler o erro — e ainda instrui a IA a narrar o que faz. O catálogo das
+// fontes é montado AO VIVO do próprio /v1/fontes: nunca envelhece, e lista
+// exatamente os recursos e filtros que o servidor aceita neste momento.
 
-const PROMPT = `Você é meu assistente para usar o Balcão, um gateway público que unifica os dados abertos do Brasil (Câmara, Senado, Banco Central, IBGE, Tesouro, INPE, ANP e mais 18 fontes oficiais) numa API só.
+const NUCLEO = (catalogo: string) => `Você é meu assistente para consultar o Balcão, um gateway que unifica os dados abertos do Brasil (33 fontes oficiais — Câmara, Senado, Banco Central, IBGE, INPE, ANP, Tesouro e muitas outras) numa API só, já normalizada.
 
-COMO A API FUNCIONA
+━━ COMO A API FUNCIONA ━━
 - Base: http://localhost:8000 (se eu te passar outra URL, use a minha).
-- Descoberta: GET /v1/fontes lista todas as fontes com os recursos e filtros aceitos de cada uma. Comece SEMPRE por aí antes de montar qualquer chamada.
-- Padrão: GET /v1/{fonte}/{recurso}?{filtros}. Exemplos reais:
-  /v1/camara/deputados?uf=SP&partido=PT
-  /v1/bacen/selic?ultimos=10
-  /v1/anp/precos?combustivel=gasolina&por=estado
-  /v1/inpe/queimadas?por=bioma&data=2026-07-01
-- Busca em várias fontes de uma vez: GET /v1/buscar?q=termo&fontes=camara,senado
-- A resposta vem sempre no mesmo envelope JSON: { fonte, recurso, dados: [...], total, meta }. Os dados já chegam normalizados: datas em ISO, CNPJ só dígitos, UF em sigla.
-- meta.cache diz de onde veio: "hit" (memória), "miss" (foi à fonte agora), "stale" (a fonte oficial caiu e o gateway serviu a cópia recente que guardou).
+- Toda chamada segue o mesmo formato: GET /v1/{fonte}/{recurso}?{filtros}
+- A resposta vem sempre no mesmo envelope JSON: { fonte, recurso, total, dados: [...], meta }.
+  Os dados já chegam normalizados: datas em ISO (AAAA-MM-DD), CNPJ só dígitos, UF em sigla.
+- meta.cache diz de onde veio o dado: "hit" (veio da memória), "miss" (buscou na fonte agora), "stale" (a fonte oficial caiu e o gateway serviu a cópia recente que tinha guardado).
 
-SE DER ERRO
-- 400: algum filtro é inválido — a própria resposta lista os aceitos; corrija e tente de novo.
-- 404: essa fonte/recurso/dado não existe (ou o arquivo do dia ainda não foi publicado pelo órgão).
-- 429: passou de 100 chamadas por minuto — espere um pouco antes de continuar.
-- 502: a fonte oficial está fora do ar; isso é comum em API de governo e costuma voltar em minutos — tente de novo.
-- 503: essa fonte exige chave de API que não está configurada no servidor.
+━━ COMO PEDIR EXATAMENTE O DADO QUE EU QUERO ━━
+1. DESCUBRA primeiro: GET /v1/fontes devolve a lista das fontes, os recursos de cada uma e os filtros que cada recurso aceita. É o índice vivo — na dúvida, consulte antes de montar a chamada.
+2. UM DADO ESPECÍFICO: monte GET /v1/{fonte}/{recurso} e use os filtros pra estreitar. Exemplos:
+   /v1/camara/deputados?uf=SP&partido=PT      → deputados de SP no PT
+   /v1/bacen/selic?ultimos=10                 → as 10 últimas taxas Selic
+   /v1/anp/precos?combustivel=gasolina&por=estado
+   /v1/inpe/queimadas?por=bioma&data=2026-07-01
+   Os filtros (entre parênteses no catálogo abaixo) são como você DEIXA DE FORA o que não interessa: peça só a UF, o ano ou o produto que importam.
+3. VÁRIAS FONTES DE UMA VEZ — acender umas e apagar outras: GET /v1/buscar?q={termo}&fontes={lista}
+   /v1/buscar?q=educacao&fontes=camara,senado  → dispara SÓ essas duas em paralelo e junta o resultado
+   /v1/buscar?q=educacao                        → sem "fontes", bate em TODAS as fontes de uma vez
+   Uma fonte que falhe não derruba as outras: você recebe o que respondeu.
+   Obs.: não existe seleção de campo por "?campos=". Pra reduzir o que volta, use os filtros do recurso (item 2) e, entre fontes, o parâmetro "fontes" (item 3).
 
-O QUE EU ESPERO DE VOCÊ (importante!)
+━━ O CATÁLOGO COMPLETO (todos os dados que o Balcão serve) ━━
+${catalogo}
+
+━━ SE DER ERRO ━━
+- 400: algum filtro está inválido — a própria resposta lista os aceitos; corrija e repita.
+- 404: essa fonte/recurso não existe, ou o arquivo do dia ainda não foi publicado pelo órgão.
+- 429: passou de 2000 chamadas por minuto — espere alguns segundos antes de continuar.
+- 502: a fonte oficial está fora do ar (comum em API de governo; costuma voltar em minutos) — tente de novo; se meta.cache vier "stale", é a cópia recente que o gateway guardou.
+- 503: essa fonte exige uma chave de API que não está configurada no servidor.
+
+━━ O QUE EU ESPERO DE VOCÊ ━━
 1. Antes de cada chamada, me diga em UMA frase o que vai buscar e por quê.
 2. Depois de cada resposta, explique o que veio em linguagem simples, sem jargão, citando a fonte oficial e a data do dado.
-3. Se der erro, me explique o que aconteceu em termos humanos e o que você vai fazer a respeito.
+3. Se der erro, me explique em termos humanos o que aconteceu e o que você vai fazer a respeito.
 4. Nunca invente número: se o dado não veio, diga que não veio.
 5. No final, resuma o que encontrou e sugira uma próxima pergunta que eu poderia fazer.
 
 Minha primeira pergunta é: [escreva aqui o que você quer saber]`;
 
+const CATALOGO_OFFLINE =
+  "(Rode GET /v1/fontes pra ver a lista completa e atualizada — o servidor estava fora de alcance quando este prompt foi gerado.)";
+
+function montaCatalogo(fontes: Fonte[]): string {
+  return fontes
+    .map((f) => {
+      const chave = f.precisa_chave ? " [requer chave de API]" : "";
+      const recursos = Object.entries(f.recursos)
+        .map(([r, desc]) => `    · /v1/${f.nome}/${r} — ${desc}`)
+        .join("\n");
+      return `▸ ${f.nome}${chave} — ${f.descricao}\n${recursos}`;
+    })
+    .join("\n\n");
+}
+
 export function PromptIA() {
+  const { dados } = useBalcao<FontesOut>(caminho("fontes"));
   const [copiado, setCopiado] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const catalogo = dados?.fontes.length ? montaCatalogo(dados.fontes) : CATALOGO_OFFLINE;
+  const prompt = NUCLEO(catalogo);
+  const totalFontes = dados?.fontes.length ?? null;
+
   async function copia() {
     try {
-      await navigator.clipboard.writeText(PROMPT);
+      await navigator.clipboard.writeText(prompt);
       setCopiado(true);
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => setCopiado(false), 2500);
@@ -56,6 +93,9 @@ export function PromptIA() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-3">
         <p className="num text-xs uppercase tracking-wider text-muted">
           prompt pronto · cole no seu assistente de IA
+          {totalFontes != null && (
+            <span className="text-accent-2"> · {totalFontes} fontes vivas</span>
+          )}
         </p>
         <button
           onClick={copia}
@@ -69,7 +109,7 @@ export function PromptIA() {
         </button>
       </div>
       <pre className="max-h-96 overflow-auto whitespace-pre-wrap px-5 py-4 font-mono text-[0.78rem] leading-relaxed text-ink/85">
-        {PROMPT}
+        {prompt}
       </pre>
     </div>
   );
