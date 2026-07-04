@@ -930,3 +930,13 @@ export interface IndicadorEducacao {
   ultimo_ano: number | null;
   ultimo_valor: number | null;
 }
+
+export interface IndicadorTrabalho {
+  fonte: string;
+  indicador: string;
+  unidade: string;
+  local: string;
+  uf: string | null;
+  periodo: string;
+  valor: number | null;
+}
