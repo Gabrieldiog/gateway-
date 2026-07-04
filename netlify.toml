@@ -1,0 +1,19 @@
+# Netlify — hospeda só o front (Next.js em web/). O backend FastAPI vive no
+# Render; o front fala com ele por proxy server-to-server (BALCAO_API_URL),
+# então não há CORS entre os dois.
+#
+# A URL do backend (BALCAO_API_URL) NÃO fica aqui: configure-a no dashboard
+# da Netlify (Site settings > Environment variables) depois que o Render
+# subir. É o que liga o proxy à API.
+
+[build]
+  base = "web"
+  command = "pnpm build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# runtime oficial do Next.js na Netlify (build + funções serverless das rotas
+# de API, como o proxy). É auto-detectado, mas deixamos explícito.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

@@ -12,12 +12,16 @@ services:
       - key: CACHE_STALE_TTL
         value: "86400"
       - key: RATE_LIMIT
-        value: 100/minute
+        value: 2000/minute
       - key: HTTP_TIMEOUT
         value: "15"
+      # chaves de fontes que exigem cadastro (opcionais — a fonte fica off sem elas)
       - key: TRANSPARENCIA_API_KEY
         sync: false
       - key: BRAPI_TOKEN
         sync: false
       - key: DATAJUD_API_KEY
+        sync: false
+      # chaves de acesso da PRÓPRIA API do Balcão (CSV; opcional — dá balde por chave)
+      - key: API_KEYS
         sync: false
