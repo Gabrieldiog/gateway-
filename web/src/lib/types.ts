@@ -919,3 +919,14 @@ export interface AlertaDesmatamento {
   alertas: number;
   area_km2: number;
 }
+
+export interface IndicadorEducacao {
+  fonte: string;
+  municipio: string;
+  tema: string;
+  etapa: string;
+  rede: string | null;
+  serie: { ano: number; valor: number }[];
+  ultimo_ano: number | null;
+  ultimo_valor: number | null;
+}

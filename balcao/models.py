@@ -973,3 +973,17 @@ class AlertaDesmatamento(BaseModel):
     nome: str
     alertas: int
     area_km2: float
+
+
+class IndicadorEducacao(BaseModel):
+    """Uma série educacional de um município: IDEB, matrículas, docentes ou
+    escolas, por etapa de ensino, ano a ano."""
+
+    fonte: str = "educacao"
+    municipio: str  # código IBGE
+    tema: str  # ideb | matriculas | docentes | escolas
+    etapa: str  # rótulo legível da etapa
+    rede: str | None = None  # só no IDEB (publica, municipal...)
+    serie: list[dict] = []  # [{ano, valor}]
+    ultimo_ano: int | None = None
+    ultimo_valor: float | None = None

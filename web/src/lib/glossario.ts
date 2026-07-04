@@ -111,6 +111,11 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  ideb: {
+    titulo: "IDEB",
+    texto:
+      "Índice de Desenvolvimento da Educação Básica: uma nota de 0 a 10 que o INEP dá a cada rede de ensino combinando duas coisas — quantos alunos passam de ano e quanto eles aprendem na Prova Brasil. Sai a cada dois anos. A meta que o país estabeleceu para 2022 era 6,0 nos anos iniciais.",
+  },
   deter: {
     titulo: "DETER — alerta de desmatamento",
     texto:
