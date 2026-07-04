@@ -53,6 +53,9 @@ body {
   background-color: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+  /* conteúdo largo (tabela, gráfico) rola no próprio invólucro; a página em si
+     nunca desliza de lado no celular */
+  overflow-x: hidden;
   /* textura levíssima de papel: pontos creme num grid esparso */
   background-image:
     radial-gradient(rgba(28, 26, 23, 0.022) 1px, transparent 1px),
@@ -150,6 +153,28 @@ body {
   }
   .compor { opacity: 1; transform: none; clip-path: none; }
   .imprime { opacity: 1; transform: none; }
+}
+
+/* dedo não tem a mira do mouse: em tela de toque, os botões-pílula (as abas de
+   filtro, a paginação, os chips) e os seletores ganham 44px de altura mínima —
+   o alvo confortável do iOS/Android. Botões de texto inline ("ler mais") não
+   têm .rounded, então seguem discretos. */
+@media (pointer: coarse) {
+  .num.rounded,
+  .num.rounded-md,
+  .num.rounded-full,
+  select {
+    min-height: 44px;
+  }
+}
+
+/* cabeçalho da tabela cola no topo do invólucro que rola, pra não perder a
+   referência das colunas em lista longa */
+thead.grudento th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-surface);
 }
 
 ::-webkit-scrollbar { width: 11px; height: 11px; }
