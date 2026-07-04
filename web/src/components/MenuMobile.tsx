@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CAPA, GRUPOS, cadernoAtivo, numeroDoCaderno, type Caderno } from "@/lib/cadernos";
@@ -29,6 +30,8 @@ export function MenuMobile() {
     };
   }, [aberto]);
 
+  const fecha = () => setAberto(false);
+
   return (
     <div className="md:hidden">
       <button
@@ -43,44 +46,49 @@ export function MenuMobile() {
         </svg>
       </button>
 
-      {aberto && (
-        <div className="fixed inset-0 z-50">
-          <button
-            aria-label="Fechar o sumário"
-            onClick={() => setAberto(false)}
-            className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
-          />
-          <div className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col border-r border-line bg-bg shadow-2xl">
-            <div className="flex items-center justify-between border-b border-line px-5 py-4">
-              <span className="font-display text-lg font-semibold tracking-[0.1em] text-ink">SUMÁRIO</span>
-              <button
-                type="button"
-                onClick={() => setAberto(false)}
-                aria-label="Fechar"
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted transition-colors hover:text-ink"
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                  <path d="M4 4l10 10M14 4L4 14" />
-                </svg>
-              </button>
-            </div>
+      {/* a gaveta vai pro <body> via portal: o cabeçalho tem backdrop-blur, que
+          cria um containing block e prenderia um position:fixed ali dentro —
+          fora do header, o inset-0 volta a valer pela viewport inteira */}
+      {aberto &&
+        createPortal(
+          <div className="fixed inset-0 z-[60] md:hidden">
+            <button
+              aria-label="Fechar o sumário"
+              onClick={fecha}
+              className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
+            />
+            <div className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col border-r border-line bg-bg shadow-2xl">
+              <div className="flex items-center justify-between border-b border-line px-5 py-4">
+                <span className="font-display text-lg font-semibold tracking-[0.1em] text-ink">SUMÁRIO</span>
+                <button
+                  type="button"
+                  onClick={fecha}
+                  aria-label="Fechar"
+                  className="flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted transition-colors hover:text-ink"
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                    <path d="M4 4l10 10M14 4L4 14" />
+                  </svg>
+                </button>
+              </div>
 
-            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
-              <ItemGaveta c={CAPA} ativo={cadernoAtivo(path, CAPA.href)} aoNavegar={() => setAberto(false)} />
-              {GRUPOS.map((g) => (
-                <Grupo
-                  key={g.nome}
-                  nome={g.nome}
-                  cadernos={g.cadernos}
-                  abreInicial={g.nome === grupoDoPath}
-                  path={path}
-                  aoNavegar={() => setAberto(false)}
-                />
-              ))}
-            </nav>
-          </div>
-        </div>
-      )}
+              <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+                <ItemGaveta c={CAPA} ativo={cadernoAtivo(path, CAPA.href)} aoNavegar={fecha} />
+                {GRUPOS.map((g) => (
+                  <Grupo
+                    key={g.nome}
+                    nome={g.nome}
+                    cadernos={g.cadernos}
+                    abreInicial={g.nome === grupoDoPath}
+                    path={path}
+                    aoNavegar={fecha}
+                  />
+                ))}
+              </nav>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
