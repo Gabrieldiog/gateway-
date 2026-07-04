@@ -910,3 +910,12 @@ export interface IndicadorMundial {
   ano: number;
   valor: number;
 }
+
+export interface AlertaDesmatamento {
+  fonte: string;
+  bioma: string;
+  nivel: string;
+  nome: string;
+  alertas: number;
+  area_km2: number;
+}
