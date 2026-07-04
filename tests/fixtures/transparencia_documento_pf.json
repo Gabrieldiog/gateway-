@@ -1,0 +1,17 @@
+{
+  "data": "15/03/2025",
+  "documento": "154003152792025OB001266",
+  "documentoResumido": "2025OB001266",
+  "observacao": "PAGAMENTO DE BOLSA DE ESTUDO",
+  "fase": "Pagamento",
+  "favorecido": "***.171.572-** - FULANO DE TAL",
+  "codigoFavorecido": "***.171.572-**",
+  "nomeFavorecido": "FULANO DE TAL",
+  "ufFavorecido": "DF",
+  "valor": "1.000,00",
+  "orgao": "CAPES",
+  "modalidade": "90 - Aplicação Direta",
+  "autor": "",
+  "favorecidoIntermediario": false,
+  "favorecidoListaFaturas": false
+}

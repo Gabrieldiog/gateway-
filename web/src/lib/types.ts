@@ -648,9 +648,43 @@ export interface ObraPublica {
   inicio_efetivo: string | null;
   fim_efetivo: string | null;
   executor: string | null;
+  executor_codigo: string | null;
   empregos: number | null;
   populacao_beneficiada: number | null;
   atrasada: boolean;
+}
+
+export interface EmpenhoResolvido extends EmpenhoObra {
+  data?: string | null;
+  favorecido_doc?: string | null;
+  origem?: "obrasgov" | "siafi" | "repasse" | "interno" | null;
+  modalidade?: string | null;
+  autor_emenda?: string | null;
+}
+
+export interface ContratoDaObra {
+  numero: string | null;
+  fornecedor: string | null;
+  cnpj: string | null;
+  valor: string | null;
+  objeto: string | null;
+  modalidade_licitacao: string | null;
+  licitacao: string | null;
+  situacao: string | null;
+  orgao: string | null;
+  assinatura: string | null;
+  fim_vigencia: string | null;
+}
+
+export interface ObraDinheiroOut {
+  id: string;
+  obra: ObraPublica | null;
+  empenhos: EmpenhoResolvido[];
+  total_empenhado: string;
+  tem_mais_empenhos: boolean;
+  contratos: ContratoDaObra[];
+  erros: Record<string, string>;
+  meta: Record<string, unknown>;
 }
 
 export interface DiarioOficial {

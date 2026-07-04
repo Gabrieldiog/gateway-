@@ -22,6 +22,7 @@ from balcao.arquivos import ArquivoVotos
 from balcao.cache import CacheRespostas
 from balcao.connectors.base import connector_classes
 from balcao.main import create_app
+from balcao.siconv import ArquivosSiconv
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -38,6 +39,7 @@ ROTAS_FAKE = [
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8/orientacoes", "camara_orientacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes/2629954-8", "camara_votacao_detalhe"),
     ("https://brasilapi.com.br/api/cnpj/v1/", "brasilapi_cnpj"),
+    ("https://api.obrasgov.gestao.gov.br/obrasgov/api/execucao-financeira?idProjetoInvestimento=11370.52-41", "obrasgov_execucao_doverlandia"),
     ("https://api.obrasgov.gestao.gov.br/obrasgov/api/execucao-financeira", "obrasgov_execucao"),
     ("https://api.obrasgov.gestao.gov.br/obrasgov/api/projeto-investimento", "obrasgov_obras"),
     ("https://api.queridodiario.ok.org.br/gazettes", "qd_gazettes"),
@@ -128,6 +130,13 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     if "portaldeinformacoes.conab.gov.br" in url:
         arquivo = "conab_levantamento.txt" if "LevantamentoGraos" in url else "conab_precos.txt"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
+    # Obrasgov — a consulta por idUnico devolve a ficha de UMA obra
+    if "obrasgov/api/projeto-investimento" in url and "idUnico=" in url:
+        return httpx.Response(200, json=carrega_fixture("obrasgov_obra_detalhe"))
+    # SICONV — os CSVs diários zipados que ligam a obra ao dinheiro
+    if "repositorio.dados.gov.br/seges/detru" in url:
+        arquivo = "siconv_contrato.zip" if "contrato" in url else "siconv_empenho.zip"
+        return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     # PNCP operacional (/api/pncp): itens, resultado por item e arquivos
     if "pncp.gov.br/api/pncp/v1/orgaos" in url:
         if "/resultados" in url:
@@ -140,6 +149,14 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(401, json={"Erro na API": "Chave de API não informada!"})
         if "/emendas/documentos" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_emendas_documentos"))
+        if "/despesas/documentos/" in url:
+            # só o empenho de Doverlândia e um pagamento a pessoa física
+            # existem; o resto responde como a fonte real: 200 com corpo vazio
+            if url.endswith("/175004000012019NE802642"):
+                return httpx.Response(200, json=carrega_fixture("transparencia_documento"))
+            if url.endswith("/154003152792025OB001266"):
+                return httpx.Response(200, json=carrega_fixture("transparencia_documento_pf"))
+            return httpx.Response(200, content=b"")
         if "/contratos/cpf-cnpj" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_contratos_cnpj"))
         if "/pessoa-juridica" in url:
@@ -286,6 +303,7 @@ def monta_app():
         nome: cls(cliente_fake) for nome, cls in connector_classes().items()
     }
     app.state.arquivo_votos = ArquivoVotos(cliente_fake)
+    app.state.siconv = ArquivosSiconv(cliente_fake)
     # o cache em disco do TSE vai pra uma pasta so desta suite, pra nao
     # colidir com um zip real baixado fora dos testes
     app.state.connectors["tse"].pasta = Path(tempfile.mkdtemp(prefix="balcao-tse-teste-"))

@@ -51,7 +51,7 @@ class ObrasgovConnector(BaseConnector):
     resources = {
         "obras": (
             "obras e projetos de investimento federais "
-            f"(params: uf, situacao = {', '.join(sorted(SITUACOES))}, pagina)"
+            f"(params: uf, situacao = {', '.join(sorted(SITUACOES))}, pagina; ou id = idUnico)"
         ),
         "execucao": "os empenhos de uma obra — o dinheiro que já saiu (params: id = idUnico, pagina)",
     }
@@ -142,7 +142,7 @@ class ObrasgovConnector(BaseConnector):
         )
 
     async def _obras(self, recurso: str, params: dict) -> NormalizedResponse:
-        aceitos = {"uf", "situacao", "pagina"}
+        aceitos = {"uf", "situacao", "pagina", "id"}
         invalidos = sorted(set(params) - aceitos)
         if invalidos:
             raise ParametroInvalido(recurso, invalidos, sorted(aceitos))
@@ -152,6 +152,8 @@ class ObrasgovConnector(BaseConnector):
         # a fonte pagina do zero; o Balcão fala em página 1 como as demais
         tamanho = 20
         consulta: dict = {"pagina": int(pagina) - 1, "tamanhoDaPagina": tamanho}
+        if params.get("id"):
+            consulta["idUnico"] = str(params["id"]).strip()
         if params.get("uf"):
             uf = normaliza_uf(params["uf"])
             if uf is None:
@@ -170,6 +172,7 @@ class ObrasgovConnector(BaseConnector):
             fim_previsto = para_data(o.get("dataFinalPrevista"))
             sit = limpa_texto(o.get("situacao")) or None
             valor = self._valor_previsto(o)
+            executor = (o.get("executores") or [{}])[0] or {}
             itens.append(
                 ObraPublica(
                     id=str(o.get("idUnico") or ""),
@@ -184,10 +187,8 @@ class ObrasgovConnector(BaseConnector):
                     fim_previsto=fim_previsto,
                     inicio_efetivo=para_data(o.get("dataInicialEfetiva")),
                     fim_efetivo=para_data(o.get("dataFinalEfetiva")),
-                    executor=limpa_texto(
-                        ((o.get("executores") or [{}])[0] or {}).get("nome")
-                    )
-                    or None,
+                    executor=limpa_texto(executor.get("nome")) or None,
+                    executor_codigo=str(executor.get("codigo") or "") or None,
                     empregos=_int_ou_none(o.get("qdtEmpregosGerados")),
                     populacao_beneficiada=_int_ou_none(o.get("populacaoBeneficiada")),
                     atrasada=bool(

@@ -1,0 +1,36 @@
+{
+ "content": [
+  {
+   "nrNotaEmpenho": null,
+   "numeroNotaEmpenhoGerada": null,
+   "fonteRecurso": "01000000000",
+   "naturezaDespesa": "444042",
+   "ugEmitente": 175004,
+   "nomeFavorecido": null,
+   "valorEmpenho": 477500.0,
+   "idProjetoInvestimento": "11370.52-41"
+  },
+  {
+   "nrNotaEmpenho": null,
+   "numeroNotaEmpenhoGerada": "2020NE999999",
+   "fonteRecurso": "01000000000",
+   "naturezaDespesa": "444042",
+   "ugEmitente": 153080,
+   "nomeFavorecido": null,
+   "valorEmpenho": 100000.0,
+   "idProjetoInvestimento": "11370.52-41"
+  },
+  {
+   "nrNotaEmpenho": null,
+   "numeroNotaEmpenhoGerada": null,
+   "fonteRecurso": "01000000000",
+   "naturezaDespesa": "449151",
+   "ugEmitente": 175004,
+   "nomeFavorecido": null,
+   "valorEmpenho": 5000.0,
+   "idProjetoInvestimento": "11370.52-41"
+  }
+ ],
+ "totalElements": 3,
+ "last": true
+}

@@ -17,6 +17,7 @@ from balcao.logs import configura_logging, loga
 from balcao.ratelimit import cria_limiter
 from balcao.resilience import CircuitBreaker
 from balcao.routers import meta, sources, unified
+from balcao.siconv import ArquivosSiconv
 
 
 @asynccontextmanager
@@ -37,6 +38,8 @@ async def lifespan(app: FastAPI):
     }
     # índice file-backed dos votos anuais da Câmara (histórico completo)
     app.state.arquivo_votos = ArquivoVotos(client)
+    # CSVs diários do SICONV: a nota de empenho e o contrato final das obras
+    app.state.siconv = ArquivosSiconv(client)
     yield
     await client.aclose()
 

@@ -9,9 +9,9 @@ import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
 import { useBalcao } from "@/hooks/useBalcao";
-import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
+import { BalcaoError, caminho, formataData, formataReaisCompacto } from "@/lib/api";
 import { UFS } from "@/lib/ufs";
-import type { EmpenhoObra, FonteDado, NormalizedResponse, ObraPublica } from "@/lib/types";
+import type { FonteDado, NormalizedResponse, ObraDinheiroOut, ObraPublica } from "@/lib/types";
 
 const SITUACOES: [string, string][] = [
   ["paralisada", "Paralisadas"],
@@ -20,46 +20,119 @@ const SITUACOES: [string, string][] = [
   ["cadastrada", "Cadastradas"],
 ];
 
-// o dinheiro que já saiu: os empenhos da obra, abertos sob demanda
-function EmpenhosDaObra({ id }: { id: string }) {
-  const r = useBalcao<NormalizedResponse<EmpenhoObra>>(caminho("obrasgov/execucao", { id }));
-  const empenhos = r.dados?.dados ?? [];
-  const totalPagina = r.dados?.meta?.total_empenhado_na_pagina as string | undefined;
-  const temProxima = Boolean(r.dados?.meta?.tem_proxima);
+function formataCnpj(doc: string | null | undefined): string | null {
+  if (!doc || doc.length !== 14) return null;
+  return `${doc.slice(0, 2)}.${doc.slice(2, 5)}.${doc.slice(5, 8)}/${doc.slice(8, 12)}-${doc.slice(12)}`;
+}
+
+// como cada favorecido foi descoberto — a cascata explicada em meia palavra
+const ORIGEM: Record<string, string> = {
+  siafi: "confirmado no SIAFI",
+  repasse: "repasse ao executor",
+  obrasgov: "informado pela fonte",
+};
+
+// o follow-the-money da obra: quem construiu e pra quem o dinheiro saiu,
+// resolvido em cascata (Obrasgov → regra orçamentária → SICONV → SIAFI)
+function DinheiroDaObra({ id }: { id: string }) {
+  const r = useBalcao<ObraDinheiroOut>(caminho("obra/dinheiro", { id }));
+  const empenhos = r.dados?.empenhos ?? [];
+  const contratos = r.dados?.contratos ?? [];
+  const total = r.dados?.total_empenhado;
+  const erros = r.dados?.erros ?? {};
+  const mensagensDeErro = Object.values(erros);
 
   if (r.erro) return <ErroBox erro={r.erro} aoTentar={r.recarregar} />;
-  if (r.carregando && !r.dados) return <Esqueleto linhas={2} />;
-  if (!empenhos.length) {
+  if (r.carregando && !r.dados) return <Esqueleto linhas={3} />;
+  if (!empenhos.length && !contratos.length) {
+    // vazio POR FALHA não é vazio de verdade: erro com retry, não afirmação
+    if (mensagensDeErro.length) {
+      return (
+        <ErroBox
+          erro={new BalcaoError(mensagensDeErro.join(" · "), 502, { passageiro: true })}
+          aoTentar={r.recarregar}
+        />
+      );
+    }
     return (
       <p className="font-editorial text-sm italic text-muted">
-        nenhum empenho registrado — o dinheiro ainda não começou a sair (ou o órgão não informou).
+        nenhum empenho ou contrato registrado — o dinheiro ainda não começou a sair (ou o órgão
+        não informou).
       </p>
     );
   }
   return (
-    <div>
-      {totalPagina && Number(totalPagina) > 0 && (
-        <p className="kicker mb-2">
-          já empenhado:{" "}
-          <span className="num normal-case tracking-normal text-ink">
-            {formataReaisCompacto(totalPagina)}
-            {temProxima && "+"}
-          </span>
+    <div className="flex flex-col gap-4">
+      {mensagensDeErro.length > 0 && (
+        <p className="font-editorial text-xs italic text-muted">
+          parte das fontes falhou agora ({mensagensDeErro.join(" · ")}) — o que está aqui pode
+          estar incompleto.{" "}
+          <button onClick={r.recarregar} className="not-italic text-accent hover:underline">
+            tentar de novo
+          </button>
         </p>
       )}
-      <ul className="flex flex-col divide-y divide-line/60">
-        {empenhos.map((e, i) => (
-          <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 py-1.5">
-            <span className="min-w-0 flex-1 truncate text-sm text-ink/85">
-              {e.favorecido ?? "favorecido não informado"}
-              {e.nota && <span className="num ml-2 text-xs text-muted">{e.nota}</span>}
-            </span>
-            <span className="num shrink-0 text-sm text-ink">
-              {e.valor ? formataReaisCompacto(e.valor) : "—"}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {contratos.length > 0 && (
+        <div className="rounded-md border border-accent/25 bg-accent/4 p-3">
+          <p className="kicker mb-1.5 text-accent">quem construiu</p>
+          {contratos.map((c, i) => (
+            <div key={i} className={i > 0 ? "mt-2 border-t border-line/60 pt-2" : ""}>
+              <p className="text-sm font-semibold text-ink">
+                {c.fornecedor ?? "fornecedor não informado"}
+                {c.valor && (
+                  <span className="num ml-2 font-normal">{formataReaisCompacto(c.valor)}</span>
+                )}
+              </p>
+              <p className="num mt-0.5 flex flex-wrap gap-x-3 text-xs text-muted">
+                {formataCnpj(c.cnpj) && <span>CNPJ {formataCnpj(c.cnpj)}</span>}
+                {c.modalidade_licitacao && <span>{c.modalidade_licitacao}</span>}
+                {c.numero && <span>contrato {c.numero}</span>}
+                {c.assinatura && <span>assinado em {formataData(c.assinatura)}</span>}
+                {c.situacao && <span>{c.situacao.toLowerCase()}</span>}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+      {empenhos.length > 0 && (
+        <div>
+          {total && Number(total) > 0 && (
+            <p className="kicker mb-2">
+              já empenhado:{" "}
+              <span className="num normal-case tracking-normal text-ink">
+                {formataReaisCompacto(total)}
+                {r.dados?.tem_mais_empenhos && "+"}
+              </span>
+            </p>
+          )}
+          <ul className="flex flex-col divide-y divide-line/60">
+            {empenhos.map((e, i) => (
+              <li key={i} className="py-1.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+                  <span className="min-w-0 flex-1 truncate text-sm text-ink/85">
+                    {e.favorecido ??
+                      (e.origem === "interno"
+                        ? "movimentação interna do governo"
+                        : "favorecido não informado pela fonte")}
+                  </span>
+                  <span className="num shrink-0 text-sm text-ink">
+                    {e.valor ? formataReaisCompacto(e.valor) : "—"}
+                  </span>
+                </div>
+                <p className="num flex flex-wrap gap-x-3 text-[0.7rem] text-muted">
+                  {e.origem && ORIGEM[e.origem] && <span>{ORIGEM[e.origem]}</span>}
+                  {e.modalidade && <span>{e.modalidade}</span>}
+                  {e.data && <span>{formataData(e.data)}</span>}
+                  {e.nota && <span>{e.nota}</span>}
+                  {e.autor_emenda && (
+                    <span className="text-accent">emenda de {e.autor_emenda}</span>
+                  )}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
@@ -189,7 +262,7 @@ export default function CadernoObras() {
                 </div>
                 {aberta === o.id && (
                   <div className="mt-3 border-t border-line pt-3">
-                    <EmpenhosDaObra id={o.id} />
+                    <DinheiroDaObra id={o.id} />
                   </div>
                 )}
               </Card>

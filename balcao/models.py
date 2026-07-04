@@ -712,6 +712,7 @@ class ObraPublica(BaseModel):
     inicio_efetivo: date | None = None
     fim_efetivo: date | None = None
     executor: str | None = None  # quem toca a obra (ex: FNDE)
+    executor_codigo: str | None = None  # em repasse a ente, é o CNPJ sem zeros à esquerda
     empregos: int | None = None
     populacao_beneficiada: int | None = None
     atrasada: bool = False  # fim previsto no passado e obra não concluída
@@ -727,6 +728,24 @@ class EmpenhoObra(BaseModel):
     natureza: str | None = None
     nota: str | None = None  # numeroNotaEmpenhoGerada, quando vem
     ug: str | None = None
+
+
+class DocumentoSiafi(BaseModel):
+    """O detalhe de um documento do SIAFI (empenho/liquidação/pagamento) no
+    Portal da Transparência — é aqui que o favorecido aparece com CNPJ."""
+
+    fonte: str = "transparencia"
+    documento: str
+    fase: str | None = None
+    data: date | None = None
+    favorecido: str | None = None
+    favorecido_doc: str | None = None  # CNPJ/CPF, só dígitos
+    uf_favorecido: str | None = None
+    valor: Decimal | None = None
+    orgao: str | None = None
+    modalidade: str | None = None  # ex: "40 - Transferências a Municípios"
+    autor_emenda: str | None = None  # quando o dinheiro veio de emenda
+    observacao: str | None = None
 
 
 class DiarioOficial(BaseModel):
