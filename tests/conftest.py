@@ -4,6 +4,7 @@ com as fixturas gravadas em tests/fixtures, entao nenhum teste abre socket."""
 import json
 import os
 import re
+import shutil
 import tempfile
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
@@ -22,6 +23,7 @@ from balcao.arquivos import ArquivoVotos
 from balcao.cache import CacheRespostas
 from balcao.connectors.base import connector_classes
 from balcao.main import create_app
+from balcao.seguranca import ArquivosSeguranca
 from balcao.siconv import ArquivosSiconv
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -356,6 +358,13 @@ def monta_app():
     # o cache em disco do TSE vai pra uma pasta so desta suite, pra nao
     # colidir com um zip real baixado fora dos testes
     app.state.connectors["tse"].pasta = Path(tempfile.mkdtemp(prefix="balcao-tse-teste-"))
+    # Seguranca: o ZIP do Sinesp vira a fixture pequena numa pasta so-teste,
+    # ja "fresca" (mtime agora) pra nunca disparar download
+    seg = ArquivosSeguranca(cliente_fake)
+    seg.pasta = Path(tempfile.mkdtemp(prefix="balcao-vde-teste-"))
+    shutil.copy(FIXTURES / "vde_teste.zip", seg.pasta / "vde.zip")
+    app.state.seguranca = seg
+    app.state.connectors["seguranca"]._arquivos = seg
     return app, cliente_fake
 
 

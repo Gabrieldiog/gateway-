@@ -74,6 +74,7 @@ export const GRUPOS: Grupo[] = [
     cadernos: [
       { num: "VII", nome: "Saúde", sub: "estabelecimentos do SUS", href: "/saude" },
       { num: "XIX", nome: "Dengue", sub: "alerta por cidade, semana a semana", href: "/dengue" },
+      { num: "XXXVIII", nome: "Segurança", sub: "as ocorrências criminais por estado", href: "/seguranca" },
       { num: "IX", nome: "Agro", sub: "safra de agora, preços e rebanho", href: "/agro" },
       { num: "XXXVI", nome: "Educação", sub: "o IDEB e as escolas da sua cidade", href: "/educacao" },
       { num: "XXXIII", nome: "Almanaque", sub: "a Mega de ontem e o seu nome no Brasil", href: "/almanaque" },

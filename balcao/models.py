@@ -999,3 +999,19 @@ class IndicadorTrabalho(BaseModel):
     uf: str | None = None
     periodo: str  # "1º trimestre 2026" ou "mar-abr-mai 2026"
     valor: float | None = None
+
+
+class OcorrenciaSeguranca(BaseModel):
+    """Um tipo de crime num estado num ano (base VDE do Sinesp): o total, o
+    recorte por sexo quando é crime de vítima, e a taxa por 100 mil no ranking."""
+
+    fonte: str = "seguranca"
+    ano: int
+    uf: str | None = None
+    local: str | None = None  # nome do estado
+    evento: str  # rótulo legível do crime
+    total: int
+    feminino: int | None = None
+    masculino: int | None = None
+    por_100k: float | None = None  # só preenchido no ranking entre estados
+    meses: list[dict] | None = None  # série mensal [{mes, total}], só no panorama
