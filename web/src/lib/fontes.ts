@@ -11,6 +11,7 @@ export const NOME_FONTE: Record<string, string> = {
   camara: "a Câmara dos Deputados",
   comex: "o ComexStat (MDIC)",
   cotacoes: "a AwesomeAPI de câmbio",
+  educacao: "o INEP (via IBGE)",
   conab: "a CONAB",
   datajud: "o DataJud (CNJ)",
   diarios: "o Querido Diário (OKBR)",

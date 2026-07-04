@@ -136,6 +136,19 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     if "servicebus2.caixa.gov.br/portaldeloterias" in url:
         arquivo = "loterias_duplasena" if "/duplasena" in url else "loterias_megasena"
         return httpx.Response(200, json=carrega_fixture(arquivo))
+    # IBGE Pesquisas — IDEB (pesquisa 40) e Censo Escolar (13): monta o envelope
+    # do IBGE a partir da série de cada indicador; indicador sem fixture = []
+    if "/pesquisas/" in url and "/indicadores/" in url and "/resultados/" in url:
+        indicador = url.split("/indicadores/")[1].split("/resultados/")[0]
+        municipio = url.rstrip("/").split("/resultados/")[1].split("?")[0]
+        series = carrega_fixture("educacao_series")
+        if indicador not in series:
+            return httpx.Response(200, json=[])
+        por_ano = series[indicador]
+        return httpx.Response(200, json=[{
+            "id": int(indicador),
+            "res": [{"localidade": municipio, "res": por_ano, "notas": {a: None for a in por_ano}}],
+        }])
     # IBGE Nomes (Censo 2010) — ranking, por UF e por década; nome raro = []
     if "censos/nomes/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("nomes_ranking"))
