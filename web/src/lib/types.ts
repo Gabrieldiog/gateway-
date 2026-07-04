@@ -940,3 +940,16 @@ export interface IndicadorTrabalho {
   periodo: string;
   valor: number | null;
 }
+
+export interface OcorrenciaSeguranca {
+  fonte: string;
+  ano: number;
+  uf: string | null;
+  local: string | null;
+  evento: string;
+  total: number;
+  feminino: number | null;
+  masculino: number | null;
+  por_100k: number | null;
+  meses: { mes: number; total: number }[] | null;
+}

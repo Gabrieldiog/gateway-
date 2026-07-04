@@ -26,6 +26,7 @@ export const NOME_FONTE: Record<string, string> = {
   obrasgov: "o Obrasgov (Ministério da Gestão)",
   ons: "o ONS",
   pncp: "o PNCP",
+  seguranca: "o Sinesp (Ministério da Justiça)",
   senado: "o Senado Federal",
   sidra: "o SIDRA (IBGE)",
   sus: "o CNES (Ministério da Saúde)",

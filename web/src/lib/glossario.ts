@@ -111,6 +111,16 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  por100k: {
+    titulo: "Taxa por 100 mil habitantes",
+    texto:
+      "O jeito honesto de comparar crime entre estados de tamanhos diferentes: em vez do número cru (São Paulo sempre teria mais, por ter mais gente), divide-se pelo tamanho da população. Assim dá pra ver onde o risco é de fato maior, não só onde mora mais gente.",
+  },
+  feminicidio: {
+    titulo: "Feminicídio",
+    texto:
+      "O assassinato de uma mulher por razão de ser mulher — em geral pelo companheiro ou ex, ou por menosprezo à condição feminina. É contado à parte do homicídio comum desde 2015, quando virou crime hediondo com nome próprio.",
+  },
   desocupacao: {
     titulo: "Taxa de desocupação",
     texto:
