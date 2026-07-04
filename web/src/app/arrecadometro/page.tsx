@@ -96,6 +96,7 @@ export default function CadernoArrecadometro() {
         kicker="ao vivo · estimado"
         titulo="Arrecadômetro"
         resumo={`Quanto o Brasil (ou um estado, ou uma cidade) já arrecadou em ${ANO_ATUAL}, subindo a cada instante. Igual ao painel da Associação Comercial de SP: é o valor oficial do último ano projetado no tempo — estimativa, não medição por segundo (esse dado não existe).`}
+        referencia={base > 0 ? `ano-base ${baseAno}` : undefined}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">

@@ -52,6 +52,7 @@ export default function CadernoIpea() {
         kicker="IPEADATA"
         titulo="O termômetro da economia"
         resumo="Milhares de séries macroeconômicas, regionais e sociais — PIB, inflação, emprego, renda — compiladas pelo Ipea. Busque pelo nome; a fonte despeja décadas de pontos e o Balcão recorta os recentes."
+        referencia={ultimo ? `até ${formataData(ultimo.data)}` : undefined}
       />
 
       <form

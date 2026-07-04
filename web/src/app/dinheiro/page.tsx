@@ -74,8 +74,7 @@ function DocumentosDaEmenda({ codigo }: { codigo: string }) {
   );
 }
 
-function Emendas() {
-  const [ano, setAno] = useState(ANO_ATUAL);
+function Emendas({ ano, setAno }: { ano: number; setAno: (ano: number) => void }) {
   const [autor, setAutor] = useState("");
   const [autorAplicado, setAutorAplicado] = useState("");
   const [pagina, setPagina] = useState(1);
@@ -382,6 +381,7 @@ function BolsaFamilia() {
 
 export default function CadernoDinheiro() {
   const [modo, setModo] = useState<Modo>("emendas");
+  const [ano, setAno] = useState(ANO_ATUAL);
 
   return (
     <div>
@@ -390,6 +390,7 @@ export default function CadernoDinheiro() {
         kicker="Portal da Transparência · CGU"
         titulo="Dinheiro público"
         resumo="Pra onde vai o dinheiro federal: as emendas que cada parlamentar destinou, as empresas e pessoas punidas pelo poder público, e quanto o Bolsa Família paga em cada cidade. Direto da Controladoria-Geral da União."
+        referencia={modo === "emendas" ? `empenhos de ${ano}` : undefined}
       />
 
       <div className="mb-6 inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
@@ -407,7 +408,7 @@ export default function CadernoDinheiro() {
         ))}
       </div>
 
-      {modo === "emendas" && <Emendas />}
+      {modo === "emendas" && <Emendas ano={ano} setAno={setAno} />}
       {modo === "sancoes" && <Sancoes />}
       {modo === "bolsa" && <BolsaFamilia />}
     </div>

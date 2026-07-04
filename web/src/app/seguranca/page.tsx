@@ -154,6 +154,7 @@ export default function CadernoSeguranca() {
         kicker="Sinesp · Ministério da Justiça"
         titulo="Segurança"
         resumo="As ocorrências criminais que as polícias estaduais informam ao Ministério da Justiça, estado por estado. Cada UF registra do seu jeito, então a comparação tem ressalvas — por isso o ranking entre estados é sempre por 100 mil habitantes."
+        referencia={`ano-base ${ano}`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

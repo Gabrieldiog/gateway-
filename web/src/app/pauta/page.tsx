@@ -55,6 +55,12 @@ function dataISO(diasAtras: number): string {
   return `${d.getFullYear()}-${m}-${dia}`;
 }
 
+// 'YYYY-MM-DD' -> 'dd/mm' pro selo mostrar a janela do dado
+function curta(iso: string): string {
+  const [, m, d] = iso.split("-");
+  return `${d}/${m}`;
+}
+
 // a história por trás da votação: o parecer que foi votado e a(s)
 // proposição(ões) afetada(s), com ementa — "Aprovado o Parecer" deixa de
 // ser enigma
@@ -431,6 +437,7 @@ export default function CadernoPauta() {
         kicker="Câmara dos Deputados"
         titulo="Em pauta"
         resumo="O Congresso desta semana: o que o plenário votou e quais projetos andaram. A mesma API oficial da Câmara dos cadernos de gastos e votos, recortada pelo período que interessa — o agora."
+        referencia={`${curta(dataISO(dias))} a ${curta(dataISO(0))}`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-4">

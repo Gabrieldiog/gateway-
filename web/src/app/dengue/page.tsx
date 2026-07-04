@@ -55,6 +55,7 @@ export default function CadernoDengue() {
         kicker="InfoDengue · Fiocruz"
         titulo="Dengue"
         resumo="O alerta de arboviroses da sua cidade, semana a semana: casos notificados, a estimativa corrigida do modelo da Fiocruz e o semáforo de verde a vermelho. Escolha a cidade e a doença."
+        referencia={atual?.semana ? `semana ${String(atual.semana).slice(4)}/${String(atual.semana).slice(0, 4)}` : undefined}
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
