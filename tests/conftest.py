@@ -119,6 +119,10 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     if "rdrweb/rest/ext/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_reclamacoes_lista"))
+    # TerraBrasilis (INPE) — WFS do DETER, uma camada por bioma
+    if "terrabrasilis.dpi.inpe.br/geoserver" in url:
+        arquivo = "deter_cerrado" if "deter-cerrado" in url else "deter_amz"
+        return httpx.Response(200, json=carrega_fixture(arquivo))
     # Banco Mundial — a expectativa de vida chega com BOM UTF-8 na frente do
     # JSON (como parte das respostas reais); indicador inexistente vira message
     if "api.worldbank.org/v2/country" in url:

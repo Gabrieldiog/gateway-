@@ -111,6 +111,16 @@ export const GLOSSARIO: Record<string, Verbete> = {
     texto:
       "Pesquisa semanal do Banco Central com mais de cem instituições financeiras: a mediana do que o mercado espera pra inflação, juros e dólar. É expectativa, não promessa.",
   },
+  deter: {
+    titulo: "DETER — alerta de desmatamento",
+    texto:
+      "O sistema do INPE que vasculha imagens de satélite quase todo dia e acende um alerta onde a floresta sumiu. Serve pra fiscalização chegar rápido — a conta oficial do ano é outra, o PRODES. Nuvem esconde e corte pequeno escapa: o alerta é piso, não teto.",
+  },
+  corteraso: {
+    titulo: "Corte raso",
+    texto:
+      "O desmatamento completo: a vegetação foi toda ao chão. É a classe mais grave dos alertas — diferente da degradação, onde a floresta ainda está de pé, mas danificada.",
+  },
   indicereclamacoes: {
     titulo: "Índice de reclamações",
     texto:

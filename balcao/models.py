@@ -962,3 +962,14 @@ class IndicadorMundial(BaseModel):
     iso3: str
     ano: int
     valor: float
+
+
+class AlertaDesmatamento(BaseModel):
+    """Alertas DETER agregados numa janela de dias — por UF, classe ou município."""
+
+    fonte: str = "inpe"
+    bioma: str  # amazonia | cerrado
+    nivel: str  # uf | classe | municipio
+    nome: str
+    alertas: int
+    area_km2: float
