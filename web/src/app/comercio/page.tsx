@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -283,9 +282,6 @@ export default function CadernoComercio() {
         titulo="Comércio exterior"
         resumo="O que o Brasil vende e compra do mundo: a balança comercial mês a mês e os rankings de parceiros, estados exportadores e produtos — dos dados oficiais da Secretaria de Comércio Exterior."
       />
-      <div className="mb-5">
-        <BadgeFrescor rotulo="dados mensais" detalhe="o MDIC fecha o mês anterior no início do seguinte" />
-      </div>
       <Balanca />
       <Destaques />
       <Rankings />
