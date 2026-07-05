@@ -19,9 +19,11 @@ async def consulta_fonte(fonte: str, recurso: str, request: Request) -> Normaliz
         raise FonteNaoEncontrada(fonte, sorted(conectores))
     params = dict(request.query_params)
 
-    cache: CacheRespostas = request.app.state.cache
-    # fontes em tempo real (cotações) não passam pelo cache: o valor muda a
-    # cada minuto, então cada request busca fresco na fonte
+    # fontes tempo-real (cotações) usam um cache de vida curta pra não estourar
+    # o rate limit da fonte; as demais usam o cache normal
+    cache: CacheRespostas = (
+        request.app.state.cache_vivo if conector.tempo_real else request.app.state.cache
+    )
     if not conector.cacheavel:
         request.state.cache = "ao vivo"
         return await conector.fetch(recurso, **params)

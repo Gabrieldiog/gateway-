@@ -27,8 +27,10 @@ class BaseConnector(ABC):
     description: ClassVar[str] = ""
     resources: ClassVar[dict[str, str]] = {}
     suporta_busca: ClassVar[bool] = False
-    # fontes em tempo real (cotações) não cacheiam: o valor muda a cada minuto
     cacheavel: ClassVar[bool] = True
+    # fontes tempo-real (câmbio) passam por um cache CURTO (cache_vivo_ttl) em
+    # vez do TTL normal: frescor de segundos, mas sem bater na fonte toda hora
+    tempo_real: ClassVar[bool] = False
 
     def __init__(
         self,

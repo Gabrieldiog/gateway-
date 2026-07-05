@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     http_timeout: float = 15.0
     cache_ttl: int = 600
     cache_stale_ttl: int = 86400
+    # cache curto das fontes tempo-real (câmbio): frescor de segundos sem
+    # martelar a fonte a cada request — a AwesomeAPI rate-limita IP fixo
+    cache_vivo_ttl: int = 45
     rate_limit: str = "2000/minute"  # o teto de cada balde (por IP ou por chave)
     # chaves de acesso da própria API do Balcão (demo): CSV no .env. Quem manda
     # uma chave válida ganha um balde só seu, isolado do IP compartilhado — o

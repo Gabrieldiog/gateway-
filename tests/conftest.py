@@ -350,6 +350,7 @@ def monta_app():
     cliente_fake = httpx.AsyncClient(transport=MockTransport(responde_fake))
     app.state.client = cliente_fake
     app.state.cache = CacheRespostas(ttl=600)
+    app.state.cache_vivo = CacheRespostas(ttl=45)
     app.state.connectors = {
         nome: cls(cliente_fake) for nome, cls in connector_classes().items()
     }
