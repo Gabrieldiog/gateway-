@@ -201,7 +201,7 @@ export default function CadernoDocs() {
             arquivo daquele dia.
           </Erro>
           <Erro codigo="429" nome="calma">
-            passou de 100 chamadas por minuto. Espere alguns segundos; para varreduras, use o
+            passou de 2000 chamadas por minuto. Espere alguns segundos; para varreduras, use o
             cache a seu favor (chamadas idênticas nem contam contra a fonte).
           </Erro>
           <Erro codigo="502" nome="fonte fora do ar">

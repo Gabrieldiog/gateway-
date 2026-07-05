@@ -119,6 +119,7 @@ export default function CadernoConsumidor() {
         kicker="Banco Central · ranking oficial"
         titulo="Consumidor"
         resumo="Qual banco mais dá dor de cabeça? O Banco Central conta as reclamações que ele mesmo julgou procedentes e divide pelo tamanho de cada instituição. Este é o ranking oficial — e dá pra procurar o seu banco pelo nome."
+        referencia={periodo || undefined}
       />
 
       <section className="mb-10">

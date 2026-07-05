@@ -132,6 +132,14 @@ function DesempregoPorUf() {
 }
 
 export default function CadernoTrabalho() {
+  // mesmo endpoint do primeiro IndicadorNacional; o cache do gateway dedup a
+  // chamada, então isto só serve pra ler o trimestre e datar o selo de frescor
+  const r = useBalcao<NormalizedResponse<IndicadorTrabalho>>(
+    caminho("sidra/desemprego", { ultimos: 8 }),
+  );
+  const serie = r.dados?.dados ?? [];
+  const periodo = serie[serie.length - 1]?.periodo;
+
   return (
     <div>
       <CadernoHeader
@@ -139,6 +147,7 @@ export default function CadernoTrabalho() {
         kicker="IBGE · PNAD Contínua"
         titulo="Trabalho e Renda"
         resumo="O retrato oficial do mercado de trabalho: quantos estão sem emprego e quanto ganha quem trabalha, medido pela PNAD Contínua do IBGE. Os trimestres são móveis — cada leitura anda um mês."
+        referencia={periodo || undefined}
       />
 
       <section className="mb-10 grid gap-4 sm:grid-cols-2">

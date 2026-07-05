@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -228,6 +227,7 @@ export default function CadernoCustoDeVida() {
   const indicadores = hoje.dados?.dados ?? [];
   const expectativas = focus.dados?.dados ?? [];
   const coleta = expectativas[0]?.data ?? null;
+  const ptax = indicadores.find((i) => i.chave === "dolar")?.data;
 
   return (
     <div>
@@ -236,11 +236,8 @@ export default function CadernoCustoDeVida() {
         kicker="Banco Central"
         titulo="Custo de vida"
         resumo="A inflação que já corroeu o seu bolso — IPCA, IGP-M (o do aluguel), INPC — e o que os analistas do Boletim Focus esperam pra frente. Dois olhares do Banco Central: o retrospecto e a expectativa."
+        referencia={ptax ? `dólar (PTAX) de ${formataData(ptax)}` : undefined}
       />
-
-      <div className="mb-5 flex flex-wrap items-center gap-3">
-        <BadgeFrescor rotulo="índices mensais" detalhe="Selic, CDI e dólar diários · Focus toda semana" />
-      </div>
 
       <section>
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">

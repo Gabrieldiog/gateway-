@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Termo } from "@/components/Termo";
 import { Esqueleto, ErroBox, Vazio, EmTransicao } from "@/components/Estados";
@@ -275,6 +274,12 @@ function Rankings() {
 }
 
 export default function CadernoComercio() {
+  // mesmo fetch da Balança (o cache do gateway dedup a chamada); serve só pra
+  // datar o selo com o último mês fechado da balança.
+  const bal = useBalcao<NormalizedResponse<BalancaMensal>>(caminho("comex/balanca"));
+  const ultimoMes = (bal.dados?.dados ?? []).reduce((max, m) => (m.mes > max ? m.mes : max), "");
+  const referencia = ultimoMes ? `fechado até ${rotuloMes(ultimoMes)}/${ultimoMes.split("-")[0]}` : undefined;
+
   return (
     <div>
       <CadernoHeader
@@ -282,10 +287,8 @@ export default function CadernoComercio() {
         kicker="ComexStat · MDIC"
         titulo="Comércio exterior"
         resumo="O que o Brasil vende e compra do mundo: a balança comercial mês a mês e os rankings de parceiros, estados exportadores e produtos — dos dados oficiais da Secretaria de Comércio Exterior."
+        referencia={referencia}
       />
-      <div className="mb-5">
-        <BadgeFrescor rotulo="dados mensais" detalhe="o MDIC fecha o mês anterior no início do seguinte" />
-      </div>
       <Balanca />
       <Destaques />
       <Rankings />

@@ -49,6 +49,7 @@ export default function CadernoDesmatamento() {
         kicker="INPE · TerraBrasilis"
         titulo="Desmatamento"
         resumo="Onde a floresta caiu nas últimas semanas, segundo os satélites do INPE. Alerta é o aviso quente — serve pra fiscalização chegar; a taxa oficial do ano (PRODES) é outra conta, mais lenta e completa."
+        referencia={`últimos ${dias} dias${ultima ? ` · até ${formataData(ultima)}` : ""}`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

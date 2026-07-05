@@ -385,6 +385,7 @@ export default function CadernoCompras() {
         kicker="PNCP · Lei 14.133"
         titulo="Compras públicas"
         resumo="O que o governo — União, estados e municípios — está comprando agora: as licitações abertas a propostas e os contratos recém-assinados, do Portal Nacional de Contratações Públicas."
+        referencia="últimos 7 dias"
       />
 
       <div className="mb-6 inline-flex gap-0.5 rounded-md border border-line p-0.5">

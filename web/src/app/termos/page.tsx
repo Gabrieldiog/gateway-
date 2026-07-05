@@ -67,7 +67,7 @@ export default function CadernoTermos() {
 
       <Secao titulo="Os limites de uso">
         <p>
-          A API aceita <strong>100 requisições por minuto</strong> por balde.
+          A API aceita <strong>2000 requisições por minuto</strong> por balde.
           Anônimo, seu balde é o seu IP — o que significa que você divide a cota
           com todo mundo atrás do mesmo IP (escritório, faculdade, operadora).
           Com uma <strong>chave de acesso</strong>, você ganha um balde só seu:

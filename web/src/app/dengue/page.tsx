@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CadernoHeader } from "@/components/Caderno";
 import { Card } from "@/components/Card";
 import { Carimbo } from "@/components/Carimbo";
-import { BadgeFrescor } from "@/components/Frescor";
 import { SeloFonte } from "@/components/SeloFonte";
 import { Seletor } from "@/components/Seletor";
 import { Termo } from "@/components/Termo";
@@ -56,6 +55,7 @@ export default function CadernoDengue() {
         kicker="InfoDengue · Fiocruz"
         titulo="Dengue"
         resumo="O alerta de arboviroses da sua cidade, semana a semana: casos notificados, a estimativa corrigida do modelo da Fiocruz e o semáforo de verde a vermelho. Escolha a cidade e a doença."
+        referencia={atual?.semana ? `semana ${String(atual.semana).slice(4)}/${String(atual.semana).slice(0, 4)}` : undefined}
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -85,7 +85,6 @@ export default function CadernoDengue() {
             </button>
           ))}
         </div>
-        <BadgeFrescor rotulo="boletim semanal" detalhe="semanas recentes se ajustam (nowcast)" />
         <Carimbo fonte="FIOCRUZ" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
       </div>
 

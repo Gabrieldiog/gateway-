@@ -89,6 +89,7 @@ export default function CadernoTesouro() {
         kicker="Tesouro Nacional · SICONFI"
         titulo="A arrecadação do Brasil"
         resumo="Quanto a União, cada estado e cada cidade arrecadam em impostos — e pra onde esse dinheiro vai. Direto da Declaração de Contas Anuais. Valores realizados do balanço; 2023 é o ano mais completo. O SICONFI é lento: a primeira consulta de cada ente pode demorar."
+        referencia={`exercício ${ano}`}
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
