@@ -17,8 +17,10 @@ class CotacoesConnector(BaseConnector):
     name = "cotacoes"
     base_url = "https://economia.awesomeapi.com.br/json"
     description = "Cotações de câmbio e cripto quase em tempo real (preço de mercado), via AwesomeAPI"
-    # tempo real: cada request busca fresco, sem passar pelo cache do gateway
-    cacheavel = False
+    # cache curto (cache_vivo_ttl): a AwesomeAPI rate-limita (429) um IP fixo que
+    # busca a cada request; com o /pulso fazendo polling, um cache de segundos
+    # segura a fonte no lugar. O valor ainda é "ao vivo" pro leitor.
+    tempo_real = True
     resources = {
         "last/{pares}": "cotação atual de um ou mais pares, ex: USD-BRL,EUR-BRL,BTC-BRL",
     }

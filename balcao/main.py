@@ -29,6 +29,10 @@ async def lifespan(app: FastAPI):
     app.state.cache = CacheRespostas(
         ttl=settings.cache_ttl, stale_ttl=settings.cache_stale_ttl
     )
+    # cache separado, de vida curta, pras fontes tempo-real (câmbio)
+    app.state.cache_vivo = CacheRespostas(
+        ttl=settings.cache_vivo_ttl, stale_ttl=settings.cache_stale_ttl
+    )
     app.state.connectors = {
         name: cls(
             client,
