@@ -9,6 +9,9 @@
 [build]
   base = "web"
   command = "pnpm build"
+  # a saída do next build; precisa diferir do base (web/) senão o plugin do
+  # Next recusa. Relativo ao base, então resolve pra web/.next.
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
