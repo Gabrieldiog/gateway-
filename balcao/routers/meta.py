@@ -40,7 +40,9 @@ class FontesOut(BaseModel):
     fontes: list[FonteOut]
 
 
-@router.get("/health", response_model=HealthOut)
+# aceita HEAD além de GET: monitores de uptime (UptimeRobot etc.) batem HEAD
+# por padrão, e um health check que só aceita GET responde 405 pra eles
+@router.api_route("/health", methods=["GET", "HEAD"], response_model=HealthOut)
 async def health(request: Request) -> HealthOut:
     return HealthOut(status="ok", versao=request.app.version)
 
