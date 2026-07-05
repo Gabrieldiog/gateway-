@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 os.environ["TRANSPARENCIA_API_KEY"] = "chave-de-teste"
 os.environ["BRAPI_TOKEN"] = "token-de-teste"
 os.environ["DATAJUD_API_KEY"] = "chave-publica-de-teste"
+os.environ["AWESOMEAPI_TOKEN"] = "token-de-teste"
 
 import httpx
 import pytest
