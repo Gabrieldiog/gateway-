@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from balcao.config import get_settings
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
-from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
+from balcao.exceptions import ChaveFaltando, ParametroInvalido, RecursoNaoEncontrado
 from balcao.models import Cotacao
 
 # um ou mais pares separados por vírgula: USD-BRL,EUR-BRL,BTC-BRL
@@ -18,9 +18,12 @@ class CotacoesConnector(BaseConnector):
     name = "cotacoes"
     base_url = "https://economia.awesomeapi.com.br/json"
     description = "Cotações de câmbio e cripto quase em tempo real (preço de mercado), via AwesomeAPI"
-    # cache curto (cache_vivo_ttl): a AwesomeAPI rate-limita (429) um IP fixo que
-    # busca a cada request; com o /pulso fazendo polling, um cache de segundos
-    # segura a fonte no lugar. O valor ainda é "ao vivo" pro leitor.
+    # exige o token gratuito da AwesomeAPI: sem ele, a fonte limita a ~100 req e
+    # trava IP de datacenter (429). Sem token o caderno mostra o aviso honesto
+    # de credencial faltando, em vez de fingir que a fonte caiu.
+    requires_key = True
+    # cache curto (cache_vivo_ttl): mesmo com token, o /pulso faz polling, então
+    # um cache de segundos segura a fonte. O valor ainda é "ao vivo" pro leitor.
     tempo_real = True
     resources = {
         "last/{pares}": "cotação atual de um ou mais pares, ex: USD-BRL,EUR-BRL,BTC-BRL",
@@ -37,11 +40,12 @@ class CotacoesConnector(BaseConnector):
     async def _last(self, recurso: str, pares: str) -> NormalizedResponse:
         if not PARES.match(pares):
             raise ParametroInvalido(recurso, [f"pares={pares}"], ["ex: USD-BRL,EUR-BRL,BTC-BRL"])
-        # com token (cadastro grátis) a cota vai a 100 mil/mês e não trava por IP;
-        # sem ele, a AwesomeAPI limita a ~100 e barra IP de datacenter (429)
+        # o token (cadastro grátis) dá 100 mil/mês e cota própria; sem ele a fonte
+        # fica indisponível de forma honesta (503), não "fora do ar"
         token = get_settings().awesomeapi_token
-        params = {"token": token} if token else None
-        bruto = await self.get_json(f"/last/{pares.upper()}", params=params)
+        if not token:
+            raise ChaveFaltando(self.name, "AWESOMEAPI_TOKEN")
+        bruto = await self.get_json(f"/last/{pares.upper()}", params={"token": token})
         cotacoes: list[dict] = []
         # a AwesomeAPI devolve um dict {"USDBRL": {...}, "EURBRL": {...}}
         for v in (bruto or {}).values():
