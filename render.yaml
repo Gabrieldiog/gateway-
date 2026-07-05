@@ -25,3 +25,6 @@ services:
       # chaves de acesso da PRÓPRIA API do Balcão (CSV; opcional — dá balde por chave)
       - key: API_KEYS
         sync: false
+      # token grátis da AwesomeAPI (câmbio): sem ele o IP do Render leva 429
+      - key: AWESOMEAPI_TOKEN
+        sync: false
