@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     brapi_token: str = ""
     # a do DataJud e PUBLICA (o CNJ publica na wiki e rotaciona de tempos em tempos)
     datajud_api_key: str = ""
+    # AwesomeAPI (cambio): sem token o limite e ~100 req e trava IP de datacenter;
+    # o token gratuito (cadastro) da 100 mil/mes. Vazio = tenta sem token.
+    awesomeapi_token: str = ""
 
 
 @lru_cache

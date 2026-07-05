@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from balcao.config import get_settings
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
 from balcao.models import Cotacao
@@ -36,7 +37,11 @@ class CotacoesConnector(BaseConnector):
     async def _last(self, recurso: str, pares: str) -> NormalizedResponse:
         if not PARES.match(pares):
             raise ParametroInvalido(recurso, [f"pares={pares}"], ["ex: USD-BRL,EUR-BRL,BTC-BRL"])
-        bruto = await self.get_json(f"/last/{pares.upper()}")
+        # com token (cadastro grátis) a cota vai a 100 mil/mês e não trava por IP;
+        # sem ele, a AwesomeAPI limita a ~100 e barra IP de datacenter (429)
+        token = get_settings().awesomeapi_token
+        params = {"token": token} if token else None
+        bruto = await self.get_json(f"/last/{pares.upper()}", params=params)
         cotacoes: list[dict] = []
         # a AwesomeAPI devolve um dict {"USDBRL": {...}, "EURBRL": {...}}
         for v in (bruto or {}).values():
