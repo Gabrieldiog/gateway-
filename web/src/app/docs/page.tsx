@@ -3,13 +3,18 @@ import { AzulejoGlifo } from "@/components/Azulejo";
 import { Configurador } from "@/components/Configurador";
 import { PromptIA } from "@/components/PromptIA";
 
+// base pública da API pros exemplos de curl. Local aponta pro uvicorn; em
+// produção, BALCAO_PUBLIC_URL aponta pro domínio publicado. Os exemplos abaixo
+// guardam só o caminho (/v1/...) — a base entra aqui, uma vez só.
+const BASE = process.env.BALCAO_PUBLIC_URL || "http://localhost:8000";
+
 // uma linha de exemplo: curl + url com o path em tinta e a query em destaque
 function Linha({ nota, url }: { nota?: string; url: string }) {
   const [caminho, query] = url.split("?");
   return (
     <div className="num overflow-x-auto whitespace-nowrap rounded-md border border-line bg-surface px-3 py-2.5 text-sm">
       {nota && <div className="mb-1 whitespace-normal text-xs text-muted">› {nota}</div>}
-      <span className="text-muted">curl &quot;localhost:8000</span>
+      <span className="text-muted">curl &quot;{BASE}</span>
       <span className="text-ink">{caminho}</span>
       {query && <span className="text-accent">?{query}</span>}
       <span className="text-muted">&quot;</span>
@@ -65,13 +70,13 @@ export default function CadernoDocs() {
           <li>
             <span className="num mr-2 text-accent">1.</span>
             Pergunte à API o que ela sabe fazer:{" "}
-            <code className="num text-sm text-accent">curl localhost:8000/v1/fontes</code> — vêm
-            as 25 fontes, cada uma com seus recursos e filtros.
+            <code className="num text-sm text-accent">curl {BASE}/v1/fontes</code> — vêm
+            as dezenas de fontes, cada uma com seus recursos e filtros.
           </li>
           <li>
             <span className="num mr-2 text-accent">2.</span>
             Chame um recurso:{" "}
-            <code className="num text-sm text-accent break-all">curl &quot;localhost:8000/v1/bacen/selic?ultimos=5&quot;</code>
+            <code className="num text-sm text-accent break-all">curl &quot;{BASE}/v1/bacen/selic?ultimos=5&quot;</code>
             . Sem chave, sem cadastro, sem SDK.
           </li>
           <li>
@@ -95,12 +100,12 @@ export default function CadernoDocs() {
         numero="01"
         titulo="Direto por fonte"
         exemplos={[
-          { nota: "deputados de SP no PL", url: "localhost:8000/v1/camara/deputados?uf=SP&partido=PL" },
-          { nota: "a cota parlamentar de um deputado num ano", url: "localhost:8000/v1/camara/deputados/204528/despesas?ano=2025" },
-          { nota: "como cada deputado votou (votação nominal)", url: "localhost:8000/v1/camara/votacoes/2629954-8/votos" },
-          { nota: "hospitais gerais de SP (tipo é o código CNES)", url: "localhost:8000/v1/sus/estabelecimentos?uf=SP&tipo=5" },
-          { nota: "receita, imposto e gasto de um estado", url: "localhost:8000/v1/tesouro/estados/SP" },
-          { nota: "Selic dos últimos 10 pontos", url: "localhost:8000/v1/bacen/selic?ultimos=10" },
+          { nota: "deputados de SP no PL", url: "/v1/camara/deputados?uf=SP&partido=PL" },
+          { nota: "a cota parlamentar de um deputado num ano", url: "/v1/camara/deputados/204528/despesas?ano=2025" },
+          { nota: "como cada deputado votou (votação nominal)", url: "/v1/camara/votacoes/2629954-8/votos" },
+          { nota: "hospitais gerais de SP (tipo é o código CNES)", url: "/v1/sus/estabelecimentos?uf=SP&tipo=5" },
+          { nota: "receita, imposto e gasto de um estado", url: "/v1/tesouro/estados/SP" },
+          { nota: "Selic dos últimos 10 pontos", url: "/v1/bacen/selic?ultimos=10" },
         ]}
       >
         O formato é <code className="num text-accent">/v1/&#123;fonte&#125;/&#123;recurso&#125;</code>.
@@ -114,8 +119,8 @@ export default function CadernoDocs() {
         numero="02"
         titulo="Busca unificada"
         exemplos={[
-          { nota: "dispara nas fontes escolhidas, em paralelo", url: "localhost:8000/v1/buscar?q=silva&fontes=camara,senado" },
-          { nota: "sem fontes= busca em todas", url: "localhost:8000/v1/buscar?q=campinas" },
+          { nota: "dispara nas fontes escolhidas, em paralelo", url: "/v1/buscar?q=silva&fontes=camara,senado" },
+          { nota: "sem fontes= busca em todas", url: "/v1/buscar?q=campinas" },
         ]}
       >
         Uma chamada, várias fontes ao mesmo tempo. O <code className="num">fontes=</code>{" "}
@@ -127,7 +132,7 @@ export default function CadernoDocs() {
         numero="03"
         titulo="Recurso cross-fonte"
         exemplos={[
-          { nota: "resolve o parlamentar por id ou nome e agrega o gasto", url: "localhost:8000/v1/gastos?deputado=Adriana&uf=SP&ano=2025" },
+          { nota: "resolve o parlamentar por id ou nome e agrega o gasto", url: "/v1/gastos?deputado=Adriana&uf=SP&ano=2025" },
         ]}
       >
         Aqui você pede o <em>dado</em>, não a fonte. O Balcão decide onde buscar,
@@ -139,8 +144,8 @@ export default function CadernoDocs() {
         numero="04"
         titulo="Descoberta"
         exemplos={[
-          { nota: "lista conectores, recursos e filtros de cada um", url: "localhost:8000/v1/fontes" },
-          { nota: "Swagger interativo, a API se autodescreve", url: "localhost:8000/docs" },
+          { nota: "lista conectores, recursos e filtros de cada um", url: "/v1/fontes" },
+          { nota: "Swagger interativo, a API se autodescreve", url: "/docs" },
         ]}
       >
         A própria API conta o que sabe fazer. <code className="num">/v1/fontes</code>{" "}
@@ -232,7 +237,7 @@ export default function CadernoDocs() {
           cada passo: o que vai buscar, o que veio, e o que aconteceu quando der erro. Você
           nunca fica no escuro.
         </p>
-        <PromptIA />
+        <PromptIA base={BASE} />
       </section>
     </div>
   );

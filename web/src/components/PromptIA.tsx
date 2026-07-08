@@ -11,10 +11,10 @@ import type { Fonte, FontesOut } from "@/lib/types";
 // fontes é montado AO VIVO do próprio /v1/fontes: nunca envelhece, e lista
 // exatamente os recursos e filtros que o servidor aceita neste momento.
 
-const NUCLEO = (catalogo: string) => `Você é meu assistente para consultar o Balcão, um gateway que unifica os dados abertos do Brasil (33 fontes oficiais — Câmara, Senado, Banco Central, IBGE, INPE, ANP, Tesouro e muitas outras) numa API só, já normalizada.
+const NUCLEO = (catalogo: string, base: string, fontesTxt: string) => `Você é meu assistente para consultar o Balcão, um gateway que unifica os dados abertos do Brasil (${fontesTxt} — Câmara, Senado, Banco Central, IBGE, INPE, ANP, Tesouro e muitas outras) numa API só, já normalizada.
 
 ━━ COMO A API FUNCIONA ━━
-- Base: http://localhost:8000 (se eu te passar outra URL, use a minha).
+- Base: ${base} (se eu te passar outra URL, use a minha).
 - Toda chamada segue o mesmo formato: GET /v1/{fonte}/{recurso}?{filtros}
 - A resposta vem sempre no mesmo envelope JSON: { fonte, recurso, total, dados: [...], meta }.
   Os dados já chegam normalizados: datas em ISO (AAAA-MM-DD), CNPJ só dígitos, UF em sigla.
@@ -68,14 +68,15 @@ function montaCatalogo(fontes: Fonte[]): string {
     .join("\n\n");
 }
 
-export function PromptIA() {
+export function PromptIA({ base = "http://localhost:8000" }: { base?: string }) {
   const { dados } = useBalcao<FontesOut>(caminho("fontes"));
   const [copiado, setCopiado] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const catalogo = dados?.fontes.length ? montaCatalogo(dados.fontes) : CATALOGO_OFFLINE;
-  const prompt = NUCLEO(catalogo);
   const totalFontes = dados?.fontes.length ?? null;
+  const fontesTxt = totalFontes ? `${totalFontes} fontes oficiais` : "dezenas de fontes oficiais";
+  const prompt = NUCLEO(catalogo, base, fontesTxt);
 
   async function copia() {
     try {
