@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     # martelar a fonte a cada request — a AwesomeAPI rate-limita IP fixo
     cache_vivo_ttl: int = 45
     rate_limit: str = "2000/minute"  # o teto de cada balde (por IP ou por chave)
+    # origens liberadas pra chamar o Balcão do navegador (CSV). Como a API é só
+    # leitura (GET), CORS aqui é só pra um front conseguir consumir. Default são
+    # as portas de dev; em produção, aponta pro domínio do site via CORS_ORIGINS.
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     # chaves de acesso da própria API do Balcão (demo): CSV no .env. Quem manda
     # uma chave válida ganha um balde só seu, isolado do IP compartilhado — o
     # modelo do brapi/DataJud. Vazio = todo mundo é anônimo (balde por IP).
