@@ -8,6 +8,7 @@ com a base do comparador."""
 
 from decimal import Decimal, InvalidOperation
 from typing import Any
+from urllib.parse import quote
 
 from balcao.connectors.base import BaseConnector, NormalizedResponse, register
 from balcao.exceptions import ParametroInvalido, RecursoNaoEncontrado
@@ -62,9 +63,12 @@ class RosarioConnector(BaseConnector):
         except (TypeError, ValueError):
             limite = 20
 
+        # o ft vai no path ja encodado: um termo com espaco ("dipirona cafeina")
+        # via params viraria "dipirona+cafeina" (o httpx usa "+"), e a VTEX
+        # responde 400 pro "+" no full-text. Com %20 ela aceita.
+        ft = quote(termo, safe="")
         bruto = await self.get_json(
-            "/api/catalog_system/pub/products/search/",
-            params={"ft": termo, "_from": 0, "_to": limite - 1},
+            f"/api/catalog_system/pub/products/search/?ft={ft}&_from=0&_to={limite - 1}",
             timeout=20,
             headers={"User-Agent": UA, "Accept": "application/json"},
         )
