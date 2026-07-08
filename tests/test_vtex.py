@@ -3,7 +3,7 @@ from decimal import Decimal
 import httpx
 from httpx import MockTransport
 
-from balcao.connectors.rosario import RosarioConnector
+from balcao.connectors.vtex import AlexfarmaConnector, RosarioConnector
 
 
 async def test_termo_com_espaco_vai_com_percent20():
@@ -64,3 +64,49 @@ async def test_sem_termo_da_400(api):
 async def test_recurso_invalido_da_404(api):
     resp = await api.get("/v1/rosario/inexistente")
     assert resp.status_code == 404
+
+
+async def test_rosario_e_local(api):
+    resp = await api.get("/v1/rosario/produtos?termo=dipirona")
+    corpo = resp.json()
+    assert corpo["meta"]["fonte"]["preco_tipo"] == "local"
+    assert corpo["dados"][0]["preco_tipo"] == "local"
+
+
+async def test_alexfarma_rotula_como_local_de_goiania(api):
+    resp = await api.get("/v1/alexfarma/produtos?termo=dipirona")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    assert corpo["meta"]["fonte"]["nome"] == "Alexfarma"
+    p = corpo["dados"][0]
+    assert p["estabelecimento"] == "Alexfarma"
+    assert p["municipio"] == "Goiânia"
+    assert p["preco_tipo"] == "local"
+
+
+async def test_extrafarma_e_nacional_entregavel(api):
+    resp = await api.get("/v1/extrafarma/produtos?termo=dipirona")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    p = corpo["dados"][0]
+    assert p["estabelecimento"] == "Extrafarma"
+    assert p["municipio"] is None  # e-commerce nacional, não amarra numa cidade
+    assert p["preco_tipo"] == "nacional_entregavel"
+
+
+async def test_gtin_lixo_vira_none():
+    # a VTEX às vezes manda "SEM GTIN" ou código de kit no ean; só EAN de verdade casa
+    payload = [
+        {"productName": "COM EAN", "items": [{"nameComplete": "COM EAN", "ean": "7896004715674",
+            "sellers": [{"commertialOffer": {"Price": 3.99, "IsAvailable": True, "AvailableQuantity": 9}}]}]},
+        {"productName": "SEM EAN", "items": [{"nameComplete": "SEM EAN", "ean": "SEM GTIN",
+            "sellers": [{"commertialOffer": {"Price": 5.0, "IsAvailable": True, "AvailableQuantity": 9}}]}]},
+        {"productName": "KIT", "items": [{"nameComplete": "KIT", "ean": "KITPGM-20001",
+            "sellers": [{"commertialOffer": {"Price": 8.0, "IsAvailable": True, "AvailableQuantity": 9}}]}]},
+    ]
+    async with httpx.AsyncClient(transport=MockTransport(lambda req: httpx.Response(200, json=payload))) as c:
+        r = await AlexfarmaConnector(c).fetch("produtos", termo="dipirona")
+    porNome = {d["descricao"]: d["gtin"] for d in r.dados}
+    assert porNome["COM EAN"] == "7896004715674"
+    assert porNome["SEM EAN"] is None
+    assert porNome["KIT"] is None
