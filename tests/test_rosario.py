@@ -1,5 +1,26 @@
 from decimal import Decimal
 
+import httpx
+from httpx import MockTransport
+
+from balcao.connectors.rosario import RosarioConnector
+
+
+async def test_termo_com_espaco_vai_com_percent20():
+    # termo multi-palavra ("dipirona cafeina") nao pode virar "dipirona+cafeina":
+    # o httpx poe "+" pra espaco em params, e a VTEX responde 400 pro "+" no ft.
+    capturado = {}
+
+    def handler(req):
+        capturado["url"] = str(req.url)
+        return httpx.Response(200, json=[])
+
+    async with httpx.AsyncClient(transport=MockTransport(handler)) as c:
+        await RosarioConnector(c).fetch("produtos", termo="dipirona cafeina")
+
+    assert "ft=dipirona%20cafeina" in capturado["url"].lower()
+    assert "+" not in capturado["url"]
+
 
 async def test_produtos_normalizados(api):
     resp = await api.get("/v1/rosario/produtos?termo=dipirona")
