@@ -86,6 +86,14 @@ def carrega_fixture(nome: str) -> dict | list:
 
 def responde_fake(request: httpx.Request) -> httpx.Response:
     url = str(request.url)
+    # Farmacias Nissei (RetailON): fluxo de 3 passos — home seta o csrftoken,
+    # /pesquisa/pesquisar acha os produtos e /pegar/preco traz os precos
+    if "farmaciasnissei.com.br/pesquisa/pesquisar" in url:
+        return httpx.Response(200, json=carrega_fixture("nissei_busca"))
+    if "farmaciasnissei.com.br/pegar/preco" in url:
+        return httpx.Response(200, json=carrega_fixture("nissei_precos"))
+    if "farmaciasnissei.com.br" in url:
+        return httpx.Response(200, headers={"set-cookie": "csrftoken=faketoken123; Path=/"}, text="<html></html>")
     # Tesouro/SICONFI: mesmo path /dca, distingue pelo ente (id_ente) e pelo anexo
     if "siconfi/tt/dca" in url:
         q = parse_qs(urlparse(url).query)

@@ -1,0 +1,39 @@
+{
+  "produtos": [
+    {
+      "_source": {
+        "cd_produto": "65822",
+        "nm_produto": "Dipirona Monoidratada 1gr 10 Comprimidos Medley",
+        "fabricante": "SANOFI MEDLEY - GENERICOS",
+        "marca": "MEDLEY",
+        "categoria": "DOR E FEBRE",
+        "is_disponivel": true,
+        "is_servico": false
+      }
+    },
+    {
+      "_source": {
+        "cd_produto": "70001",
+        "nm_produto": "Dipirona Sódica 500mg 10 Comprimidos EMS",
+        "fabricante": "EMS",
+        "marca": "EMS",
+        "categoria": "DOR E FEBRE",
+        "is_disponivel": true,
+        "is_servico": false
+      }
+    },
+    {
+      "_source": {
+        "cd_produto": "99999",
+        "nm_produto": "Dipirona Fora de Estoque",
+        "fabricante": "GENERICO",
+        "marca": "GENERICO",
+        "is_disponivel": false,
+        "is_servico": false
+      }
+    }
+  ],
+  "quantidade": 3,
+  "pagina_atual": 1,
+  "termo": "dipirona"
+}

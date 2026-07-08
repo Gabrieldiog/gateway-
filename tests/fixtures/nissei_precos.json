@@ -1,0 +1,26 @@
+{
+  "precos": {
+    "65822": {
+      "publico": {
+        "clube_id": "publico",
+        "produto_id": "65822",
+        "is_disponivel": true,
+        "produto_tipo": "medicamento",
+        "valor_ini": "23.44",
+        "valor_fim": "9.29",
+        "is_desc": true
+      }
+    },
+    "70001": {
+      "publico": {
+        "clube_id": "publico",
+        "produto_id": "70001",
+        "is_disponivel": true,
+        "produto_tipo": "medicamento",
+        "valor_ini": "12.00",
+        "valor_fim": "6.50",
+        "is_desc": true
+      }
+    }
+  }
+}
