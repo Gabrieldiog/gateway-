@@ -1,0 +1,71 @@
+[
+  {
+    "productName": "Dipirona 500mg 30 Comprimidos - Medley",
+    "brand": "Medley",
+    "categories": ["/Medicamentos/Dor e Febre/"],
+    "items": [
+      {
+        "itemId": "1135024",
+        "nameComplete": "Dipirona 500mg 30 Comprimidos - Medley",
+        "ean": "7896422507059",
+        "sellers": [
+          {
+            "sellerName": "Drogaria Rosário",
+            "commertialOffer": {
+              "Price": 17.91,
+              "ListPrice": 37.2,
+              "PriceWithoutDiscount": 17.91,
+              "AvailableQuantity": 99999,
+              "IsAvailable": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productName": "Maxalgina Dipirona Monoidratada 500mg Gotas 10ml",
+    "brand": "Sanofi",
+    "categories": ["/Medicamentos/Dor e Febre/"],
+    "items": [
+      {
+        "itemId": "1140055",
+        "nameComplete": "Maxalgina Dipirona Monoidratada 500mg Gotas 10ml",
+        "ean": "7898133131011",
+        "sellers": [
+          {
+            "sellerName": "Drogaria Rosário",
+            "commertialOffer": {
+              "Price": 3.26,
+              "ListPrice": 3.26,
+              "AvailableQuantity": 42,
+              "IsAvailable": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productName": "Dipirona Fora de Estoque 1g",
+    "brand": "Generico",
+    "categories": ["/Medicamentos/Dor e Febre/"],
+    "items": [
+      {
+        "itemId": "999999",
+        "nameComplete": "Dipirona Fora de Estoque 1g",
+        "ean": "7890000000000",
+        "sellers": [
+          {
+            "sellerName": "Drogaria Rosário",
+            "commertialOffer": {
+              "Price": 9.9,
+              "AvailableQuantity": 0,
+              "IsAvailable": false
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
