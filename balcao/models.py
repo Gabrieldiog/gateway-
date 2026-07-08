@@ -299,10 +299,10 @@ class PrecoCombustivel(BaseModel):
 
 
 class PrecoProduto(BaseModel):
-    """Um preço praticado por um estabelecimento, extraído de nota fiscal (NFC-e)
-    e publicado pelo app estadual de menor preço. Traz a loja, o endereço e
-    quando o preço foi visto — inclusive de remédio controlado, que não aparece
-    em e-commerce mas emite nota quando vendido no balcão."""
+    """Um preço praticado por um estabelecimento. Vem de duas naturezas: nota
+    fiscal (NFC-e) publicada por app estadual — traz loja, endereço e quando foi
+    visto, inclusive de controlado — ou catálogo online (VTEX) de uma rede. O
+    campo `preco_tipo` diz qual, pro cliente rotular sem enganar."""
 
     fonte: str = "notaparana"
     descricao: str  # nome do produto na nota
@@ -318,6 +318,10 @@ class PrecoProduto(BaseModel):
     bairro: str | None = None
     municipio: str | None = None
     uf: str | None = None
+    # local = rede com loja física na cidade (preço reflete a praça);
+    # nacional_entregavel = e-commerce nacional que entrega na cidade;
+    # referencia = só comparação. None = NFC-e por loja (já é local por natureza).
+    preco_tipo: str | None = None
 
 
 class TituloPublico(BaseModel):

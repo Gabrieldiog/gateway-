@@ -73,6 +73,8 @@ ROTAS_FAKE = [
     ("https://apisidra.ibge.gov.br/values/t/5938", "sidra_pib"),
     ("https://menorpreco.notaparana.pr.gov.br/api/v1/produtos", "notaparana_produtos"),
     ("https://www.drogariarosario.com.br/api/catalog_system/pub/products/search", "rosario_produtos"),
+    ("https://www.alexfarma.com.br/api/catalog_system/pub/products/search", "rosario_produtos"),
+    ("https://www.extrafarma.com.br/api/catalog_system/pub/products/search", "rosario_produtos"),
     ("http://www.ipeadata.gov.br/api/odata4/Metadados", "ipeadata_series"),
     ("http://www.ipeadata.gov.br/api/odata4/ValoresSerie", "ipeadata_valores"),
 ]
