@@ -17,6 +17,13 @@ async def test_cors_preflight_get_passa_sem_gastar_balde(api):
     assert "GET" in resp.headers.get("access-control-allow-methods", "")
 
 
+async def test_cors_libera_o_comparador_publicado(api):
+    # o comparador de remédio no Netlify chama o Balcão direto do navegador
+    origem = "https://pharmacy-price.netlify.app"
+    resp = await api.get("/health", headers={"Origin": origem})
+    assert resp.headers.get("access-control-allow-origin") == origem
+
+
 async def test_cors_ignora_origem_de_fora(api):
     resp = await api.get("/health", headers={"Origin": "https://site-qualquer.example"})
     assert "access-control-allow-origin" not in resp.headers
