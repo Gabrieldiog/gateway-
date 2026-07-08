@@ -68,7 +68,7 @@ function montaCatalogo(fontes: Fonte[]): string {
     .join("\n\n");
 }
 
-export function PromptIA({ base = "http://localhost:8000" }: { base?: string }) {
+export function PromptIA({ base = "https://balcao-api.onrender.com" }: { base?: string }) {
   const { dados } = useBalcao<FontesOut>(caminho("fontes"));
   const [copiado, setCopiado] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
