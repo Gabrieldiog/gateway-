@@ -1,0 +1,69 @@
+{
+ "tempo": 158,
+ "local": "-25.4284,-49.2733",
+ "total": 2,
+ "precos": {
+  "min": "1.04",
+  "max": "250.60"
+ },
+ "produtos": [
+  {
+   "id": "y9Fz-atnzBPEZDKIwgloq78pms0ILkAgTyTVrq5gq0051m_h1HtCOcCC5KsStYAvhRnWTA.qrKdYAy-8oWIXnGjAUIIfdxp8DuJQ9BX",
+   "local": "6gkzrq9h4t0",
+   "desc": "DIPIRONA SOD CAF E",
+   "ncm": "30049069",
+   "cdanp": "0",
+   "valor_desconto": "0.00",
+   "valor_tabela": "1.04",
+   "valor": "1.04",
+   "datahora": "2026-07-05T11:25:39.675Z",
+   "tempo": "há 3 dias",
+   "distkm": "4.061",
+   "gtin": "7896714273198",
+   "nrdoc": "00068841",
+   "estabelecimento": {
+    "codigo": "Kel5EswjHTVTVwHmJ0mC0wH7d5lBPsGj4im_CDjeYjw",
+    "nm_fan": "FARMACIAS PAGUE MENOS",
+    "nm_emp": "EMPREENDIMENTOS PAGUE MENOS S/A",
+    "tp_logr": "AV",
+    "nm_logr": "MUNHOZ DA ROCHA",
+    "nr_logr": "974",
+    "complemento": "",
+    "bairro": "CABRAL",
+    "mun": "CURITIBA",
+    "uf": "PR",
+    "mesoreg": "",
+    "microreg": ""
+   }
+  },
+  {
+   "id": "d71noIt3ThP7fudkEnV4NYeAfN36cB3PAe6UUr7ElbqErWbpFDNo1oCJAqlTIGwnGHAdbg.HmHjxMBzXb7JKCzLSCQJNkz0VuB8WOJu",
+   "local": "6gkyy4zyyz0",
+   "desc": "DIPIRONA SOD CAF E",
+   "ncm": "30049069",
+   "cdanp": "0",
+   "valor_desconto": "0.00",
+   "valor_tabela": "2.09",
+   "valor": "2.09",
+   "datahora": "2026-06-26T22:21:57.909Z",
+   "tempo": "há 12 dias",
+   "distkm": "12.486",
+   "gtin": "7896714273198",
+   "nrdoc": "00179092",
+   "estabelecimento": {
+    "codigo": "lsREtKKKYnI_YmKMrIE0psQXZFf7RG0cXY1XfqZPLFU",
+    "nm_fan": "FARMACIA PAGUE MENOS",
+    "nm_emp": "EMPREENDIMENTOS PAGUE MENOS S/A",
+    "tp_logr": "AV",
+    "nm_logr": "WINSTON CHURCHILL",
+    "nr_logr": "2225",
+    "complemento": "",
+    "bairro": "CAPAO RASO",
+    "mun": "CURITIBA",
+    "uf": "PR",
+    "mesoreg": "",
+    "microreg": ""
+   }
+  }
+ ]
+}
