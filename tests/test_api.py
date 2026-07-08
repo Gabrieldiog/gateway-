@@ -34,3 +34,11 @@ async def test_segunda_chamada_vem_do_cache(api):
     assert segunda.json()["meta"]["cache"] == "hit"
     # o corpo cacheado continua igual, fora o carimbo de cache
     assert segunda.json()["dados"] == primeira.json()["dados"]
+
+
+async def test_openapi_tem_server_relativo(api):
+    # sem servers explícito, o Scalar chuta o host e sai duplicado; com "/" ele
+    # usa a origem de onde a doc está servida
+    resp = await api.get("/openapi.json")
+    servers = resp.json().get("servers")
+    assert servers and servers[0]["url"] == "/"

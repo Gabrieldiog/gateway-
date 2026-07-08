@@ -65,6 +65,9 @@ def create_app() -> FastAPI:
             "com schema normalizado, cache e resiliência."
         ),
         lifespan=lifespan,
+        # base dos exemplos na doc. Relativo ("/") por padrão pra bater sempre
+        # com onde está servido; sem isso o Scalar chuta e duplica o host.
+        servers=[{"url": settings.public_url or "/"}],
     )
 
     # a variante ASGI e a unica que aceita exception handler async

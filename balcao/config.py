@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     # leitura (GET), CORS aqui é só pra um front conseguir consumir. Default são
     # as portas de dev; em produção, aponta pro domínio do site via CORS_ORIGINS.
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # base pública que a doc (Scalar/Swagger) usa pra montar os exemplos de curl.
+    # vazio = relativo ("/"), que sempre bate com onde a API está servida — sem
+    # isso o Scalar chuta o host e sai duplicado. Em produção, aponta pro domínio.
+    public_url: str = ""
     # chaves de acesso da própria API do Balcão (demo): CSV no .env. Quem manda
     # uma chave válida ganha um balde só seu, isolado do IP compartilhado — o
     # modelo do brapi/DataJud. Vazio = todo mundo é anônimo (balde por IP).
