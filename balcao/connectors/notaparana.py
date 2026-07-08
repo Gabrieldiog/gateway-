@@ -81,8 +81,8 @@ class NotaParanaConnector(BaseConnector):
             itens.append(
                 PrecoProduto(
                     descricao=limpa_texto(p.get("desc")),
-                    gtin=(p.get("gtin") or None),
-                    ncm=(p.get("ncm") or None),
+                    gtin=(str(p["gtin"]) if p.get("gtin") else None),
+                    ncm=(str(p["ncm"]) if p.get("ncm") else None),
                     valor=valor,
                     valor_tabela=_decimal(p.get("valor_tabela")),
                     atualizado=(p.get("datahora") or None),
@@ -96,10 +96,12 @@ class NotaParanaConnector(BaseConnector):
                 ).model_dump(mode="json")
             )
 
-        total = bruto.get("total") if isinstance(bruto, dict) else None
-        meta = {"termo": termo, "local": local, "raio": raio, "fonte": FONTE}
+        # total do envelope = quantos itens vieram (contrato dos conectores-irmãos).
+        # o total da fonte (todas as páginas do offset) fica no meta pra quem pagina.
+        total_fonte = bruto.get("total") if isinstance(bruto, dict) else None
+        meta = {"termo": termo, "local": local, "raio": raio, "total_fonte": total_fonte, "fonte": FONTE}
         return NormalizedResponse(
-            fonte=self.name, recurso=recurso, dados=itens, total=total if total is not None else len(itens), meta=meta
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
         )
 
 
