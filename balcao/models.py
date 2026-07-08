@@ -298,6 +298,28 @@ class PrecoCombustivel(BaseModel):
     unidade: str  # "R$ / litro", "R$ / 13kg"...
 
 
+class PrecoProduto(BaseModel):
+    """Um preço praticado por um estabelecimento, extraído de nota fiscal (NFC-e)
+    e publicado pelo app estadual de menor preço. Traz a loja, o endereço e
+    quando o preço foi visto — inclusive de remédio controlado, que não aparece
+    em e-commerce mas emite nota quando vendido no balcão."""
+
+    fonte: str = "notaparana"
+    descricao: str  # nome do produto na nota
+    gtin: str | None = None  # código de barras (EAN)
+    ncm: str | None = None
+    valor: Decimal  # preço praticado, R$
+    valor_tabela: Decimal | None = None  # preço "de" antes do desconto
+    atualizado: str | None = None  # ISO da última venda vista
+    distancia_km: float | None = None
+    estabelecimento: str  # nome fantasia da loja
+    empresa: str | None = None  # razão social
+    endereco: str | None = None
+    bairro: str | None = None
+    municipio: str | None = None
+    uf: str | None = None
+
+
 class TituloPublico(BaseModel):
     """Um título do Tesouro Direto na última data publicada: a taxa e o preço
     unitário de compra e venda. O nome comercial (Tesouro Selic 2029) é

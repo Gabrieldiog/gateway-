@@ -71,6 +71,7 @@ ROTAS_FAKE = [
     ("https://apisidra.ibge.gov.br/values/t/4709", "sidra_censo_pop"),
     ("https://apisidra.ibge.gov.br/values/t/4712", "sidra_censo_dom"),
     ("https://apisidra.ibge.gov.br/values/t/5938", "sidra_pib"),
+    ("https://menorpreco.notaparana.pr.gov.br/api/v1/produtos", "notaparana_produtos"),
     ("http://www.ipeadata.gov.br/api/odata4/Metadados", "ipeadata_series"),
     ("http://www.ipeadata.gov.br/api/odata4/ValoresSerie", "ipeadata_valores"),
 ]
