@@ -6,7 +6,7 @@ import { PromptIA } from "@/components/PromptIA";
 // base pública da API pros exemplos de curl. Local aponta pro uvicorn; em
 // produção, BALCAO_PUBLIC_URL aponta pro domínio publicado. Os exemplos abaixo
 // guardam só o caminho (/v1/...) — a base entra aqui, uma vez só.
-const BASE = process.env.BALCAO_PUBLIC_URL || "http://localhost:8000";
+const BASE = process.env.BALCAO_PUBLIC_URL || "https://balcao-api.onrender.com";
 
 // uma linha de exemplo: curl + url com o path em tinta e a query em destaque
 function Linha({ nota, url }: { nota?: string; url: string }) {
