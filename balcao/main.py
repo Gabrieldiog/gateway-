@@ -2,6 +2,7 @@ import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIASGIMiddleware
@@ -69,6 +70,18 @@ def create_app() -> FastAPI:
     # a variante ASGI e a unica que aceita exception handler async
     app.state.limiter = cria_limiter(settings.rate_limit, le_chaves(settings.api_keys))
     app.add_middleware(SlowAPIASGIMiddleware)
+
+    # CORS: a API e so leitura (GET), entao libera so isso pras origens do allowlist.
+    # fica por fora do rate-limit pra o preflight (OPTIONS) nao gastar balde.
+    origens = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    if origens:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=origens,
+            allow_methods=["GET", "OPTIONS"],
+            allow_headers=["*"],
+            max_age=3600,
+        )
 
     # rotas exatas (/v1/fontes, /v1/buscar, /v1/gastos) antes da generica
     # /v1/{fonte}/{recurso}, senao "buscar" viraria nome de fonte
