@@ -1,4 +1,5 @@
 import asyncio
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -14,6 +15,7 @@ from balcao.models import (
     PerfilDeputado,
     Proposicao,
     ProposicaoDetalhe,
+    ProposicaoNovidade,
     ProposicaoResumo,
     TramitacaoEvento,
     Votacao,
@@ -60,14 +62,28 @@ PARAMS_PROPOSICOES = {
     "itens": "itens",
 }
 
-# nomes de gente pras comissões/órgãos mais citados na tramitação; o resto usa a
-# própria sigla. CCJC (Constituição e Justiça e de Cidadania) é a tal "CCJ".
+# feed "andou recentemente": tipos que valem acompanhar por padrão (as reformas e
+# medidas de maior peso). O cliente pode restringir com ?tipo=PEC.
+PARAMS_ANDARAM = {"dias", "tipo", "data_inicio", "data_fim"}
+TIPOS_ANDARAM_PADRAO = ["PEC", "PLP", "MPV"]
+DIAS_ANDARAM_MAX = 60
+CAP_ANDARAM = 150  # teto de proposições que o feed enriquece (limita o fan-out)
+FAN_OUT_ANDARAM = 8  # tramitações buscadas em paralelo por vez (educado com a fonte)
+
+# nomes de gente pras COMISSÕES (o marco vira "na {comissão}"). CCJC = a tal "CCJ";
+# o resto das comissões usa a própria sigla.
 ORGAOS_AMIGAVEIS = {
     "CCJC": "CCJ",
     "CFT": "Comissão de Finanças e Tributação",
-    "PLEN": "plenário",
-    "MESA": "Mesa Diretora",
-    "CD": "Câmara",
+}
+# órgãos que NÃO são comissão: pedem outra preposição no marco ("em plenário", "no
+# Congresso") em vez de "na {comissão}".
+ORGAOS_MARCO = {
+    "PLEN": "em plenário",
+    "CN": "no Congresso Nacional",
+    "CD": "na Câmara",
+    "SF": "no Senado",
+    "MESA": "na Mesa Diretora",
 }
 
 
@@ -90,6 +106,7 @@ class CamaraConnector(BaseConnector):
         "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
         "votacoes/{id}/orientacoes": "como cada partido/bloco (e Governo/Oposição) orientou; só nas nominais",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
+        "proposicoes/andaram": f"feed de acompanhamento: proposições que MUDARAM de status no período, já com o marco (ex.: aprovada na CCJ) — sem precisar do id. Filtros: {', '.join(sorted(PARAMS_ANDARAM))}. Padrão: {', '.join(TIPOS_ANDARAM_PADRAO)}, últimos 7 dias",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -115,6 +132,8 @@ class CamaraConnector(BaseConnector):
                 return await self._votacao_detalhe(recurso, vid)
             case ["proposicoes"]:
                 return await self._proposicoes(recurso, params)
+            case ["proposicoes", "andaram"]:
+                return await self._andaram(recurso, params)
             case ["proposicoes", pid] if pid.isdigit():
                 return await self._proposicao_detalhe(recurso, int(pid))
             case ["proposicoes", pid, "tramitacoes"] if pid.isdigit():
@@ -378,13 +397,13 @@ class CamaraConnector(BaseConnector):
         # a matéria APROVANDO um parecer "pela rejeição/inadmissibilidade" — olhar
         # só "Aprovação do Parecer" daria o marco errado.
         texto = (descricao + " " + (despacho or "")).lower()
-        onde = ORGAOS_AMIGAVEIS.get((orgao or "").upper(), orgao)
-        no_plenario = (orgao or "").upper() == "PLEN"
+        sigla = (orgao or "").upper()
 
         def lugar(rejeitada: bool) -> str:
             verbo = "Rejeitada" if rejeitada else "Aprovada"
-            if no_plenario:
-                return f"{verbo} em plenário"
+            if sigla in ORGAOS_MARCO:
+                return f"{verbo} {ORGAOS_MARCO[sigla]}"
+            onde = ORGAOS_AMIGAVEIS.get(sigla, orgao)
             return f"{verbo} na {onde}" if onde else verbo
 
         # fim de linha, independem de órgão
@@ -402,6 +421,124 @@ class CamaraConnector(BaseConnector):
             negativo = any(t in texto for t in ("rejei", "inadmiss", "inconstitucional", "prejudicad"))
             return lugar(rejeitada=negativo)
         return None
+
+    async def _andaram(self, recurso: str, params: dict) -> NormalizedResponse:
+        invalidos = sorted(set(params) - PARAMS_ANDARAM)
+        if invalidos:
+            raise ParametroInvalido(recurso, invalidos, sorted(PARAMS_ANDARAM))
+
+        # janela: datas explícitas ou os últimos N dias (default 7). data_fim
+        # inválida é ERRO (não vira hoje calado); dias é validado sempre; a janela
+        # tem teto pra não virar um fan-out gigante.
+        dias = self._inteiro(params.get("dias"), 7, DIAS_ANDARAM_MAX, recurso, "dias")
+        fim = para_data(params["data_fim"]) if params.get("data_fim") else date.today()
+        if params.get("data_inicio"):
+            inicio = para_data(params["data_inicio"])
+        else:
+            inicio = (fim or date.today()) - timedelta(days=dias)
+        if inicio is None or fim is None or inicio > fim:
+            raise ParametroInvalido(recurso, ["data_inicio", "data_fim"], ["AAAA-MM-DD com inicio <= fim"])
+        if (fim - inicio).days > DIAS_ANDARAM_MAX:
+            raise ParametroInvalido(recurso, ["data_inicio", "data_fim"], [f"janela máxima de {DIAS_ANDARAM_MAX} dias"])
+
+        tipos = self._tipos_andaram(params.get("tipo"))
+
+        # 1) quem TRAMITOU no período — a Câmara filtra proposições por período de
+        # tramitação (dataInicio/dataFim), então isso já é "o que se mexeu". Pagina
+        # até o fim OU um teto de segurança, pra uma PEC de id menor não ser cortada
+        # pelos muitos MPV de id alto — nem o fan-out estourar.
+        props: list[dict] = []
+        truncado = False
+        pagina = 1
+        while True:
+            lote = await self.get_json(
+                "/proposicoes",
+                params={
+                    "dataInicio": inicio.isoformat(),
+                    "dataFim": fim.isoformat(),
+                    "siglaTipo": tipos,
+                    "ordenarPor": "id",
+                    "ordem": "DESC",
+                    "itens": 100,
+                    "pagina": pagina,
+                },
+            )
+            props.extend(lote.get("dados", []))
+            if not any(l.get("rel") == "next" for l in lote.get("links", [])):
+                break
+            if len(props) >= CAP_ANDARAM:
+                truncado = True
+                break
+            pagina += 1
+        props = props[:CAP_ANDARAM]
+
+        # 2) fan-out (limitado, pra não martelar a fonte): a tramitação de cada uma.
+        # Só entra no feed quem teve um MARCO de verdade na janela (aprovada/
+        # rejeitada/virou norma) — quem só teve passo procedural não é novidade.
+        sem = asyncio.Semaphore(FAN_OUT_ANDARAM)
+
+        async def traz(pid: int):
+            async with sem:
+                return await self.get_json(f"/proposicoes/{pid}/tramitacoes")
+
+        tramitacoes = await asyncio.gather(
+            *(traz(p["id"]) for p in props), return_exceptions=True
+        )
+        novidades = []
+        for p, t in zip(props, tramitacoes):
+            if isinstance(t, BaseException):
+                continue  # uma fonte fora não derruba o feed inteiro
+            marcos = [
+                ev
+                for e in t.get("dados", [])
+                if (ev := self._norm_tramitacao(e)).marco and ev.data and inicio <= ev.data <= fim
+            ]
+            if not marcos:
+                continue
+            marcos.sort(key=lambda m: m.data, reverse=True)
+            novidades.append(
+                ProposicaoNovidade(
+                    id=p["id"],
+                    titulo=self._titulo_proposicao(p),
+                    ementa=limpa_texto(p.get("ementa")) or None,
+                    andou=marcos,
+                )
+            )
+        # a proposição com o marco mais recente primeiro
+        novidades.sort(key=lambda n: n.andou[0].data, reverse=True)
+        meta = {
+            "periodo": {"inicio": inicio.isoformat(), "fim": fim.isoformat()},
+            "tipos": tipos,
+            "tramitaram": len(props),
+        }
+        if truncado:
+            meta["truncado"] = True  # passou de 100 que tramitaram; feed pode estar incompleto
+        return NormalizedResponse(
+            fonte=self.name,
+            recurso=recurso,
+            dados=[n.model_dump(mode="json") for n in novidades],
+            total=len(novidades),
+            meta=meta,
+        )
+
+    def _inteiro(self, valor, padrao: int, teto: int, recurso: str, nome: str) -> int:
+        if valor is None:
+            return padrao
+        if not str(valor).isdigit():
+            raise ParametroInvalido(recurso, [nome], [f"inteiro entre 1 e {teto}"])
+        return max(1, min(int(valor), teto))
+
+    def _tipos_andaram(self, valor) -> list[str]:
+        if not valor:
+            return list(TIPOS_ANDARAM_PADRAO)
+        tipos = [t.strip().upper() for t in str(valor).split(",") if t.strip()]
+        return tipos or list(TIPOS_ANDARAM_PADRAO)
+
+    def _titulo_proposicao(self, p: dict) -> str:
+        tipo = p.get("siglaTipo") or "Proposição"
+        if p.get("numero") and p.get("ano"):
+            return f"{tipo} {p['numero']}/{p['ano']}"
+        return tipo
 
     def _traduz(self, recurso: str, params: dict, mapa: dict[str, str]) -> dict:
         invalidos = sorted(set(params) - set(mapa))

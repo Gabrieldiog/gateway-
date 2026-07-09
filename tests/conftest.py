@@ -49,6 +49,7 @@ ROTAS_FAKE = [
     ("https://api.queridodiario.ok.org.br/cities", "qd_cities"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes", "camara_votacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/2604173/tramitacoes", "camara_tramitacoes"),
+    ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/9990001/tramitacoes", "camara_tramitacoes_procedural"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/2234666", "camara_proposicao_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
@@ -337,6 +338,10 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=carrega_fixture("ckan_datasets"))
     if "/api/3/action/datastore_search" in url:
         return httpx.Response(200, json=carrega_fixture("ckan_datastore"))
+    # Câmara — feed "andaram": só ele manda ordenarPor=id (a lista simples não tem
+    # esse mapeamento), então é o discriminador seguro contra a lista comum.
+    if "/api/v2/proposicoes?" in url and "ordenarPor=id" in url and "siglaTipo=" in url:
+        return httpx.Response(200, json=carrega_fixture("camara_andaram_lista"))
     for prefixo, nome in ROTAS_FAKE:
         if url.startswith(prefixo):
             if nome is None:

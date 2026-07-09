@@ -78,6 +78,51 @@ async def test_tramitacoes_traz_a_linha_do_tempo_com_o_marco(api):
     assert leitura["marco"] is None
 
 
+async def test_andaram_lista_o_que_mudou_de_status_com_o_marco(api):
+    # feed de acompanhamento: sem saber o id, o Balcão lista as proposições que
+    # ANDARAM no período, já com o marco. A PEC 3/2026 (IPVA) aprovada na CCJ aparece;
+    # a que só teve passos procedurais no período NÃO aparece (não é novidade).
+    resp = await api.get("/v1/camara/proposicoes/andaram?data_inicio=2026-07-01&data_fim=2026-07-31")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    titulos = [n["titulo"] for n in corpo["dados"]]
+    assert "PEC 3/2026" in titulos
+    assert "PLP 99/2026" not in titulos  # só teve recebimento/apresentação: sem marco
+    pec = next(n for n in corpo["dados"] if n["titulo"] == "PEC 3/2026")
+    assert pec["andou"][0]["marco"] == "Aprovada na CCJ"
+    assert pec["andou"][0]["data"] == "2026-07-08"
+    assert corpo["meta"]["periodo"]["inicio"] == "2026-07-01"
+
+
+async def test_andaram_com_default_nao_quebra(api):
+    # sem params usa os últimos 7 dias (data de hoje); só garante que a rota responde
+    resp = await api.get("/v1/camara/proposicoes/andaram")
+    assert resp.status_code == 200
+    assert "dados" in resp.json()
+
+
+async def test_andaram_rejeita_param_desconhecido(api):
+    resp = await api.get("/v1/camara/proposicoes/andaram?semana=2")
+    assert resp.status_code == 400
+    assert "dias" in resp.json()["detalhes"]["parametros_aceitos"]
+
+
+async def test_andaram_valida_datas_e_dias(api):
+    # data_fim inválida não pode virar "hoje" calada — 400, igual a data_inicio
+    assert (await api.get("/v1/camara/proposicoes/andaram?data_fim=2026-13-01")).status_code == 400
+    assert (
+        await api.get("/v1/camara/proposicoes/andaram?data_inicio=2026-07-01&data_fim=lixo")
+    ).status_code == 400
+    # dias inválido é erro mesmo junto de data_inicio (era ignorado antes)
+    assert (
+        await api.get("/v1/camara/proposicoes/andaram?data_inicio=2026-07-01&dias=abc")
+    ).status_code == 400
+    # janela grande demais é barrada (senão o fan-out estoura)
+    assert (
+        await api.get("/v1/camara/proposicoes/andaram?data_inicio=2026-01-01&data_fim=2026-12-31")
+    ).status_code == 400
+
+
 def test_marco_humano_tira_o_sentido_do_despacho():
     # o marco de "aprovada/rejeitada" não pode sair só da descrição: a comissão
     # mata a matéria APROVANDO um parecer "pela rejeição"
