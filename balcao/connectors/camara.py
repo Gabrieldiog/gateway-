@@ -15,6 +15,7 @@ from balcao.models import (
     Proposicao,
     ProposicaoDetalhe,
     ProposicaoResumo,
+    TramitacaoEvento,
     Votacao,
     VotacaoCompleta,
     VotoDeputado,
@@ -59,6 +60,16 @@ PARAMS_PROPOSICOES = {
     "itens": "itens",
 }
 
+# nomes de gente pras comissões/órgãos mais citados na tramitação; o resto usa a
+# própria sigla. CCJC (Constituição e Justiça e de Cidadania) é a tal "CCJ".
+ORGAOS_AMIGAVEIS = {
+    "CCJC": "CCJ",
+    "CFT": "Comissão de Finanças e Tributação",
+    "PLEN": "plenário",
+    "MESA": "Mesa Diretora",
+    "CD": "Câmara",
+}
+
 
 @register
 class CamaraConnector(BaseConnector):
@@ -75,6 +86,7 @@ class CamaraConnector(BaseConnector):
         "votacoes": f"votações; filtros: {', '.join(PARAMS_VOTACOES)}",
         "votacoes/{id}": "a história da votação: parecer votado e proposições afetadas com ementa",
         "proposicoes/{id}": "dossiê de um projeto: situação, onde está, regime e o texto integral",
+        "proposicoes/{id}/tramitacoes": "a linha do tempo do projeto: cada passo em comissão/plenário (data, órgão, o que aconteceu), com o marco traduzido — ex.: aprovada na CCJ. É aqui que aparece o que o status atual (só a última linha) não conta",
         "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
         "votacoes/{id}/orientacoes": "como cada partido/bloco (e Governo/Oposição) orientou; só nas nominais",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
@@ -105,6 +117,8 @@ class CamaraConnector(BaseConnector):
                 return await self._proposicoes(recurso, params)
             case ["proposicoes", pid] if pid.isdigit():
                 return await self._proposicao_detalhe(recurso, int(pid))
+            case ["proposicoes", pid, "tramitacoes"] if pid.isdigit():
+                return await self._tramitacoes(recurso, int(pid))
             case _:
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
 
@@ -323,6 +337,71 @@ class CamaraConnector(BaseConnector):
         query = self._traduz(recurso, params, PARAMS_PROPOSICOES)
         bruto = await self.get_json("/proposicoes", params=query)
         return self._envelopa(recurso, bruto, params, self._norm_proposicao)
+
+    async def _tramitacoes(self, recurso: str, pid: int) -> NormalizedResponse:
+        bruto = await self.get_json(f"/proposicoes/{pid}/tramitacoes")
+        itens, descartados = [], 0
+        for t in bruto.get("dados", []):
+            try:
+                itens.append(self._norm_tramitacao(t).model_dump(mode="json"))
+            except (ValidationError, KeyError):
+                descartados += 1
+        # a fonte devolve em ordem crescente; invertemos pra o que acabou de
+        # acontecer (a aprovação na CCJ, p.ex.) ficar no topo
+        itens.reverse()
+        meta = {"descartados": descartados} if descartados else {}
+        return NormalizedResponse(
+            fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta
+        )
+
+    def _norm_tramitacao(self, b: dict) -> TramitacaoEvento:
+        orgao = b.get("siglaOrgao") or None
+        descricao = limpa_texto(b.get("descricaoTramitacao")) or None
+        despacho = limpa_texto(b.get("despacho")) or None
+        return TramitacaoEvento(
+            data=para_data(b.get("dataHora")),
+            orgao=orgao,
+            descricao=descricao,
+            despacho=despacho,
+            marco=self._marco_humano(orgao, descricao, despacho),
+        )
+
+    def _marco_humano(
+        self, orgao: str | None, descricao: str | None, despacho: str | None = None
+    ) -> str | None:
+        # traduz só os passos que decidem algo; o resto (recebimento, leitura,
+        # discussão...) é procedural e não vira marco, pra não virar ruído.
+        if not descricao:
+            return None
+        d = descricao.lower()
+        # o SENTIDO da decisão às vezes só aparece no despacho: uma comissão "mata"
+        # a matéria APROVANDO um parecer "pela rejeição/inadmissibilidade" — olhar
+        # só "Aprovação do Parecer" daria o marco errado.
+        texto = (descricao + " " + (despacho or "")).lower()
+        onde = ORGAOS_AMIGAVEIS.get((orgao or "").upper(), orgao)
+        no_plenario = (orgao or "").upper() == "PLEN"
+
+        def lugar(rejeitada: bool) -> str:
+            verbo = "Rejeitada" if rejeitada else "Aprovada"
+            if no_plenario:
+                return f"{verbo} em plenário"
+            return f"{verbo} na {onde}" if onde else verbo
+
+        # fim de linha, independem de órgão
+        if "transformad" in texto and "norma" in texto:
+            return "Virou norma (lei)"
+        if "arquiv" in d and "desarquiv" not in d:
+            return "Arquivada"
+        # só marca decisões sobre a PRÓPRIA matéria (parecer/proposição/projeto/
+        # redação) — requerimento, emenda avulsa etc. são procedurais
+        if not any(t in d for t in ("parecer", "proposi", "matéria", "materia", "projeto", "redaç", "redac")):
+            return None
+        if "rejei" in d:
+            return lugar(rejeitada=True)
+        if "aprova" in d:
+            negativo = any(t in texto for t in ("rejei", "inadmiss", "inconstitucional", "prejudicad"))
+            return lugar(rejeitada=negativo)
+        return None
 
     def _traduz(self, recurso: str, params: dict, mapa: dict[str, str]) -> dict:
         invalidos = sorted(set(params) - set(mapa))

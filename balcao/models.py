@@ -712,6 +712,19 @@ class ProposicaoDetalhe(Proposicao):
     keywords: str | None = None
 
 
+class TramitacaoEvento(BaseModel):
+    """Um passo na vida de uma proposição: quando, em que órgão/comissão, e o que
+    aconteceu. É aqui que mora "aprovada na CCJ" — o marco que o status atual (só a
+    última linha) não conta. `marco` traduz os passos reconhecidos pra fala de gente."""
+
+    fonte: str = "camara"
+    data: date | None = None
+    orgao: str | None = None  # sigla da comissão/órgão: CCJC, CFT, PLEN...
+    descricao: str | None = None  # "Aprovação do Parecer", "Recebimento"...
+    despacho: str | None = None
+    marco: str | None = None  # "Aprovada na CCJ", "Virou norma"... só quando reconhecido
+
+
 class ArquivoCompra(BaseModel):
     """Um documento publicado junto da contratação no PNCP (edital, anexos)."""
 

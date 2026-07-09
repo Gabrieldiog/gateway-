@@ -48,6 +48,7 @@ ROTAS_FAKE = [
     ("https://api.queridodiario.ok.org.br/gazettes", "qd_gazettes"),
     ("https://api.queridodiario.ok.org.br/cities", "qd_cities"),
     ("https://dadosabertos.camara.leg.br/api/v2/votacoes", "camara_votacoes"),
+    ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/2604173/tramitacoes", "camara_tramitacoes"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes/2234666", "camara_proposicao_detalhe"),
     ("https://dadosabertos.camara.leg.br/api/v2/proposicoes", "camara_proposicoes"),
     ("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432", "bacen_selic"),
