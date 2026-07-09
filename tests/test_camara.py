@@ -59,6 +59,47 @@ async def test_proposicoes_normalizadas(api):
     assert proposicao["ementa"]
 
 
+async def test_tramitacoes_traz_a_linha_do_tempo_com_o_marco(api):
+    # PEC 3/2026 (do IPVA): a aprovação na CCJ é um evento da tramitação, que o
+    # status atual (só a última linha) não conta. O recurso traz a linha do tempo.
+    resp = await api.get("/v1/camara/proposicoes/2604173/tramitacoes")
+    assert resp.status_code == 200
+    corpo = resp.json()
+    assert corpo["total"] > 0
+    eventos = corpo["dados"]
+    # a aprovação na CCJ está lá, com o marco traduzido pra fala de gente
+    ccj = next(
+        e for e in eventos if e["orgao"] == "CCJC" and e["descricao"] == "Aprovação do Parecer"
+    )
+    assert ccj["data"] == "2026-07-08"
+    assert ccj["marco"] == "Aprovada na CCJ"
+    # passo procedural não ganha marco falso (só ruído)
+    leitura = next(e for e in eventos if e["descricao"] == "Leitura e publicação do Parecer")
+    assert leitura["marco"] is None
+
+
+def test_marco_humano_tira_o_sentido_do_despacho():
+    # o marco de "aprovada/rejeitada" não pode sair só da descrição: a comissão
+    # mata a matéria APROVANDO um parecer "pela rejeição"
+    from balcao.connectors.camara import CamaraConnector
+
+    c = CamaraConnector(None)
+    # parecer favorável aprovado -> a matéria avança
+    assert c._marco_humano("CCJC", "Aprovação do Parecer", "Aprovado o Parecer.") == "Aprovada na CCJ"
+    # parecer aprovado PELA REJEIÇÃO -> a matéria morre (o "aprova" engana)
+    assert (
+        c._marco_humano("CCJC", "Aprovação do Parecer", "Aprovado o Parecer pela rejeição da matéria.")
+        == "Rejeitada na CCJ"
+    )
+    assert c._marco_humano("CCJC", "Rejeição do Parecer", "Rejeitado.") == "Rejeitada na CCJ"
+    # requerimento e leitura são procedurais, não viram marco
+    assert c._marco_humano("CCJC", "Aprovação de Requerimento", "Aprovado.") is None
+    assert c._marco_humano("CCJC", "Leitura e publicação do Parecer", None) is None
+    # plenário e fim de linha
+    assert c._marco_humano("PLEN", "Aprovação da Matéria", None) == "Aprovada em plenário"
+    assert c._marco_humano("MESA", "Transformado em Norma Jurídica", None) == "Virou norma (lei)"
+
+
 async def test_param_desconhecido_da_400_com_lista_dos_aceitos(api):
     resp = await api.get("/v1/camara/deputados?cidade=Campinas")
     assert resp.status_code == 400
