@@ -725,6 +725,18 @@ class TramitacaoEvento(BaseModel):
     marco: str | None = None  # "Aprovada na CCJ", "Virou norma"... só quando reconhecido
 
 
+class ProposicaoNovidade(BaseModel):
+    """Uma proposição que ANDOU no período — o feed de acompanhamento. Já vem com
+    os marcos que aconteceram na janela (aprovada na CCJ, rejeitada, virou norma),
+    pra não precisar saber o id nem abrir a tramitação inteira."""
+
+    fonte: str = "camara"
+    id: int
+    titulo: str  # "PEC 3/2026"
+    ementa: str | None = None
+    andou: list[TramitacaoEvento] = []  # só os eventos com marco na janela, mais novo primeiro
+
+
 class ArquivoCompra(BaseModel):
     """Um documento publicado junto da contratação no PNCP (edital, anexos)."""
 

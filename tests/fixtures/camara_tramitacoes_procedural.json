@@ -1,0 +1,17 @@
+{
+  "dados": [
+    {
+      "dataHora": "2026-07-05T10:00",
+      "siglaOrgao": "MESA",
+      "descricaoTramitacao": "Apresentação de Proposição",
+      "despacho": "Apresentada a Proposição."
+    },
+    {
+      "dataHora": "2026-07-07T14:30",
+      "siglaOrgao": "CCJC",
+      "descricaoTramitacao": "Recebimento - Relator(a)",
+      "despacho": "Recebido pelo relator."
+    }
+  ],
+  "links": []
+}
