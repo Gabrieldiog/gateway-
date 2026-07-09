@@ -32,9 +32,25 @@ interface Proposicao {
   ementa: string;
 }
 
-type Aba = "votacoes" | "proposicoes";
+interface EventoAndou {
+  data: string | null;
+  orgao: string | null;
+  descricao: string | null;
+  marco: string | null;
+}
+
+interface Novidade {
+  fonte: string;
+  id: number;
+  titulo: string;
+  ementa: string | null;
+  andou: EventoAndou[];
+}
+
+type Aba = "andou" | "votacoes" | "proposicoes";
 
 const ABAS: [Aba, string][] = [
+  ["andou", "Andou"],
   ["votacoes", "Votações"],
   ["proposicoes", "Proposições"],
 ];
@@ -183,6 +199,95 @@ function VotosDaVotacao({ id }: { id: string }) {
       </div>
       {outros > 0 && (
         <p className="num mt-2 text-xs text-muted">+ {outros} abstenções/obstruções/outros</p>
+      )}
+    </div>
+  );
+}
+
+// classes do selo do marco, por sentido: verde aprovou, vermelho rejeitou/arquivou,
+// petróleo virou norma (lei); o resto neutro
+function corDoMarco(marco: string): string {
+  const m = marco.toLowerCase();
+  if (m.startsWith("aprovada")) return "border-ok/40 bg-ok/10 text-ok";
+  if (m.startsWith("rejeitada") || m.includes("arquiv")) return "border-erro/40 bg-erro/10 text-erro";
+  if (m.includes("norma")) return "border-accent-2/40 bg-accent-2/10 text-accent-2";
+  return "border-line bg-surface text-muted";
+}
+
+// o feed que fecha o acompanhamento: só as proposições que DECIDIRAM algo no
+// período (aprovada na CCJ, rejeitada, virou norma), já com o marco em português.
+// Não é a lista de tudo que tramitou — é o que virou notícia.
+function Andou({ dias }: { dias: number }) {
+  const r = useBalcao<NormalizedResponse<Novidade>>(
+    caminho("camara/proposicoes/andaram", { dias }),
+  );
+  const novidades = r.dados?.dados ?? [];
+  const tramitaram = r.dados?.meta?.tramitaram as number | undefined;
+
+  return (
+    <div>
+      <p className="kicker mb-3 flex items-center justify-between">
+        <span>as decisões da semana</span>
+        <Carimbo fonte="CÂMARA" cache={r.dados?.meta?.cache as string | undefined} ms={r.ms} erro={!!r.erro} />
+      </p>
+      {r.erro ? (
+        <ErroBox erro={r.erro} aoTentar={r.recarregar} />
+      ) : r.carregando && !r.dados ? (
+        <Esqueleto linhas={6} />
+      ) : novidades.length ? (
+        <EmTransicao ativo={r.carregando}>
+          {tramitaram ? (
+            <p className="mb-3 font-editorial text-sm italic text-muted">
+              De {tramitaram} proposições de peso (PEC, PLP, MPV) que se mexeram,{" "}
+              {novidades.length === 1 ? "esta 1 teve" : `estas ${novidades.length} tiveram`} uma decisão de
+              verdade.
+            </p>
+          ) : null}
+          <Card className="divide-y divide-line p-0">
+            {novidades.map((n) => {
+              const topo = n.andou[0];
+              return (
+                <div key={n.id} className="px-5 py-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <span className="num text-xs font-semibold uppercase tracking-wider text-accent">
+                      {n.titulo}
+                    </span>
+                    {topo?.marco && (
+                      <span
+                        className={`num rounded-full border px-2.5 py-0.5 text-[0.7rem] font-semibold ${corDoMarco(topo.marco)}`}
+                      >
+                        {topo.marco}
+                      </span>
+                    )}
+                    {topo?.data && <span className="num text-xs text-muted">{formataData(topo.data)}</span>}
+                    <a
+                      href={`https://www.camara.leg.br/propostas-legislativas/${n.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="num text-xs text-accent transition-colors hover:text-accent-2"
+                    >
+                      na Câmara →
+                    </a>
+                  </div>
+                  {n.ementa && (
+                    <LerMais
+                      texto={n.ementa}
+                      limite={220}
+                      className="mt-1 font-editorial text-sm leading-snug text-ink/90"
+                    />
+                  )}
+                  {n.andou.length > 1 && (
+                    <p className="num mt-1 text-xs text-muted">
+                      + {n.andou.length - 1} {n.andou.length - 1 === 1 ? "outro marco" : "outros marcos"} no período
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </Card>
+        </EmTransicao>
+      ) : (
+        <Vazio>nenhuma decisão de peso (PEC/PLP/MPV) no período.</Vazio>
       )}
     </div>
   );
@@ -427,7 +532,7 @@ function Proposicoes({ dias }: { dias: number }) {
 }
 
 export default function CadernoPauta() {
-  const [aba, setAba] = useState<Aba>("votacoes");
+  const [aba, setAba] = useState<Aba>("andou");
   const [dias, setDias] = useState(7);
 
   return (
@@ -473,7 +578,13 @@ export default function CadernoPauta() {
         </div>
       </div>
 
-      {aba === "votacoes" ? <Votacoes dias={dias} /> : <Proposicoes dias={dias} />}
+      {aba === "andou" ? (
+        <Andou dias={dias} />
+      ) : aba === "votacoes" ? (
+        <Votacoes dias={dias} />
+      ) : (
+        <Proposicoes dias={dias} />
+      )}
 
       <SeloFonte fonte={FONTE_CAMARA} />
     </div>
