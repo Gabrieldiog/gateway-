@@ -91,6 +91,7 @@ export const GRUPOS: Grupo[] = [
     nome: "Desenvolvedores",
     cadernos: [
       { num: "XXV", nome: "Manual da API", sub: "como chamar cada fonte", href: "/docs" },
+      { num: "XL", nome: "Índice de Endpoints", sub: "todas as chamadas, por tema", href: "/endpoints" },
       { num: "XXXIX", nome: "Termos de Uso", sub: "a licença, os limites e as fontes", href: "/termos" },
     ],
   },
