@@ -15,6 +15,7 @@ from balcao.connectors.base import connector_classes
 from balcao.exceptions import BalcaoError
 from balcao.http import cria_client
 from balcao.logs import configura_logging, loga
+from balcao.multiplayer import router as multiplayer_router
 from balcao.ratelimit import cria_limiter, le_chaves
 from balcao.resilience import CircuitBreaker
 from balcao.routers import meta, sources, unified
@@ -88,6 +89,9 @@ def create_app() -> FastAPI:
     app.include_router(meta.router)
     app.include_router(unified.router)
     app.include_router(sources.router)
+    # relay WebSocket do modo 1v1 do joguinho "Maior ou Menor?" — isolado do
+    # gateway, só junta dois jogadores e repassa mensagens (ver multiplayer.py)
+    app.include_router(multiplayer_router)
 
     @app.middleware("http")
     async def loga_requisicoes(request: Request, call_next):
