@@ -5,6 +5,10 @@
 
 Projeto de portfólio: o objetivo é demonstrar arquitetura de gateway, não operar como serviço para terceiros.
 
+**Ao vivo:** [balcaoo.netlify.app](https://balcaoo.netlify.app) — o Diário de Dados Públicos (a view web) · [balcao-api.onrender.com/docs](https://balcao-api.onrender.com/docs) — a API, com Swagger pra testar cada rota no navegador.
+
+> A API roda no plano grátis do Render, que dorme quando ninguém usa — a primeira chamada do dia pode levar alguns segundos pra acordar.
+
 ## Por que isso existe
 
 Já existem ótimos agregadores de dados públicos BR — [BrasilAPI](https://brasilapi.com.br), [mcp-brasil](https://github.com/mcp-brasil), [Base dos Dados](https://basedosdados.org) e o próprio [Portal da Transparência](https://portaldatransparencia.gov.br). Juntar APIs é a parte fácil. O valor deste projeto está na **camada do meio**, que separa um gateway de engenharia de um proxy burro:
@@ -39,43 +43,45 @@ cliente HTTP ──► FastAPI (rotas + OpenAPI)
 
 ## Como chamar
 
+Os exemplos abaixo já apontam pra **API no ar** — é só colar no terminal (a primeira pode demorar uns segundos, cold start do Render).
+
 **Direto por fonte** — filtros com nomes nossos, o conector traduz pros da fonte:
 
 ```bash
-curl "localhost:8000/v1/camara/deputados?uf=SP&partido=PL"
-curl "localhost:8000/v1/camara/deputados/204528/despesas?ano=2025"
-curl "localhost:8000/v1/camara/votacoes/2629954-8/votos"   # voto de cada deputado + placar no meta
-curl "localhost:8000/v1/bacen/selic?ultimos=10"        # atalhos: selic, cdi, ipca, igpm, dolar, euro
-curl "localhost:8000/v1/bacen/serie/433?data_inicio=2026-01-01&data_fim=2026-03-31"
-curl "localhost:8000/v1/ibge/municipios?uf=SP"
-curl "localhost:8000/v1/senado/senadores?uf=SP&partido=PSD"
-curl "localhost:8000/v1/sus/estabelecimentos?uf=SP&tipo=5"  # hospitais gerais; tipo é o código CNES
-curl "localhost:8000/v1/sidra/producao?produto=soja&ano=2023"  # produção de soja por estado
-curl "localhost:8000/v1/sidra/rebanho?animal=bovino&municipio=5107925"  # rebanho num município
-curl "localhost:8000/v1/ipeadata/series?q=PIB"          # acha o código da série
-curl "localhost:8000/v1/ipeadata/serie/BM12_IPCA2012?ultimos=12"  # valores recentes
-curl "localhost:8000/v1/aneel/datasets?q=tarifa"        # busca conjuntos num portal CKAN
-curl "localhost:8000/v1/aneel/dados/{recurso_id}"       # linhas reais de um recurso (datastore)
+curl "https://balcao-api.onrender.com/v1/camara/deputados?uf=SP&partido=PL"
+curl "https://balcao-api.onrender.com/v1/camara/deputados/204528/despesas?ano=2025"
+curl "https://balcao-api.onrender.com/v1/camara/votacoes/2629954-8/votos"   # voto de cada deputado + placar no meta
+curl "https://balcao-api.onrender.com/v1/bacen/selic?ultimos=10"        # atalhos: selic, cdi, ipca, igpm, dolar, euro
+curl "https://balcao-api.onrender.com/v1/bacen/serie/433?data_inicio=2026-01-01&data_fim=2026-03-31"
+curl "https://balcao-api.onrender.com/v1/ibge/municipios?uf=SP"
+curl "https://balcao-api.onrender.com/v1/senado/senadores?uf=SP&partido=PSD"
+curl "https://balcao-api.onrender.com/v1/sus/estabelecimentos?uf=SP&tipo=5"  # hospitais gerais; tipo é o código CNES
+curl "https://balcao-api.onrender.com/v1/sidra/producao?produto=soja&ano=2023"  # produção de soja por estado
+curl "https://balcao-api.onrender.com/v1/sidra/rebanho?animal=bovino&municipio=5107925"  # rebanho num município
+curl "https://balcao-api.onrender.com/v1/ipeadata/series?q=PIB"          # acha o código da série
+curl "https://balcao-api.onrender.com/v1/ipeadata/serie/BM12_IPCA2012?ultimos=12"  # valores recentes
+curl "https://balcao-api.onrender.com/v1/aneel/datasets?q=tarifa"        # busca conjuntos num portal CKAN
+curl "https://balcao-api.onrender.com/v1/aneel/dados/{recurso_id}"       # linhas reais de um recurso (datastore)
 ```
 
 **Busca unificada** — fan-out paralelo, erro numa fonte não derruba as outras:
 
 ```bash
-curl "localhost:8000/v1/buscar?q=silva&fontes=camara,senado"
-curl "localhost:8000/v1/buscar?q=campinas"               # sem fontes= busca em todas
+curl "https://balcao-api.onrender.com/v1/buscar?q=silva&fontes=camara,senado"
+curl "https://balcao-api.onrender.com/v1/buscar?q=campinas"               # sem fontes= busca em todas
 ```
 
 **Recurso cross-fonte** — resolve o parlamentar por id ou nome e agrega:
 
 ```bash
-curl "localhost:8000/v1/gastos?deputado=Adriana&uf=SP&ano=2025"
+curl "https://balcao-api.onrender.com/v1/gastos?deputado=Adriana&uf=SP&ano=2025"
 ```
 
 **Descoberta** — a API se autodescreve:
 
 ```bash
-curl "localhost:8000/v1/fontes"      # conectores, recursos e filtros de cada um
-open http://localhost:8000/docs      # Swagger
+curl "https://balcao-api.onrender.com/v1/fontes"      # conectores, recursos e filtros de cada um
+open https://balcao-api.onrender.com/docs             # Swagger
 ```
 
 Toda resposta de fonte vem no mesmo envelope:
@@ -189,24 +195,14 @@ A parte divertida de unificar dados públicos é descobrir que **cada API tem su
 
 Python 3.12+ · FastAPI · httpx (async, pool único) · Pydantic v2 · cachetools · tenacity · slowapi · ijson (ETL streaming) · pytest (offline, `MockTransport`) · Docker
 
-## Roadmap
+## O que já tem
 
-- [x] Fase 0 — Spike (fluxo httpx → normalização → resposta)
-- [x] Fase 1 — Gateway core: conectores, cache, rate limit, logging, Swagger, testes offline
-- [x] Fase 2 — Resiliência (retry + breaker + stale) e busca unificada
-- [x] Dashboard web (`web/`) — diário de dados públicos sobre o gateway
-- [x] Fase 4 — MCP server (FastMCP): os conectores como ferramentas de IA
-- [x] Tesouro Nacional (SICONFI): receita, impostos e gastos por função dos estados
-- [x] SUS (CNES) e voto por deputado na Câmara
-- [x] IBGE SIDRA: produção agrícola e pecuária (agro) por estado/município
-- [x] Motor CKAN reutilizável: ANEEL, MME e ANTT (energia, mineração, transporte)
-- [x] IPEADATA: séries macro, regionais e sociais (complementa o BACEN)
-- [x] Fase 3 — Fontes com chave: Portal da Transparência, brapi (B3) e DataJud
-- [x] Economia viva: painel de custo de vida (inflação) e Boletim Focus
-- [x] Tempo real: câmbio/ouro/cripto (AwesomeAPI), geração de energia (ONS) e queimadas (INPE)
-- [x] Dinheiro público: arrecadação por ente (SICONFI), emendas, sanções, Bolsa Família e PNCP
-- [x] ComexStat (comércio exterior) e InfoDengue (vigilância epidemiológica)
-- [x] Fase 5 — Conectores de arquivo: ANP (combustíveis), Tesouro Direto e TSE (doações, ZIP de 1,4 GB)
-- [x] MCP com passe livre (`consultar`) sobre as 25 fontes
-- [ ] Deploy público (Render + Netlify) — blueprint pronto em `render.yaml`
-- [ ] Caderno de compras públicas na view (aguardando o PNCP estabilizar)
+- **Gateway core** — conectores plugáveis, cache em dois níveis, rate limit, logging JSON, Swagger e testes offline.
+- **Resiliência** — retry com backoff, circuit breaker e fallback pra cache stale quando a fonte cai.
+- **Busca unificada** — fan-out paralelo por várias fontes numa chamada só.
+- **25 fontes ativas** — parlamento, economia, saúde, dinheiro público, tempo real e conectores de arquivo (ANP, Tesouro Direto e o ZIP de até 1,4 GB do TSE).
+- **Dashboard web** — o [Diário de Dados Públicos](https://balcaoo.netlify.app), com mais de vinte cadernos sobre o gateway.
+- **Servidor MCP** (FastMCP) — os conectores como ferramentas de IA, com passe livre `consultar` sobre as 25 fontes.
+- **No ar** — API no Render, dashboard no Netlify (blueprint em `render.yaml`).
+
+Próximo: caderno de compras públicas na view (aguardando o PNCP estabilizar).
