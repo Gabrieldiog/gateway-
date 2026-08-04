@@ -53,7 +53,7 @@ export interface PontoSerie {
   valor: string;
 }
 
-// ação ou índice da B3 (/v1/b3/acoes/...) — ~15 min de atraso no plano free
+// ação ou índice da B3 (/v1/b3/acoes/...), ~15 min de atraso no plano free
 export interface Acao {
   fonte: string;
   ticker: string; // IBOV, PETR4...
@@ -79,9 +79,14 @@ export interface Cotacao {
   maxima: string | null;
   minima: string | null;
   atualizado: string | null;
+  // qual fonte serviu este número: a principal exige cadastro, então o gateway
+  // tem plano B em fontes abertas e cada cotação diz de onde veio
+  origem: string;
+  // preço de mercado agora, ou taxa de referência do dia? o selo não mente
+  ao_vivo: boolean;
 }
 
-// uma linha do painel /v1/bacen/inflacao — o valor mais recente de cada série
+// uma linha do painel /v1/bacen/inflacao, o valor mais recente de cada série
 export interface IndicadorEconomico {
   fonte: string;
   chave: string; // ipca, ipca12m, igpm, selic, dolar...
@@ -92,7 +97,7 @@ export interface IndicadorEconomico {
   valor: string;
 }
 
-// uma linha do painel /v1/focus/painel — o que o mercado espera pra um ano
+// uma linha do painel /v1/focus/painel, o que o mercado espera pra um ano
 export interface ExpectativaMercado {
   fonte: string;
   indicador: string; // IPCA, Selic, Câmbio, PIB Total, IGP-M
@@ -115,7 +120,7 @@ export interface Estado {
   regiao: string | null;
 }
 
-// emenda parlamentar (/v1/transparencia/emendas) — valores já normalizados
+// emenda parlamentar (/v1/transparencia/emendas), valores já normalizados
 export interface Emenda {
   fonte: string;
   codigo: string;
@@ -129,7 +134,7 @@ export interface Emenda {
   valor_pago: string | null;
 }
 
-// punição em vigor (/v1/transparencia/sancoes) — CEIS ou CNEP
+// punição em vigor (/v1/transparencia/sancoes), CEIS ou CNEP
 export interface Sancao {
   fonte: string;
   cadastro: string; // CEIS | CNEP
@@ -190,7 +195,7 @@ export interface ContratoPublico {
   vigencia_fim: string | null;
 }
 
-// preço agregado de um combustível (/v1/anp/precos) — média das coletas
+// preço agregado de um combustível (/v1/anp/precos), média das coletas
 export interface PrecoCombustivel {
   fonte: string;
   combustivel: string;
@@ -265,7 +270,7 @@ export interface Queimada {
   frp_total: number | null;
 }
 
-// foto da geração do SIN num instante (/v1/ons/geracao) — MW por fonte
+// foto da geração do SIN num instante (/v1/ons/geracao), MW por fonte
 export interface GeracaoEnergia {
   fonte: string;
   instante: string;
