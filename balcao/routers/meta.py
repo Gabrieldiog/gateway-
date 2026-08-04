@@ -5,12 +5,12 @@ from pydantic import BaseModel
 router = APIRouter(tags=["meta"])
 
 # referência da API estilo Scalar, montada do próprio OpenAPI que o FastAPI já
-# gera — try-it no navegador e exemplos de código em várias linguagens. O
+# gera: try-it no navegador e exemplos de código em várias linguagens. O
 # FastAPI ainda serve /docs (Swagger) e /redoc; esta é a versão bonita.
 SCALAR_HTML = """<!doctype html>
 <html>
 <head>
-  <title>Balcão — Referência da API</title>
+  <title>Balcão, Referência da API</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="data:," />

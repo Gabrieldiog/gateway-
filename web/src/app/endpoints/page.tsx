@@ -8,7 +8,7 @@ import { TEMAS_ENDPOINTS, type Endpoint } from "@/lib/endpoints";
 const BASE = process.env.BALCAO_PUBLIC_URL || "https://balcao-api.onrender.com";
 
 // uma rota: link clicável (caminho em tinta, query em destaque) + o que devolve.
-// Rotas com {placeholder} não abrem sozinhas — mostram o padrão, sem link.
+// Rotas com {placeholder} não abrem sozinhas, mostram o padrão, sem link.
 function Rota({ ep }: { ep: Endpoint }) {
   const [caminho, query] = ep.path.split("?");
   return (
@@ -44,7 +44,7 @@ export default function CadernoEndpoints() {
         numero="XL"
         kicker="Desenvolvedores"
         titulo="Índice de Endpoints"
-        resumo="Todas as chamadas do Balcão, agrupadas por tema. Cada rota abaixo é clicável e responde JSON de verdade — os exemplos já vêm com filtros de brinde (UF, ano, termo). Sem chave na maioria, sem SDK: é só abrir o link."
+        resumo="Todas as chamadas do Balcão, agrupadas por tema. Cada rota abaixo é clicável e responde JSON de verdade; os exemplos já vêm com filtros de brinde (UF, ano, termo). Sem chave na maioria, sem SDK: é só abrir o link."
       />
 
       {/* base + atalhos vivos */}
@@ -128,7 +128,7 @@ export default function CadernoEndpoints() {
           <Link href="/docs" className="text-accent hover:underline">
             Manual da API
           </Link>{" "}
-          explica — e traz um prompt pronto pra uma IA explorar o Balcão por você.
+          explica, e traz um prompt pronto pra uma IA explorar o Balcão por você.
         </p>
       </section>
     </div>

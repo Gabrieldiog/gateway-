@@ -32,7 +32,7 @@ function KpiReais({
 }
 
 // contas anuais: o ano corrente ainda está aberto, então o padrão é o
-// anterior — mas a lista cresce sozinha a cada virada de calendário
+// anterior, mas a lista cresce sozinha a cada virada de calendário
 const ANOS = anos(ANO_ATUAL, 2020);
 type Nivel = "uniao" | "estado" | "municipio";
 const NIVEIS: [Nivel, string][] = [
@@ -79,7 +79,7 @@ export default function CadernoTesouro() {
       ? Number(fin.receita_impostos) / fin.populacao
       : null;
 
-  const titulo = fin?.ente ?? (nivel === "uniao" ? "Brasil" : nivel === "estado" ? uf : "—");
+  const titulo = fin?.ente ?? (nivel === "uniao" ? "Brasil" : nivel === "estado" ? uf : "sem dado");
   const carregandoVazio = arr.carregando && !arr.dados;
 
   return (
@@ -88,7 +88,7 @@ export default function CadernoTesouro() {
         numero="VI"
         kicker="Tesouro Nacional · SICONFI"
         titulo="A arrecadação do Brasil"
-        resumo="Quanto a União, cada estado e cada cidade arrecadam em impostos — e pra onde esse dinheiro vai. Direto da Declaração de Contas Anuais. Valores realizados do balanço; 2023 é o ano mais completo. O SICONFI é lento: a primeira consulta de cada ente pode demorar."
+        resumo="Quanto a União, cada estado e cada cidade arrecadam em impostos, e pra onde esse dinheiro vai. Direto da Declaração de Contas Anuais. Valores realizados do balanço; 2023 é o ano mais completo. O SICONFI é lento: a primeira consulta de cada ente pode demorar."
         referencia={`exercício ${ano}`}
       />
 
@@ -228,7 +228,7 @@ export default function CadernoTesouro() {
               </div>
               <p className="mt-5 max-w-[60ch] font-editorial text-[1.02rem] italic text-ink/70">
                 <strong className="font-semibold not-italic">Arrecadação</strong> = impostos +
-                contribuições (INSS, COFINS…) — é o número das manchetes.{" "}
+                contribuições (INSS, COFINS…); é o número das manchetes.{" "}
                 <strong className="font-semibold not-italic">Impostos</strong> é só a fatia de
                 impostos (IR, ICMS, ISS…).
                 {impostoPorHab != null &&

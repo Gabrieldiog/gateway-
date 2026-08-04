@@ -72,7 +72,7 @@ function Ideb({ ibge }: { ibge: string }) {
     <section className="mb-10">
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <h2 className="font-display text-lg font-semibold text-ink">
-          <Termo t="ideb">IDEB</Termo> — a nota da escola
+          <Termo t="ideb">IDEB</Termo>, a nota da escola
         </h2>
         <div className="inline-flex flex-wrap gap-0.5 rounded-md border border-line p-0.5">
           {REDES.map(([v, label]) => (
@@ -153,7 +153,7 @@ function Censo({ ibge }: { ibge: string }) {
         </div>
       </div>
       <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
-        {rotulo} da rede pública e privada juntas, pelo Censo Escolar mais recente — e como o
+        {rotulo} da rede pública e privada juntas, pelo Censo Escolar mais recente, e como o
         número mudou ao longo dos anos.
       </p>
       {r.erro ? (
@@ -213,7 +213,7 @@ export default function CadernoEducacao() {
         numero="XXXVI"
         kicker="INEP · IDEB e Censo Escolar"
         titulo="Educação"
-        resumo="Como vai a escola da sua cidade: a nota do IDEB rede por rede, etapa por etapa, e o tamanho real da rede de ensino — quantas matrículas, quantos professores, quantas escolas. Traço no lugar da nota é ano que o INEP não divulgou."
+        resumo="Como vai a escola da sua cidade: a nota do IDEB rede por rede, etapa por etapa, e o tamanho real da rede de ensino; quantas matrículas, quantos professores, quantas escolas. Traço no lugar da nota é ano que o INEP não divulgou."
         referencia={anoCenso ? `Censo ${anoCenso}` : undefined}
       />
 

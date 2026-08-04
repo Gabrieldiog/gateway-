@@ -38,7 +38,7 @@ async def consulta_fonte(fonte: str, recurso: str, request: Request) -> Normaliz
     try:
         resposta = await conector.fetch(recurso, **params)
     except ErroUpstream as exc:
-        # fonte caida: dado velho e melhor que erro, quando existir — mas o
+        # fonte caida: dado velho e melhor que erro, quando existir, mas o
         # leitor merece saber de quando ele e (salvo_em)
         guardado = cache.pega_velho(chave)
         if guardado is None:

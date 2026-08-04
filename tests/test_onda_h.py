@@ -1,4 +1,4 @@
-"""Onda H — a API pública: referência Scalar, rate limit por chave, headers."""
+"""Onda H, a API pública: referência Scalar, rate limit por chave, headers."""
 
 from starlette.requests import Request
 

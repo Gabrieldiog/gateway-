@@ -1,10 +1,10 @@
-// Catalogo curado de endpoints por tema — o indice clicavel da API. Cada rota
+// Catalogo curado de endpoints por tema, o indice clicavel da API. Cada rota
 // vem com filtros de exemplo (uf, ano, termo...) pra o link abrir JSON de verdade.
 // O indice SEMPRE-atual e o /v1/fontes (esta lista e a versao narrada, agrupada
 // por tema, pra explorar). As 38 fontes aqui espelham as 38 registradas no gateway.
 
 export interface Endpoint {
-  path: string; // "/v1/camara/deputados?uf=SP&partido=PT" — vira link BASE+path
+  path: string; // "/v1/camara/deputados?uf=SP&partido=PT"; vira link BASE+path
   desc: string;
   pattern?: boolean; // rota com {placeholder}: mostrada, mas nao clicavel
 }
@@ -241,7 +241,7 @@ export const TEMAS_ENDPOINTS: TemaEndpoints[] = [
       ] },
       { nome: "aneel", desc: "ANEEL (CKAN) · setor elétrico", eps: [
         { path: "/v1/aneel/datasets?q=tarifa", desc: "busca conjuntos de dados" },
-        { path: "/v1/aneel/dados/{recurso_id}", desc: "linhas de um recurso — id vem de /datasets", pattern: true },
+        { path: "/v1/aneel/dados/{recurso_id}", desc: "linhas de um recurso, id vem de /datasets", pattern: true },
       ] },
       { nome: "mme", desc: "Minas e Energia (CKAN)", eps: [
         { path: "/v1/mme/datasets?q=energia", desc: "conjuntos de dados" },

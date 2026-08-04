@@ -1,6 +1,6 @@
 """Boletim Focus (BACEN): o que o mercado espera pra frente. Enquanto o /serie
 do BACEN é retrospectivo (o IPCA que já saiu), o Focus traz a projeção mediana
-dos analistas pro ano — atualizada toda semana. A API é OData (plataforma
+dos analistas pro ano, atualizada toda semana. A API é OData (plataforma
 Olinda): os nomes de recurso são irregulares e o servidor recusa o `$` quando
 vem percent-encoded, então a query é montada à mão."""
 
@@ -30,7 +30,7 @@ PAINEL = ("ipca", "selic", "cambio", "pib", "igpm")
 PARAMS = {"ano"}
 
 FONTE = {
-    "nome": "Banco Central — Boletim Focus",
+    "nome": "Banco Central, Boletim Focus",
     "url": "https://www.bcb.gov.br/publicacoes/focus",
     "nota": (
         "Projeção mediana de mais de cem instituições financeiras, coletada e "

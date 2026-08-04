@@ -9,12 +9,12 @@ export const GLOSSARIO: Record<string, Verbete> = {
   focos: {
     titulo: "Foco de calor",
     texto:
-      "Um pixel quente visto pelo satélite do INPE — um ponto onde o sensor detectou temperatura de queima. Não é “um incêndio”: um incêndio grande vira dezenas de focos, e uma queimada pequena pode passar entre duas passagens do satélite.",
+      "Um pixel quente visto pelo satélite do INPE, um ponto onde o sensor detectou temperatura de queima. Não é “um incêndio”: um incêndio grande vira dezenas de focos, e uma queimada pequena pode passar entre duas passagens do satélite.",
   },
   empenhado: {
     titulo: "Empenhado",
     texto:
-      "A primeira etapa do gasto público: o governo reserva o dinheiro e se compromete com a despesa. Ainda não saiu do caixa — o caminho é empenhar → liquidar → pagar.",
+      "A primeira etapa do gasto público: o governo reserva o dinheiro e se compromete com a despesa. Ainda não saiu do caixa, o caminho é empenhar → liquidar → pagar.",
   },
   pago: {
     titulo: "Pago",
@@ -24,10 +24,10 @@ export const GLOSSARIO: Record<string, Verbete> = {
   fob: {
     titulo: "Valor FOB",
     texto:
-      "“Free on Board”: o preço da mercadoria posta no navio, no porto de saída — sem frete nem seguro internacionais. É o padrão mundial das estatísticas de comércio exterior.",
+      "“Free on Board”: o preço da mercadoria posta no navio, no porto de saída; sem frete nem seguro internacionais. É o padrão mundial das estatísticas de comércio exterior.",
   },
   rt: {
-    titulo: "Rt — número de reprodução",
+    titulo: "Rt, número de reprodução",
     texto:
       "Quantas pessoas, em média, cada doente contamina. Acima de 1, a epidemia cresce; abaixo de 1, encolhe.",
   },
@@ -39,12 +39,12 @@ export const GLOSSARIO: Record<string, Verbete> = {
   selic: {
     titulo: "Selic",
     texto:
-      "A taxa básica de juros do país, definida pelo Banco Central a cada 45 dias. É a referência de todos os outros juros — do cartão ao financiamento — e do rendimento da renda fixa.",
+      "A taxa básica de juros do país, definida pelo Banco Central a cada 45 dias. É a referência de todos os outros juros, do cartão ao financiamento, e do rendimento da renda fixa.",
   },
   cdi: {
     titulo: "CDI",
     texto:
-      "A taxa dos empréstimos de um dia que os bancos fazem entre si, sempre colada na Selic. É o termômetro dos investimentos de renda fixa — o famoso “% do CDI”.",
+      "A taxa dos empréstimos de um dia que os bancos fazem entre si, sempre colada na Selic. É o termômetro dos investimentos de renda fixa, o famoso “% do CDI”.",
   },
   ipca: {
     titulo: "IPCA",
@@ -54,7 +54,7 @@ export const GLOSSARIO: Record<string, Verbete> = {
   ipca12m: {
     titulo: "IPCA acumulado em 12 meses",
     texto:
-      "A inflação oficial somada dos últimos 12 meses — o número que resume quanto o seu dinheiro perdeu de valor em um ano.",
+      "A inflação oficial somada dos últimos 12 meses, o número que resume quanto o seu dinheiro perdeu de valor em um ano.",
   },
   inpc: {
     titulo: "INPC",
@@ -74,7 +74,7 @@ export const GLOSSARIO: Record<string, Verbete> = {
   ceap: {
     titulo: "Cota parlamentar (CEAP)",
     texto:
-      "Verba mensal que cada deputado pode gastar no exercício do mandato — passagens, combustível, escritório, divulgação. O deputado comprova a despesa e a Câmara ressarce.",
+      "Verba mensal que cada deputado pode gastar no exercício do mandato, passagens, combustível, escritório, divulgação. O deputado comprova a despesa e a Câmara ressarce.",
   },
   ceis: {
     titulo: "CEIS",
@@ -84,22 +84,22 @@ export const GLOSSARIO: Record<string, Verbete> = {
   cnep: {
     titulo: "CNEP",
     texto:
-      "Cadastro Nacional de Empresas Punidas: as punições aplicadas pela Lei Anticorrupção — multas e proibições por corrupção comprovada.",
+      "Cadastro Nacional de Empresas Punidas: as punições aplicadas pela Lei Anticorrupção, multas e proibições por corrupção comprovada.",
   },
   sin: {
-    titulo: "SIN — Sistema Interligado Nacional",
+    titulo: "SIN, Sistema Interligado Nacional",
     texto:
       "A grande rede elétrica que conecta usinas e consumidores de quase todo o Brasil. O número que você vê é a soma do que essa rede está gerando neste instante.",
   },
   pregao: {
     titulo: "Pregão eletrônico",
     texto:
-      "A modalidade mais comum de licitação: um leilão reverso pela internet — vence quem oferece o MENOR preço pelo que o governo quer comprar.",
+      "A modalidade mais comum de licitação: um leilão reverso pela internet, vence quem oferece o MENOR preço pelo que o governo quer comprar.",
   },
   dispensa: {
     titulo: "Dispensa de licitação",
     texto:
-      "Compra sem concorrência, permitida por lei em situações específicas (valores baixos, emergência). É legal — mas é onde o olho do leitor vale mais.",
+      "Compra sem concorrência, permitida por lei em situações específicas (valores baixos, emergência). É legal, mas é onde o olho do leitor vale mais.",
   },
   emenda: {
     titulo: "Emenda parlamentar",
@@ -119,56 +119,56 @@ export const GLOSSARIO: Record<string, Verbete> = {
   feminicidio: {
     titulo: "Feminicídio",
     texto:
-      "O assassinato de uma mulher por razão de ser mulher — em geral pelo companheiro ou ex, ou por menosprezo à condição feminina. É contado à parte do homicídio comum desde 2015, quando virou crime hediondo com nome próprio.",
+      "O assassinato de uma mulher por razão de ser mulher, em geral pelo companheiro ou ex, ou por menosprezo à condição feminina. É contado à parte do homicídio comum desde 2015, quando virou crime hediondo com nome próprio.",
   },
   desocupacao: {
     titulo: "Taxa de desocupação",
     texto:
-      "O nome técnico do desemprego, medido pelo IBGE: entre as pessoas de 14 anos ou mais que querem e procuraram trabalho, quantas não acharam. Quem desistiu de procurar não entra na conta — por isso o número real de sem-trabalho costuma ser maior.",
+      "O nome técnico do desemprego, medido pelo IBGE: entre as pessoas de 14 anos ou mais que querem e procuraram trabalho, quantas não acharam. Quem desistiu de procurar não entra na conta, por isso o número real de sem-trabalho costuma ser maior.",
   },
   rendimentoreal: {
     titulo: "Rendimento real",
     texto:
-      "Quanto as pessoas ganham do trabalho, já descontada a inflação e trazido a preços de hoje. É o que permite comparar o salário de agora com o de anos atrás sem a ilusão dos números maiores — se o real subiu, o poder de compra subiu de verdade.",
+      "Quanto as pessoas ganham do trabalho, já descontada a inflação e trazido a preços de hoje. É o que permite comparar o salário de agora com o de anos atrás sem a ilusão dos números maiores, se o real subiu, o poder de compra subiu de verdade.",
   },
   ideb: {
     titulo: "IDEB",
     texto:
-      "Índice de Desenvolvimento da Educação Básica: uma nota de 0 a 10 que o INEP dá a cada rede de ensino combinando duas coisas — quantos alunos passam de ano e quanto eles aprendem na Prova Brasil. Sai a cada dois anos. A meta que o país estabeleceu para 2022 era 6,0 nos anos iniciais.",
+      "Índice de Desenvolvimento da Educação Básica: uma nota de 0 a 10 que o INEP dá a cada rede de ensino combinando duas coisas, quantos alunos passam de ano e quanto eles aprendem na Prova Brasil. Sai a cada dois anos. A meta que o país estabeleceu para 2022 era 6,0 nos anos iniciais.",
   },
   deter: {
-    titulo: "DETER — alerta de desmatamento",
+    titulo: "DETER, alerta de desmatamento",
     texto:
-      "O sistema do INPE que vasculha imagens de satélite quase todo dia e acende um alerta onde a floresta sumiu. Serve pra fiscalização chegar rápido — a conta oficial do ano é outra, o PRODES. Nuvem esconde e corte pequeno escapa: o alerta é piso, não teto.",
+      "O sistema do INPE que vasculha imagens de satélite quase todo dia e acende um alerta onde a floresta sumiu. Serve pra fiscalização chegar rápido, a conta oficial do ano é outra, o PRODES. Nuvem esconde e corte pequeno escapa: o alerta é piso, não teto.",
   },
   corteraso: {
     titulo: "Corte raso",
     texto:
-      "O desmatamento completo: a vegetação foi toda ao chão. É a classe mais grave dos alertas — diferente da degradação, onde a floresta ainda está de pé, mas danificada.",
+      "O desmatamento completo: a vegetação foi toda ao chão. É a classe mais grave dos alertas, diferente da degradação, onde a floresta ainda está de pé, mas danificada.",
   },
   indicereclamacoes: {
     titulo: "Índice de reclamações",
     texto:
-      "Reclamações julgadas PROCEDENTES pelo Banco Central a cada 1 milhão de clientes da instituição. Procedente = o banco realmente descumpriu uma regra. O BC só compara os grandes entre si (Top 15) — banco pequeno com poucos clientes inflaria o índice.",
+      "Reclamações julgadas PROCEDENTES pelo Banco Central a cada 1 milhão de clientes da instituição. Procedente = o banco realmente descumpriu uma regra. O BC só compara os grandes entre si (Top 15), banco pequeno com poucos clientes inflaria o índice.",
   },
   volumeutil: {
     titulo: "Volume útil",
     texto:
-      "A parte da água do reservatório que dá pra usar de verdade — o que está acima da tomada d'água. 100% é reservatório cheio; 0% não é seco, é o ponto abaixo do qual a água não desce mais por gravidade.",
+      "A parte da água do reservatório que dá pra usar de verdade, o que está acima da tomada d'água. 100% é reservatório cheio; 0% não é seco, é o ponto abaixo do qual a água não desce mais por gravidade.",
   },
   afluencia: {
     titulo: "Afluência",
     texto:
-      "Quanta água está CHEGANDO ao reservatório, em metros cúbicos por segundo — os rios e a chuva que desaguam nele. Afluência maior que a defluência = reservatório enchendo.",
+      "Quanta água está CHEGANDO ao reservatório, em metros cúbicos por segundo; os rios e a chuva que desaguam nele. Afluência maior que a defluência = reservatório enchendo.",
   },
   defluencia: {
     titulo: "Defluência",
     texto:
-      "Quanta água está SAINDO do reservatório, em metros cúbicos por segundo — pelas turbinas, pelo vertedouro ou pro abastecimento. Defluência maior que a afluência = reservatório baixando.",
+      "Quanta água está SAINDO do reservatório, em metros cúbicos por segundo; pelas turbinas, pelo vertedouro ou pro abastecimento. Defluência maior que a afluência = reservatório baixando.",
   },
   cota: {
     titulo: "Cota",
     texto:
-      "O nível da água, em metros em relação ao nível do mar. É a régua do reservatório: cota subindo é água entrando. Cada reservatório tem sua faixa própria — compare a cota com ela mesma ao longo dos dias, não entre reservatórios.",
+      "O nível da água, em metros em relação ao nível do mar. É a régua do reservatório: cota subindo é água entrando. Cada reservatório tem sua faixa própria, compare a cota com ela mesma ao longo dos dias, não entre reservatórios.",
   },
 };

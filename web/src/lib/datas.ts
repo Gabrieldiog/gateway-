@@ -1,4 +1,4 @@
-// datas dinâmicas: nada de ano ou mês cravado no código — as listas de
+// datas dinâmicas: nada de ano ou mês cravado no código, as listas de
 // filtro seguem o calendário sozinhas, e o "mais recente" é decidido pelo
 // gateway (walk-back), não por nós.
 export const ANO_ATUAL = new Date().getFullYear();
@@ -29,6 +29,6 @@ export function ultimosMeses(n: number): { valor: string; label: string }[] {
 }
 
 export function rotuloMesAAAAMM(m: string | undefined | null): string {
-  if (!m || m.length !== 6) return "—";
+  if (!m || m.length !== 6) return "sem dado";
   return `${MES_CURTO[Number(m.slice(4)) - 1]}/${m.slice(0, 4)}`;
 }

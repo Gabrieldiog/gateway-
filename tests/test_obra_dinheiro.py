@@ -22,7 +22,7 @@ async def test_sem_siafi_a_regra_orcamentaria_aponta_o_executor(api):
     resp = await api.get("/v1/obra/dinheiro?id=11370.52-41")
     e = resp.json()["empenhos"][1]
     # UG com gestão própria: o SIAFI responde vazio, mas natureza 444042 é
-    # transferência a município — o favorecido É o executor da obra
+    # transferência a município, o favorecido É o executor da obra
     assert e["origem"] == "repasse"
     assert e["favorecido"] == "MUNICIPIO DE DOVERLANDIA"
     # o codigo do executor vira CNPJ com zfill
@@ -52,7 +52,7 @@ async def test_contrato_final_vem_do_csv_do_siconv(api):
 
 
 async def test_favorecido_da_propria_fonte_tem_prioridade(api):
-    # obra de execução direta: o Obrasgov já traz o favorecido — a cascata
+    # obra de execução direta: o Obrasgov já traz o favorecido, a cascata
     # não sobrescreve
     resp = await api.get("/v1/obra/dinheiro?id=33266.16-49")
     corpo = resp.json()
@@ -92,7 +92,7 @@ async def test_documento_codigo_invalido_da_400(api):
 
 async def test_nota_nao_cruza_entre_empenhos_de_mesmo_valor(api):
     # o CSV tem uma armadilha: linha de mesma UG e mesmo valor (R$5000) do
-    # empenho interno, mas natureza de repasse — sem casar natureza, a nota
+    # empenho interno, mas natureza de repasse; sem casar natureza, a nota
     # 2021NE111111 grudaria no empenho errado
     resp = await api.get("/v1/obra/dinheiro?id=11370.52-41")
     interno = resp.json()["empenhos"][2]
@@ -102,7 +102,7 @@ async def test_nota_nao_cruza_entre_empenhos_de_mesmo_valor(api):
 
 
 async def test_cpf_mascarado_nao_vira_documento(api):
-    # pagamento a pessoa física: o Portal mascara o CPF (***.171.572-**) —
+    # pagamento a pessoa física: o Portal mascara o CPF (***.171.572-**),
     # o fragmento de 6 dígitos não pode ser publicado como documento
     resp = await api.get("/v1/transparencia/documento?codigo=154003152792025OB001266")
     d = resp.json()["dados"][0]
@@ -128,7 +128,7 @@ async def test_sem_chave_da_transparencia_degrada_pra_regra(api):
     corpo = resp.json()
     assert corpo["erros"] == {}
     e = corpo["empenhos"][0]
-    # sem SIAFI, o repasse resolve pelo executor — e sem autor de emenda
+    # sem SIAFI, o repasse resolve pelo executor, e sem autor de emenda
     assert e["origem"] == "repasse"
     assert e["favorecido"] == "MUNICIPIO DE DOVERLANDIA"
     assert "autor_emenda" not in e or e["autor_emenda"] is None

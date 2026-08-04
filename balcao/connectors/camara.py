@@ -102,11 +102,11 @@ class CamaraConnector(BaseConnector):
         "votacoes": f"votações; filtros: {', '.join(PARAMS_VOTACOES)}",
         "votacoes/{id}": "a história da votação: parecer votado e proposições afetadas com ementa",
         "proposicoes/{id}": "dossiê de um projeto: situação, onde está, regime e o texto integral",
-        "proposicoes/{id}/tramitacoes": "a linha do tempo do projeto: cada passo em comissão/plenário (data, órgão, o que aconteceu), com o marco traduzido — ex.: aprovada na CCJ. É aqui que aparece o que o status atual (só a última linha) não conta",
+        "proposicoes/{id}/tramitacoes": "a linha do tempo do projeto: cada passo em comissão/plenário (data, órgão, o que aconteceu), com o marco traduzido; ex.: aprovada na CCJ. É aqui que aparece o que o status atual (só a última linha) não conta",
         "votacoes/{id}/votos": "voto de cada deputado (Sim/Não/Abstenção); só votação nominal tem",
         "votacoes/{id}/orientacoes": "como cada partido/bloco (e Governo/Oposição) orientou; só nas nominais",
         "proposicoes": f"proposições; filtros: {', '.join(PARAMS_PROPOSICOES)}",
-        "proposicoes/andaram": f"feed de acompanhamento: proposições que MUDARAM de status no período, já com o marco (ex.: aprovada na CCJ) — sem precisar do id. Filtros: {', '.join(sorted(PARAMS_ANDARAM))}. Padrão: {', '.join(TIPOS_ANDARAM_PADRAO)}, últimos 7 dias",
+        "proposicoes/andaram": f"feed de acompanhamento: proposições que MUDARAM de status no período, já com o marco (ex.: aprovada na CCJ), sem precisar do id. Filtros: {', '.join(sorted(PARAMS_ANDARAM))}. Padrão: {', '.join(TIPOS_ANDARAM_PADRAO)}, últimos 7 dias",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -394,7 +394,7 @@ class CamaraConnector(BaseConnector):
             return None
         d = descricao.lower()
         # o SENTIDO da decisão às vezes só aparece no despacho: uma comissão "mata"
-        # a matéria APROVANDO um parecer "pela rejeição/inadmissibilidade" — olhar
+        # a matéria APROVANDO um parecer "pela rejeição/inadmissibilidade", olhar
         # só "Aprovação do Parecer" daria o marco errado.
         texto = (descricao + " " + (despacho or "")).lower()
         sigla = (orgao or "").upper()
@@ -412,7 +412,7 @@ class CamaraConnector(BaseConnector):
         if "arquiv" in d and "desarquiv" not in d:
             return "Arquivada"
         # só marca decisões sobre a PRÓPRIA matéria (parecer/proposição/projeto/
-        # redação) — requerimento, emenda avulsa etc. são procedurais
+        # redação), requerimento, emenda avulsa etc. são procedurais
         if not any(t in d for t in ("parecer", "proposi", "matéria", "materia", "projeto", "redaç", "redac")):
             return None
         if "rejei" in d:
@@ -443,10 +443,10 @@ class CamaraConnector(BaseConnector):
 
         tipos = self._tipos_andaram(params.get("tipo"))
 
-        # 1) quem TRAMITOU no período — a Câmara filtra proposições por período de
+        # 1) quem TRAMITOU no período, a Câmara filtra proposições por período de
         # tramitação (dataInicio/dataFim), então isso já é "o que se mexeu". Pagina
         # até o fim OU um teto de segurança, pra uma PEC de id menor não ser cortada
-        # pelos muitos MPV de id alto — nem o fan-out estourar.
+        # pelos muitos MPV de id alto, nem o fan-out estourar.
         props: list[dict] = []
         truncado = False
         pagina = 1
@@ -474,7 +474,7 @@ class CamaraConnector(BaseConnector):
 
         # 2) fan-out (limitado, pra não martelar a fonte): a tramitação de cada uma.
         # Só entra no feed quem teve um MARCO de verdade na janela (aprovada/
-        # rejeitada/virou norma) — quem só teve passo procedural não é novidade.
+        # rejeitada/virou norma), quem só teve passo procedural não é novidade.
         sem = asyncio.Semaphore(FAN_OUT_ANDARAM)
 
         async def traz(pid: int):

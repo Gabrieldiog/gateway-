@@ -43,7 +43,7 @@ INDICADORES = {
 PAINEL = ("ipca12m", "ipca", "igpm", "inpc", "selic", "cdi", "poupanca", "dolar")
 
 FONTE = {
-    "nome": "Banco Central — Sistema Gerenciador de Séries (SGS)",
+    "nome": "Banco Central, Sistema Gerenciador de Séries (SGS)",
     "url": "https://www3.bcb.gov.br/sgspub/",
     "nota": (
         "IPCA, INPC e IGP-M são os índices oficiais de inflação; Selic, CDI e "
@@ -59,7 +59,7 @@ TIPOS_RECLAMACOES = {"bancos": "Bancos e financeiras", "consorcios": "Consorcios
 ROTULO_PERIODO = {"TRIMESTRAL": "trimestre", "SEMESTRAL": "semestre", "MENSAL": "mês", "BIMESTRAL": "bimestre"}
 
 FONTE_RECLAMACOES = {
-    "nome": "Banco Central — Ranking de Reclamações",
+    "nome": "Banco Central, Ranking de Reclamações",
     "url": "https://www.bcb.gov.br/estabilidadefinanceira/rankingreclamacoes",
     "nota": (
         "Reclamações de clientes registradas no BC e julgadas procedentes, por "
@@ -110,7 +110,7 @@ class BacenConnector(BaseConnector):
         """Ranking oficial: quanto cada banco cobra numa modalidade de crédito,
         na última janela publicada (5 dias úteis). Vive no Olinda (outro host
         do BCB); o $ vai literal na URL porque o Olinda rejeita %24. A fonte
-        é lenta — o cache do gateway segura o resto."""
+        é lenta, o cache do gateway segura o resto."""
         aceitos = {"modalidade", "limit"}
         invalidos = sorted(set(params) - aceitos)
         if invalidos:
@@ -143,8 +143,8 @@ class BacenConnector(BaseConnector):
                 itens.append(
                     TaxaJurosBanco(
                         posicao=int(r.get("Posicao") or 0),
-                        instituicao=limpa_texto(r.get("InstituicaoFinanceira")) or "—",
-                        modalidade=limpa_texto(r.get("Modalidade")) or "—",
+                        instituicao=limpa_texto(r.get("InstituicaoFinanceira")) or "sem dado",
+                        modalidade=limpa_texto(r.get("Modalidade")) or "sem dado",
                         mes=inicio,
                         taxa_mes=float(r["TaxaJurosAoMes"]) if r.get("TaxaJurosAoMes") is not None else None,
                         taxa_ano=float(r["TaxaJurosAoAno"]) if r.get("TaxaJurosAoAno") is not None else None,
@@ -159,7 +159,7 @@ class BacenConnector(BaseConnector):
             "janela_de": janela[0] if janela else None,
             "janela_ate": janela[1] if janela else None,
             "fonte": {
-                "nome": "Banco Central — ranking de taxas de juros (Olinda)",
+                "nome": "Banco Central, ranking de taxas de juros (Olinda)",
                 "url": "https://www.bcb.gov.br/estatisticas/txjuros",
                 "nota": (
                     "Taxas médias efetivamente cobradas por cada instituição na "
@@ -279,7 +279,7 @@ class BacenConnector(BaseConnector):
         por milhão de clientes. Quirks: o CSV chega latin-1 com o header HTTP
         mentindo charset=UTF-8; o índice usa vírgula e vem vazio pra
         instituição pequena; e o nome da coluna de clientes carrega um
-        caractere de controle — as colunas são achadas por prefixo."""
+        caractere de controle, as colunas são achadas por prefixo."""
         aceitos = {"ano", "periodo", "tipo", "busca", "limit", "grupo"}
         invalidos = sorted(set(params) - aceitos)
         if invalidos:
@@ -300,7 +300,7 @@ class BacenConnector(BaseConnector):
             raise ParametroInvalido(recurso, ["periodo"], ["número do período (ex: 1 = 1º trimestre)"])
 
         # sem ano/período, o listing da fonte diz qual é o mais novo QUE TEM o
-        # tipo pedido — consórcio sai depois dos bancos, então pode ser preciso
+        # tipo pedido, consórcio sai depois dos bancos, então pode ser preciso
         # recuar um período (ou um ano)
         lista = await self.get_json(RECLAMACOES_URL, timeout=30)
         anos = lista.get("anos", []) if isinstance(lista, dict) else []
@@ -365,7 +365,7 @@ class BacenConnector(BaseConnector):
             elif n.startswith("quantidade total de reclamações respondidas"):
                 col["respondidas"] = nome
             elif "procedentes extrapoladas" in n or "reguladas - outras" in n:
-                pass  # estimativa e miscelânea — ficam de fora
+                pass  # estimativa e miscelânea; ficam de fora
             elif n.startswith("quantidade de reclamações reguladas procedentes") or n.startswith(
                 "quantidade de reclamações procedentes"
             ):
@@ -403,7 +403,7 @@ class BacenConnector(BaseConnector):
                 ).model_dump(mode="json")
             )
         # o ranking OFICIAL é o Top 15 (instituições grandes): posição só vale
-        # lá dentro — comparar índice de banco de 400 clientes com o do Itaú
+        # lá dentro, comparar índice de banco de 400 clientes com o do Itaú
         # seria estatística de mentira
         itens.sort(key=lambda i: (not i["top15"], i["indice"] is None, -(i["indice"] or 0)))
         pos = 0

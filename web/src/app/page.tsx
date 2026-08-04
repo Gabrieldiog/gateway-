@@ -17,8 +17,8 @@ export default function Capa() {
       </h1>
       <p className="mt-5 max-w-[64ch] font-editorial text-lg leading-relaxed text-ink/80">
         Isto é um jornal de dados. Cada caderno pega os números oficiais do
-        governo — da Câmara ao Banco Central, do satélite do INPE ao posto de
-        gasolina da ANP — e mostra do jeito que vieram: quanto custa, quem
+        governo, da Câmara ao Banco Central, do satélite do INPE ao posto de
+        gasolina da ANP, e mostra do jeito que vieram: quanto custa, quem
         votou, o que subiu. Sem opinião no meio; todo número diz de onde veio
         e quando foi atualizado.
       </p>
@@ -33,7 +33,7 @@ export default function Capa() {
           Comece perguntando
         </p>
         <p className="mb-4 max-w-[62ch] font-editorial text-[1.05rem] leading-relaxed text-ink/80">
-          Digite um nome, uma cidade, um tema — a busca dispara em várias
+          Digite um nome, uma cidade, um tema; a busca dispara em várias
           fontes ao mesmo tempo e os resultados <em>imprimem</em> aqui conforme
           cada órgão responde.
         </p>
@@ -97,7 +97,7 @@ export default function Capa() {
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
           <ComoLer titulo="Cada número tem selo">
             Um selo em cada caderno diz o ritmo do dado: <em>ao vivo</em> com o
-            relógio contando, diário, semanal ou mensal — no ritmo em que o
+            relógio contando, diário, semanal ou mensal; no ritmo em que o
             órgão publica, sem fingir tempo real onde não há.
           </ComoLer>
           <ComoLer titulo="Toda fonte tem link">
@@ -106,7 +106,7 @@ export default function Capa() {
           </ComoLer>
           <ComoLer titulo="Quando a fonte cai, a gente avisa">
             API de governo cai. Quando acontece, o Balcão mostra o último dado
-            que guardou — carimbado com a hora — ou avisa com todas as letras,
+            que guardou, carimbado com a hora, ou avisa com todas as letras,
             em vez de inventar número.
           </ComoLer>
         </div>

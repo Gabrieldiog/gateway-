@@ -46,7 +46,7 @@ export function ResultadoBuscaCard({ r, fonte }: { r: ResultadoBusca; fonte: str
           <>
             <p className="truncate font-display text-lg leading-tight text-ink">{nome}</p>
             <p className="num text-xs text-muted">
-              {[texto(r, "partido"), texto(r, "uf")].filter(Boolean).join(" · ") || "—"}
+              {[texto(r, "partido"), texto(r, "uf")].filter(Boolean).join(" · ") || "sem dado"}
             </p>
           </>
         )}
@@ -57,7 +57,7 @@ export function ResultadoBuscaCard({ r, fonte }: { r: ResultadoBusca; fonte: str
               {texto(r, "tipo")} {texto(r, "numero")}/{texto(r, "ano")}
             </p>
             <p className="mt-0.5 line-clamp-2 font-editorial text-sm leading-snug text-ink/80">
-              {texto(r, "ementa") ?? "—"}
+              {texto(r, "ementa") ?? "sem dado"}
             </p>
           </>
         )}
@@ -66,7 +66,7 @@ export function ResultadoBuscaCard({ r, fonte }: { r: ResultadoBusca; fonte: str
           <>
             <p className="truncate font-display text-lg leading-tight text-ink">{nome}</p>
             <p className="num text-xs text-muted">
-              {[texto(r, "sigla"), texto(r, "uf"), texto(r, "regiao")].filter(Boolean).join(" · ") || "—"}
+              {[texto(r, "sigla"), texto(r, "uf"), texto(r, "regiao")].filter(Boolean).join(" · ") || "sem dado"}
             </p>
           </>
         )}

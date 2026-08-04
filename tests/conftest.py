@@ -22,6 +22,7 @@ from httpx import ASGITransport, MockTransport
 
 from balcao.arquivos import ArquivoVotos
 from balcao.cache import CacheRespostas
+from balcao.config import get_settings
 from balcao.connectors.base import connector_classes
 from balcao.main import create_app
 from balcao.seguranca import ArquivosSeguranca
@@ -88,7 +89,7 @@ def carrega_fixture(nome: str) -> dict | list:
 
 def responde_fake(request: httpx.Request) -> httpx.Response:
     url = str(request.url)
-    # Farmacias Nissei (RetailON): fluxo de 3 passos — home seta o csrftoken,
+    # Farmacias Nissei (RetailON): fluxo de 3 passos, home seta o csrftoken,
     # /pesquisa/pesquisar acha os produtos e /pegar/preco traz os precos
     if "farmaciasnissei.com.br/pesquisa/pesquisar" in url:
         return httpx.Response(200, json=carrega_fixture("nissei_busca"))
@@ -111,6 +112,21 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # AwesomeAPI (cotações em tempo real): /json/last/USD-BRL,EUR-BRL,...
     if "awesomeapi.com.br/json/last/" in url:
         return httpx.Response(200, json=carrega_fixture("cotacoes_last"))
+    # Plano B do cotacoes, tudo sem cadastro: Frankfurter (BCE) pro cambio,
+    # gold-api pro ouro e Binance pra cripto. Entram quando a AwesomeAPI
+    # recusa (429 no IP de datacenter) ou nao responde.
+    if "api.frankfurter.dev" in url:
+        return httpx.Response(200, json=carrega_fixture("frankfurter_serie"))
+    if "api.gold-api.com/price/" in url:
+        return httpx.Response(200, json=carrega_fixture("goldapi_xau"))
+    if "api.binance.com/api/v3/ticker/24hr" in url:
+        pedidos = set(re.findall(r"[A-Z0-9]+BRL", unquote(url)))
+        todos = carrega_fixture("binance_cripto")
+        casados = [t for t in todos if t["symbol"] in pedidos]
+        if not casados:
+            # a Binance devolve 400 quando nenhum simbolo do lote existe
+            return httpx.Response(400, json={"code": -1121, "msg": "Invalid symbol."})
+        return httpx.Response(200, json=casados)
     # Boletim Focus (Olinda/OData): devolve um registro sintético com o
     # indicador pedido no $filter, pra o painel poder testar as 5 séries
     if "servico/Expectativas" in url:
@@ -128,22 +144,22 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             "numeroRespondentes": 148,
             "baseCalculo": 0,
         }]})
-    # Portal da Transparencia — exige o header chave-api-dados; sem ele, 401
-    # BCB Olinda — ranking de juros por banco (taxaJuros v2)
+    # Portal da Transparencia, exige o header chave-api-dados; sem ele, 401
+    # BCB Olinda, ranking de juros por banco (taxaJuros v2)
     if "servico/taxaJuros" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_juros"))
-    # BCB rdrweb — ranking de reclamações: o CSV é latin-1 (header mente UTF-8)
+    # BCB rdrweb, ranking de reclamações: o CSV é latin-1 (header mente UTF-8)
     # e consórcio fala outro dialeto de colunas
     if "rdrweb/rest/ext/ranking/arquivo" in url:
         arquivo = "bacen_reclamacoes_consorcio.csv" if "Consorcios" in url else "bacen_reclamacoes.csv"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
     if "rdrweb/rest/ext/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("bacen_reclamacoes_lista"))
-    # TerraBrasilis (INPE) — WFS do DETER, uma camada por bioma
+    # TerraBrasilis (INPE), WFS do DETER, uma camada por bioma
     if "terrabrasilis.dpi.inpe.br/geoserver" in url:
         arquivo = "deter_cerrado" if "deter-cerrado" in url else "deter_amz"
         return httpx.Response(200, json=carrega_fixture(arquivo))
-    # Banco Mundial — a expectativa de vida chega com BOM UTF-8 na frente do
+    # Banco Mundial, a expectativa de vida chega com BOM UTF-8 na frente do
     # JSON (como parte das respostas reais); indicador inexistente vira message
     if "api.worldbank.org/v2/country" in url:
         if "SP.DYN.LE00.IN" in url:
@@ -152,11 +168,11 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         if "XX.BAD" in url:
             return httpx.Response(200, json=[{"message": [{"id": "175", "key": "Invalid format"}]}])
         return httpx.Response(200, json=carrega_fixture("mundo_pib"))
-    # Loterias CAIXA — resultado por jogo
+    # Loterias CAIXA, resultado por jogo
     if "servicebus2.caixa.gov.br/portaldeloterias" in url:
         arquivo = "loterias_duplasena" if "/duplasena" in url else "loterias_megasena"
         return httpx.Response(200, json=carrega_fixture(arquivo))
-    # IBGE Pesquisas — IDEB (pesquisa 40) e Censo Escolar (13): monta o envelope
+    # IBGE Pesquisas, IDEB (pesquisa 40) e Censo Escolar (13): monta o envelope
     # do IBGE a partir da série de cada indicador; indicador sem fixture = []
     if "/pesquisas/" in url and "/indicadores/" in url and "/resultados/" in url:
         indicador = url.split("/indicadores/")[1].split("/resultados/")[0]
@@ -169,7 +185,7 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             "id": int(indicador),
             "res": [{"localidade": municipio, "res": por_ano, "notas": {a: None for a in por_ano}}],
         }])
-    # IBGE Nomes (Censo 2010) — ranking, por UF e por década; nome raro = []
+    # IBGE Nomes (Censo 2010), ranking, por UF e por década; nome raro = []
     if "censos/nomes/ranking" in url:
         return httpx.Response(200, json=carrega_fixture("nomes_ranking"))
     if "censos/nomes/" in url:
@@ -178,7 +194,7 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         if "groupBy=UF" in url:
             return httpx.Response(200, json=carrega_fixture("nomes_gabriel_uf"))
         return httpx.Response(200, json=carrega_fixture("nomes_gabriel"))
-    # ANA/SAR — última medição é JSON; lista e histórico são páginas HTML
+    # ANA/SAR, última medição é JSON; lista e histórico são páginas HTML
     if "ana.gov.br/sar/restportal" in url:
         return httpx.Response(200, json=carrega_fixture("ana_ultima"))
     if "ana.gov.br/sar0/" in url:
@@ -192,14 +208,14 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         else:
             arquivo = "ana_dropdown_ne.html" if url.endswith("/Medicao") else "ana_dropdown_sin.html"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
-    # CONAB — arquivos TXT em latin-1 (o conector decodifica dos bytes)
+    # CONAB, arquivos TXT em latin-1 (o conector decodifica dos bytes)
     if "portaldeinformacoes.conab.gov.br" in url:
         arquivo = "conab_levantamento.txt" if "LevantamentoGraos" in url else "conab_precos.txt"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
-    # Obrasgov — a consulta por idUnico devolve a ficha de UMA obra
+    # Obrasgov, a consulta por idUnico devolve a ficha de UMA obra
     if "obrasgov/api/projeto-investimento" in url and "idUnico=" in url:
         return httpx.Response(200, json=carrega_fixture("obrasgov_obra_detalhe"))
-    # SICONV — os CSVs diários zipados que ligam a obra ao dinheiro
+    # SICONV, os CSVs diários zipados que ligam a obra ao dinheiro
     if "repositorio.dados.gov.br/seges/detru" in url:
         arquivo = "siconv_contrato.zip" if "contrato" in url else "siconv_empenho.zip"
         return httpx.Response(200, content=(FIXTURES / arquivo).read_bytes())
@@ -235,8 +251,8 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=carrega_fixture("transparencia_cnep"))
         if "novo-bolsa-familia-por-municipio" in url:
             return httpx.Response(200, json=carrega_fixture("transparencia_bolsa"))
-    # ANP — CSV rolante de preços de combustível; o firewall real barra UA
-    # técnico (403) e Accept: application/json (401) — o mock protege os dois
+    # ANP, CSV rolante de preços de combustível; o firewall real barra UA
+    # técnico (403) e Accept: application/json (401), o mock protege os dois
     if "gov.br/anp" in url and "ultimas-4-semanas" in url:
         if "Mozilla" not in request.headers.get("user-agent", ""):
             return httpx.Response(403, text="Forbidden")
@@ -245,12 +261,12 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200, text=(FIXTURES / "anp_precos.csv").read_text(encoding="utf-8")
         )
-    # Tesouro Direto — CSV de 14 MB sem ordem cronológica (fixture encolhida)
+    # Tesouro Direto, CSV de 14 MB sem ordem cronológica (fixture encolhida)
     if "tesourotransparente.gov.br" in url and "precotaxatesourodireto" in url:
         return httpx.Response(
             200, text=(FIXTURES / "tesourodireto.csv").read_text(encoding="utf-8")
         )
-    # DataJud (CNJ) — Elasticsearch por tribunal; agregação vs busca pelo corpo
+    # DataJud (CNJ), Elasticsearch por tribunal; agregação vs busca pelo corpo
     if "api-publica.datajud.cnj.jus.br" in url:
         if not request.headers.get("authorization", "").startswith("APIKey "):
             return httpx.Response(401, json={"error": "missing api key"})
@@ -258,7 +274,7 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         if "aggs" in corpo:
             return httpx.Response(200, json=carrega_fixture("datajud_resumo"))
         return httpx.Response(200, json=carrega_fixture("datajud_processos"))
-    # ComexStat — consulta por POST; o corpo diz a dimensão pedida
+    # ComexStat, consulta por POST; o corpo diz a dimensão pedida
     if "api-comexstat.mdic.gov.br/general" in url:
         corpo = json.loads(request.content or b"{}")
         flow = corpo.get("flow", "export")
@@ -283,10 +299,10 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
                 {"year": "2026", "chapterCode": "27", "chapter": "Combustíveis minerais", "metricFOB": "27242313613", "metricKG": "700"},
             ]
         return httpx.Response(200, json={"data": {"list": lista}, "success": True, "message": None})
-    # InfoDengue — semanas epidemiológicas de um município
+    # InfoDengue, semanas epidemiológicas de um município
     if "info.dengue.mat.br/api/alertcity" in url:
         return httpx.Response(200, json=carrega_fixture("infodengue_alertas"))
-    # brapi (B3) — exige Bearer; devolve um ativo sintético com o símbolo pedido
+    # brapi (B3), exige Bearer; devolve um ativo sintético com o símbolo pedido
     if "brapi.dev/api/v2/stocks/quote" in url:
         if not request.headers.get("authorization", "").startswith("Bearer "):
             return httpx.Response(401, json={"error": True, "message": "Token de autenticação não fornecido"})
@@ -307,19 +323,19 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
                 "regularMarketTime": "2026-07-02T12:21:41.000Z",
             },
         }]})
-    # PNCP — consulta pública de licitações e contratos
+    # PNCP, consulta pública de licitações e contratos
     if "pncp.gov.br/api/consulta" in url:
         if "/contratacoes/publicacao" in url:
             return httpx.Response(200, json=carrega_fixture("pncp_contratacoes"))
         if "/contratos" in url:
             return httpx.Response(200, json=carrega_fixture("pncp_contratos"))
-    # ONS — geração do SIN quase em tempo real (balanço energético do dia)
+    # ONS, geração do SIN quase em tempo real (balanço energético do dia)
     if "tr.ons.org.br/Content/Get/BalancoEnergetico" in url:
         return httpx.Response(200, json=carrega_fixture("ons_balanco"))
-    # INPE — arquivo CSV diário de focos de queimada (texto, não JSON)
+    # INPE, arquivo CSV diário de focos de queimada (texto, não JSON)
     if "dataserver-coids.inpe.br" in url and "focos_diario_br_" in url:
         return httpx.Response(200, text=(FIXTURES / "inpe_focos.csv").read_text(encoding="utf-8"))
-    # Câmara — arquivos anuais (histórico completo de votos por deputado)
+    # Câmara, arquivos anuais (histórico completo de votos por deputado)
     if "/arquivos/votacoesVotos/" in url:
         return httpx.Response(200, json=carrega_fixture("camara_arquivo_votos"))
     if "/arquivos/votacoes/" in url:
@@ -330,7 +346,7 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     # Senado (API nova de processos): matérias legislativas
     if "/dadosabertos/processo" in url:
         return httpx.Response(200, json=carrega_fixture("senado_processos"))
-    # TSE — ZIP da prestação de contas (o conector baixa por streaming)
+    # TSE, ZIP da prestação de contas (o conector baixa por streaming)
     if "cdn.tse.jus.br" in url and "prestacao_de_contas" in url:
         return httpx.Response(200, content=(FIXTURES / "tse_doacoes.zip").read_bytes())
     # CKAN (ANEEL, MME, ANTT): mesma API em hosts diferentes, distingue pela ação
@@ -338,7 +354,7 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=carrega_fixture("ckan_datasets"))
     if "/api/3/action/datastore_search" in url:
         return httpx.Response(200, json=carrega_fixture("ckan_datastore"))
-    # Câmara — feed "andaram": só ele manda ordenarPor=id (a lista simples não tem
+    # Câmara, feed "andaram": só ele manda ordenarPor=id (a lista simples não tem
     # esse mapeamento), então é o discriminador seguro contra a lista comum.
     if "/api/v2/proposicoes?" in url and "ordenarPor=id" in url and "siglaTipo=" in url:
         return httpx.Response(200, json=carrega_fixture("camara_andaram_lista"))
@@ -352,21 +368,29 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     if "/votacoes/" in url and url.endswith("/votos"):
         return httpx.Response(200, json=carrega_fixture("camara_votos"))
     # a 195 (índice diário da poupança) responde {"erro":{}} com HTTP 200 no
-    # ultimos/1 — reproduz o quirk real pra provar que o conector não estoura
+    # ultimos/1, reproduz o quirk real pra provar que o conector não estoura
     if "api.bcb.gov.br/dados/serie/bcdata.sgs.195/" in url:
         return httpx.Response(200, json={"erro": {}})
     # BACEN SGS: a série 432 tem fixture própria (bacen_selic) no lote acima;
-    # qualquer outra série (bcdata.sgs.{codigo}) serve pontos genéricos — o
+    # qualquer outra série (bcdata.sgs.{codigo}) serve pontos genéricos, o
     # painel de inflação puxa ~8 séries de uma vez
     if "api.bcb.gov.br/dados/serie/bcdata.sgs." in url:
         return httpx.Response(200, json=carrega_fixture("bacen_serie"))
     return httpx.Response(500, json={"erro": f"sem fixture pra {url}"})
 
 
-def monta_app():
+def bloqueia_awesomeapi(request: httpx.Request) -> httpx.Response:
+    """A AwesomeAPI anonima barra IP de datacenter com 429; foi o que derrubou
+    o /pulso no Render. Reproduz isso e deixa o resto da suite intacto."""
+    if "awesomeapi.com.br" in str(request.url):
+        return httpx.Response(429, json={"status": 429, "message": "Too Many Requests"})
+    return responde_fake(request)
+
+
+def monta_app(responde=responde_fake):
     app = create_app()
     # o ASGITransport nao roda o lifespan, entao o estado e montado na mao
-    cliente_fake = httpx.AsyncClient(transport=MockTransport(responde_fake))
+    cliente_fake = httpx.AsyncClient(transport=MockTransport(responde))
     app.state.client = cliente_fake
     app.state.cache = CacheRespostas(ttl=600)
     app.state.cache_vivo = CacheRespostas(ttl=45)
@@ -395,3 +419,23 @@ async def api():
     async with httpx.AsyncClient(transport=transporte, base_url="http://teste") as cliente:
         yield cliente
     await cliente_fake.aclose()
+
+
+@pytest.fixture
+async def api_awesomeapi_fora():
+    """O mesmo gateway, mas com a AwesomeAPI devolvendo 429; o cenario do
+    servidor publico, onde o plano B sem cadastro precisa assumir."""
+    app, cliente_fake = monta_app(bloqueia_awesomeapi)
+    transporte = ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transporte, base_url="http://teste") as cliente:
+        yield cliente
+    await cliente_fake.aclose()
+
+
+@pytest.fixture
+def sem_awesomeapi_token(monkeypatch):
+    """Servidor sem AWESOMEAPI_TOKEN configurado: o estado real do deploy."""
+    monkeypatch.delenv("AWESOMEAPI_TOKEN", raising=False)
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()

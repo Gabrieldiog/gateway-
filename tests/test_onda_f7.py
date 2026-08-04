@@ -1,4 +1,4 @@
-"""Onda F7 — Almanaque: as loterias da CAIXA e os nomes do Censo."""
+"""Onda F7, Almanaque: as loterias da CAIXA e os nomes do Censo."""
 
 
 async def test_resultado_da_mega_normalizado(api):

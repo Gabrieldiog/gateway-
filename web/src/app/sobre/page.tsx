@@ -17,9 +17,9 @@ export default function CadernoSobre() {
 
       <Secao titulo="Um jornal feito de números">
         <p>
-          O Balcão junta <strong>25 fontes oficiais</strong> — Câmara, Senado,
+          O Balcão junta <strong>25 fontes oficiais</strong>, Câmara, Senado,
           Banco Central, IBGE, Tesouro Nacional, INPE, Fiocruz, ANP, entre
-          outras — atrás de uma porta só, e as apresenta em cadernos temáticos,
+          outras, atrás de uma porta só, e as apresenta em cadernos temáticos,
           como um jornal: Governo, Economia, Território, Infraestrutura e
           Social. Cada caderno responde uma pergunta concreta: quanto ganha um
           deputado, quanto está a gasolina no seu estado, quantos focos de
@@ -27,7 +27,7 @@ export default function CadernoSobre() {
         </p>
         <p>
           Não escrevemos opinião. O trabalho aqui é de <em>tradução</em>: órgão
-          público fala em código, planilha e sigla — o Balcão devolve em número
+          público fala em código, planilha e sigla; o Balcão devolve em número
           limpo, com contexto e fonte.
         </p>
       </Secao>
@@ -44,7 +44,7 @@ export default function CadernoSobre() {
         </div>
         <p>
           “Normalizar” quer dizer: datas todas no mesmo formato, CNPJ sem
-          máscara, estados com a mesma sigla — porque cada repartição escreve
+          máscara, estados com a mesma sigla; porque cada repartição escreve
           de um jeito, e ler o Brasil inteiro exige um idioma só.
         </p>
       </Secao>
@@ -61,7 +61,7 @@ export default function CadernoSobre() {
             quiser conferir na fonte, o caminho está sempre aberto.
           </Compromisso>
           <Compromisso titulo="Falha declarada">
-            API de governo cai — é normal e costuma voltar sozinha. Quando
+            API de governo cai; é normal e costuma voltar sozinha. Quando
             acontece, mostramos o último dado guardado com o carimbo de quando
             foi salvo, ou avisamos do erro com todas as letras. Número
             inventado, nunca.
@@ -75,7 +75,7 @@ export default function CadernoSobre() {
 
       <Secao titulo="O que o Balcão não é">
         <p>
-          Não é o site oficial de nenhum órgão — para o ato administrativo que
+          Não é o site oficial de nenhum órgão, para o ato administrativo que
           vale juridicamente, consulte sempre a fonte (os links estão no{" "}
           <Link href="/fontes" className="text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent">
             Expediente

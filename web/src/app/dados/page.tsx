@@ -46,7 +46,7 @@ export default function CadernoDados() {
         numero="XI"
         kicker="Dados Abertos · CKAN"
         titulo="Os portais de dados abertos"
-        resumo="ANEEL, MME e ANTT publicam em CKAN — o mesmo padrão atrás de um motor só no Balcão. Escolha o portal, busque um conjunto e abra as linhas reais (datastore)."
+        resumo="ANEEL, MME e ANTT publicam em CKAN; o mesmo padrão atrás de um motor só no Balcão. Escolha o portal, busque um conjunto e abra as linhas reais (datastore)."
         referencia={ds?.atualizado ? `atualizado em ${formataData(ds.atualizado.slice(0, 10))}` : undefined}
       />
 
@@ -207,7 +207,7 @@ function TabelaRecurso({
                 <tr key={i} className="border-b border-line/60">
                   {campos.slice(0, 8).map((c) => (
                     <td key={c} className="whitespace-nowrap py-1.5 pr-4 text-ink/85">
-                      {String(row[c] ?? "—").slice(0, 38)}
+                      {String(row[c] ?? "sem dado").slice(0, 38)}
                     </td>
                   ))}
                 </tr>

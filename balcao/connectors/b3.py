@@ -1,7 +1,7 @@
 """B3 via brapi.dev: ações e índices da bolsa brasileira. O plano gratuito
 tem duas manhas que o conector esconde: só aceita UM ativo por requisição
 (então a lista vira fan-out paralelo) e o dado vem com ~15 minutos de
-atraso — por isso a fonte É cacheável (TTL padrão), diferente do câmbio.
+atraso, por isso a fonte É cacheável (TTL padrão), diferente do câmbio.
 Token gratuito no .env (BRAPI_TOKEN), header Bearer."""
 
 import asyncio
@@ -24,7 +24,7 @@ FONTE = {
     "url": "https://brapi.dev",
     "nota": (
         "Cotações da bolsa brasileira com ~15 minutos de atraso (plano gratuito "
-        "da brapi). Não é preço de execução — pra isso só o home broker."
+        "da brapi). Não é preço de execução, pra isso só o home broker."
     ),
 }
 
@@ -34,7 +34,7 @@ class B3Connector(BaseConnector):
     name = "b3"
     base_url = "https://brapi.dev/api/v2"
     requires_key = True
-    description = "B3 (via brapi): ações e índices da bolsa — IBOV, PETR4, VALE3... (~15 min de atraso)"
+    description = "B3 (via brapi): ações e índices da bolsa, IBOV, PETR4, VALE3... (~15 min de atraso)"
     resources = {
         "acoes/{tickers}": f"cotação de até {MAX_TICKERS} ativos separados por vírgula; aceita 'ibov' pro índice",
     }

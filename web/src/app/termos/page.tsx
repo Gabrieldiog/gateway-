@@ -35,7 +35,7 @@ export default function CadernoTermos() {
           lei: a Lei de Acesso à Informação (12.527/2011) e a Política de Dados
           Abertos do Executivo federal (Decreto 8.777/2016) obrigam os órgãos a
           publicar essas bases pra qualquer pessoa usar, inclusive
-          comercialmente. O Balcão não é dono de nada disso — ele só reorganiza,
+          comercialmente. O Balcão não é dono de nada disso, ele só reorganiza,
           normaliza e serve o que já é seu por direito.
         </p>
         <p>
@@ -48,7 +48,7 @@ export default function CadernoTermos() {
         </p>
       </Secao>
 
-      <Secao titulo="O que o Balcão promete — e o que não promete">
+      <Secao titulo="O que o Balcão promete, e o que não promete">
         <p>
           <strong>Promete honestidade:</strong> nenhum número aqui é inventado,
           arredondado por conveniência ou preenchido no chute. Quando a fonte
@@ -59,7 +59,7 @@ export default function CadernoTermos() {
           <strong>Não promete disponibilidade:</strong> este é um{" "}
           <strong>projeto de portfólio</strong>, não um serviço contratado. Pode
           sair do ar, mudar de rota ou ficar para trás quando um órgão muda sua
-          API. Não use o Balcão como peça crítica de outro sistema em produção —
+          API. Não use o Balcão como peça crítica de outro sistema em produção,
           vá direto na fonte oficial pra isso. Os dados são fornecidos
           &ldquo;como estão&rdquo;, sem garantia.
         </p>
@@ -68,7 +68,7 @@ export default function CadernoTermos() {
       <Secao titulo="Os limites de uso">
         <p>
           A API aceita <strong>2000 requisições por minuto</strong> por balde.
-          Anônimo, seu balde é o seu IP — o que significa que você divide a cota
+          Anônimo, seu balde é o seu IP; o que significa que você divide a cota
           com todo mundo atrás do mesmo IP (escritório, faculdade, operadora).
           Com uma <strong>chave de acesso</strong>, você ganha um balde só seu:
           mande-a no cabeçalho <Rota>X-API-Key</Rota> ou na query{" "}
@@ -78,7 +78,7 @@ export default function CadernoTermos() {
         </p>
         <p>
           Em troca, um pedido: <strong>não martele as fontes</strong>. O Balcão
-          já cacheia e respeita os limites dos órgãos por você — respeite os dele
+          já cacheia e respeita os limites dos órgãos por você, respeite os dele
           também. Uso abusivo derruba o serviço pra todo mundo.
         </p>
       </Secao>
@@ -99,7 +99,7 @@ export default function CadernoTermos() {
       <Secao titulo="Ao reusar, credite">
         <p>
           Se você construir algo em cima do Balcão, cite a fonte original do
-          dado (o órgão público), não o Balcão — ele é só o balcão de
+          dado (o órgão público), não o Balcão; ele é só o balcão de
           atendimento, não a repartição. E, se der, mencione que passou por
           aqui: é o que mantém um projeto aberto vivo.
         </p>

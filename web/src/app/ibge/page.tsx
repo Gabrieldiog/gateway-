@@ -13,9 +13,9 @@ import { UFS } from "@/lib/ufs";
 import type { Estado, Municipio, NormalizedResponse } from "@/lib/types";
 
 const FONTE_IBGE = {
-  nome: "IBGE — API de Localidades",
+  nome: "IBGE, API de Localidades",
   url: "https://servicodados.ibge.gov.br/api/docs/localidades",
-  nota: "Estados e municípios oficiais do Brasil. Na fonte, a UF de um município mora três níveis abaixo do aninhamento — o Balcão aplaina e devolve com sigla e região no primeiro nível.",
+  nota: "Estados e municípios oficiais do Brasil. Na fonte, a UF de um município mora três níveis abaixo do aninhamento; o Balcão aplaina e devolve com sigla e região no primeiro nível.",
 };
 
 type Modo = "estados" | "municipios";
@@ -30,7 +30,7 @@ export default function CadernoIbge() {
         numero="V"
         kicker="IBGE · localidades"
         titulo="O território, plano"
-        resumo="Estados e municípios do Brasil. Na fonte, a UF de cada município mora três níveis abaixo do aninhamento — o Balcão desce até lá e devolve tudo plano, com sigla e região no primeiro nível."
+        resumo="Estados e municípios do Brasil. Na fonte, a UF de cada município mora três níveis abaixo do aninhamento; o Balcão desce até lá e devolve tudo plano, com sigla e região no primeiro nível."
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -93,7 +93,7 @@ function Estados() {
             <AzulejoGlifo size={12} className="absolute right-2 top-2 text-accent-2/25" />
             <p className="num text-2xl font-semibold text-accent-2">{e.sigla}</p>
             <p className="truncate font-display text-base text-ink">{e.nome}</p>
-            <p className="num text-xs text-muted">{e.regiao ?? "—"}</p>
+            <p className="num text-xs text-muted">{e.regiao ?? "sem dado"}</p>
           </article>
         ))}
       </div>

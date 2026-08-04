@@ -19,13 +19,13 @@ import type {
 } from "@/lib/types";
 
 const FONTE_BACEN = {
-  nome: "Banco Central — Sistema Gerenciador de Séries (SGS)",
+  nome: "Banco Central, Sistema Gerenciador de Séries (SGS)",
   url: "https://www3.bcb.gov.br/sgspub/",
   nota: "IPCA, INPC e IGP-M são os índices oficiais de inflação; Selic, CDI e poupança medem o preço do dinheiro. O Balcão entrega o valor mais recente que o Banco Central publicou, já em ISO 8601.",
 };
 
 const FONTE_FOCUS = {
-  nome: "Banco Central — Boletim Focus",
+  nome: "Banco Central, Boletim Focus",
   url: "https://www.bcb.gov.br/publicacoes/focus",
   nota: "Projeção mediana de mais de cem instituições financeiras, coletada e divulgada toda semana pelo Banco Central. É expectativa de mercado, não previsão oficial.",
 };
@@ -42,7 +42,7 @@ const MODALIDADES_JUROS = [
   ["não consignado", "Crédito pessoal"],
 ] as const;
 
-// verde no banco barato, vermelho no caro — interpola pela posição no ranking
+// verde no banco barato, vermelho no caro; interpola pela posição no ranking
 function corJuros(frac: number): string {
   const de = [16, 185, 129]; // emerald
   const ate = [225, 29, 72]; // rose
@@ -51,7 +51,7 @@ function corJuros(frac: number): string {
 }
 
 function pctAno(taxa: number | null): string {
-  if (taxa == null) return "—";
+  if (taxa == null) return "sem dado";
   return `${taxa.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% a.a.`;
 }
 
@@ -235,7 +235,7 @@ export default function CadernoCustoDeVida() {
         numero="XIV"
         kicker="Banco Central"
         titulo="Custo de vida"
-        resumo="A inflação que já corroeu o seu bolso — IPCA, IGP-M (o do aluguel), INPC — e o que os analistas do Boletim Focus esperam pra frente. Dois olhares do Banco Central: o retrospecto e a expectativa."
+        resumo="A inflação que já corroeu o seu bolso: IPCA, IGP-M (o do aluguel) e INPC. E o que os analistas do Boletim Focus esperam pra frente. Dois olhares do Banco Central: o retrospecto e a expectativa."
         referencia={ptax ? `dólar (PTAX) de ${formataData(ptax)}` : undefined}
       />
 

@@ -1,4 +1,4 @@
-"""Onda F12 — Segurança: ocorrências criminais do Sinesp (base VDE)."""
+"""Onda F12, Segurança: ocorrências criminais do Sinesp (base VDE)."""
 
 
 async def test_panorama_agrega_e_ordena_por_total(api):
@@ -41,7 +41,7 @@ async def test_ranking_por_100k_compara_estados_justo(api):
     resp = await api.get("/v1/seguranca/ranking?crime=homicidio&ano=2025")
     corpo = resp.json()
     # CE (100 em 8,79 mi hab) tem taxa maior que SP (15 em 44,4 mi), mesmo com
-    # muito menos gente — é o sentido de comparar por 100 mil
+    # muito menos gente; é o sentido de comparar por 100 mil
     assert corpo["dados"][0]["uf"] == "CE"
     assert corpo["dados"][0]["por_100k"] > corpo["dados"][1]["por_100k"]
     sp = next(i for i in corpo["dados"] if i["uf"] == "SP")

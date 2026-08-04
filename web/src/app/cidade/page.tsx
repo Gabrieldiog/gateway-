@@ -24,7 +24,7 @@ import type {
 } from "@/lib/types";
 
 const inteiro = (v: number | null | undefined) =>
-  v == null ? "—" : Math.round(v).toLocaleString("pt-BR");
+  v == null ? "sem dado" : Math.round(v).toLocaleString("pt-BR");
 
 function KpiCidade({
   rotulo,
@@ -128,7 +128,7 @@ export default function CadernoCidade() {
               <KpiCidade rotulo="população" valor={inteiro(c.populacao)} tom="text-accent" />
               <KpiCidade
                 rotulo="crescimento"
-                valor={c.crescimento_aa_pct != null ? `${c.crescimento_aa_pct.toLocaleString("pt-BR")}%` : "—"}
+                valor={c.crescimento_aa_pct != null ? `${c.crescimento_aa_pct.toLocaleString("pt-BR")}%` : "sem dado"}
                 detalhe={
                   c.variacao_desde_2010 != null
                     ? `${c.variacao_desde_2010 >= 0 ? "+" : ""}${inteiro(c.variacao_desde_2010)} pessoas desde 2010`
@@ -139,7 +139,7 @@ export default function CadernoCidade() {
               <KpiCidade rotulo="domicílios ocupados" valor={inteiro(c.domicilios)} />
               <KpiCidade
                 rotulo="moradores por domicílio"
-                valor={c.moradores_por_domicilio?.toLocaleString("pt-BR") ?? "—"}
+                valor={c.moradores_por_domicilio?.toLocaleString("pt-BR") ?? "sem dado"}
               />
             </div>
           </EmTransicao>
@@ -158,7 +158,7 @@ export default function CadernoCidade() {
           {p && (
             <BadgeFrescor
               rotulo={`contas de ${p.ano}`}
-              detalhe="o PIB municipal sai com ~2 anos de defasagem — é o retrato mais novo que existe"
+              detalhe="o PIB municipal sai com ~2 anos de defasagem; é o retrato mais novo que existe"
             />
           )}
         </div>
@@ -172,7 +172,7 @@ export default function CadernoCidade() {
               <KpiCidade rotulo={`PIB · ${p.ano}`} valor={formataReaisCompacto(p.pib)} tom="text-accent-2" />
               <KpiCidade
                 rotulo="PIB por habitante"
-                valor={perCapita ? formataReaisCompacto(perCapita) : "—"}
+                valor={perCapita ? formataReaisCompacto(perCapita) : "sem dado"}
                 detalhe={`PIB de ${p.ano} ÷ população do Censo 2022`}
               />
             </div>
@@ -203,12 +203,12 @@ export default function CadernoCidade() {
               <KpiCidade rotulo="receita total" valor={formataReaisCompacto(fin.receita_total)} />
               <KpiCidade
                 rotulo="arrecadação própria"
-                valor={fin.arrecadacao_total ? formataReaisCompacto(fin.arrecadacao_total) : "—"}
+                valor={fin.arrecadacao_total ? formataReaisCompacto(fin.arrecadacao_total) : "sem dado"}
                 tom="text-ocre"
               />
               <KpiCidade
                 rotulo="despesa total"
-                valor={fin.despesa_total ? formataReaisCompacto(fin.despesa_total) : "—"}
+                valor={fin.despesa_total ? formataReaisCompacto(fin.despesa_total) : "sem dado"}
               />
             </div>
             {despesas.length > 0 && (
@@ -271,7 +271,7 @@ export default function CadernoCidade() {
                 valor={
                   folha.beneficiarios
                     ? formataReaisCompacto(Number(folha.valor) / folha.beneficiarios)
-                    : "—"
+                    : "sem dado"
                 }
               />
             </div>

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Spike (Fase 0) — prova o fluxo httpx → normalização → resposta.
+"""Spike (Fase 0), prova o fluxo httpx → normalização → resposta.
 
 Busca as despesas (CEAP) de um deputado na API da Câmara e imprime
-tudo já mapeado pro schema normalizado ``Despesa`` — o embrião da
+tudo já mapeado pro schema normalizado ``Despesa``, o embrião da
 camada que diferencia o Balcão de um proxy burro.
 
 Uso:
@@ -125,7 +125,7 @@ async def roda_spike(uf: str, ano: int, deputado_id: int | None) -> int:
         else:
             candidatos = await busca_deputados(client, uf)
 
-        # nem todo deputado tem despesa no ano — tenta até achar um com dados
+        # nem todo deputado tem despesa no ano, tenta até achar um com dados
         brutos: list[dict] = []
         escolhido: dict | None = None
         for dep in candidatos:
@@ -146,11 +146,11 @@ async def roda_spike(uf: str, ano: int, deputado_id: int | None) -> int:
             except (ValidationError, KeyError):
                 descartadas += 1  # dado podre não derruba o lote
 
-        print(f"\nDespesas de {escolhido['nome']} (id {escolhido['id']}) — ano {ano}")
+        print(f"\nDespesas de {escolhido['nome']} (id {escolhido['id']}), ano {ano}")
         print("─" * 88)
         for d in despesas:
             quando = d.data.isoformat() if d.data else f"{d.ano}-{d.mes:02d}"
-            doc = d.fornecedor_doc or "—"
+            doc = d.fornecedor_doc or "sem dado"
             print(
                 f"{quando}  {d.tipo[:34]:<34}  "
                 f"{d.fornecedor[:22]:<22}  {doc:>14}  R$ {d.valor:>10.2f}"
@@ -160,7 +160,7 @@ async def roda_spike(uf: str, ano: int, deputado_id: int | None) -> int:
         print(f"{len(despesas)} documentos normalizados", end="")
         if descartadas:
             print(f" ({descartadas} descartados por dado inválido)", end="")
-        print(f" — total R$ {total:.2f}\n")
+        print(f", total R$ {total:.2f}\n")
         return 0
 
 

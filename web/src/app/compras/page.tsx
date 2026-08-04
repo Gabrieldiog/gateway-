@@ -105,7 +105,7 @@ function Vencedor({ controle, item }: { controle: string; item: number }) {
   );
 }
 
-// os documentos da compra — o edital em PDF é o "ler tudo" de verdade
+// os documentos da compra, o edital em PDF é o "ler tudo" de verdade
 function ArquivosDaCompra({ controle }: { controle: string }) {
   const r = useBalcao<NormalizedResponse<ArquivoCompra>>(caminho("pncp/arquivos", { controle }));
   const arquivos = r.dados?.dados ?? [];
@@ -154,7 +154,7 @@ function ItensDaCompra({ controle }: { controle: string }) {
               )}
             </p>
             <span className="num shrink-0 text-sm text-accent">
-              {i.valor_total ? formataBRL(i.valor_total) : "—"}
+              {i.valor_total ? formataBRL(i.valor_total) : "sem dado"}
             </span>
           </div>
           <p className="num mt-1 text-xs text-muted">
@@ -261,7 +261,7 @@ function Licitacoes() {
                     </span>
                   </p>
                   <span className="num shrink-0 text-sm text-accent">
-                    {l.valor_estimado ? formataReaisCompacto(l.valor_estimado) : "—"}
+                    {l.valor_estimado ? formataReaisCompacto(l.valor_estimado) : "sem dado"}
                   </span>
                 </div>
                 <LerMais
@@ -345,7 +345,7 @@ function Contratos() {
                     {c.fornecedor}
                   </p>
                   <span className="num shrink-0 text-sm text-accent">
-                    {c.valor ? formataReaisCompacto(c.valor) : "—"}
+                    {c.valor ? formataReaisCompacto(c.valor) : "sem dado"}
                   </span>
                 </div>
                 <LerMais
@@ -384,7 +384,7 @@ export default function CadernoCompras() {
         numero="XXIII"
         kicker="PNCP · Lei 14.133"
         titulo="Compras públicas"
-        resumo="O que o governo — União, estados e municípios — está comprando agora: as licitações abertas a propostas e os contratos recém-assinados, do Portal Nacional de Contratações Públicas."
+        resumo="O que o governo (União, estados e municípios) está comprando agora: as licitações abertas a propostas e os contratos recém-assinados, do Portal Nacional de Contratações Públicas."
         referencia="últimos 7 dias"
       />
 

@@ -113,7 +113,7 @@ async def municipios(uf: str) -> list[dict]:
 
 @mcp.tool
 async def consultar(fonte: str, recurso: str, params: dict | None = None) -> dict:
-    """Consulta QUALQUER recurso de qualquer fonte do Balcão — o passe livre.
+    """Consulta QUALQUER recurso de qualquer fonte do Balcão, o passe livre.
     Use 'listar_fontes' pra ver os nomes e recursos (ex.: fonte='anp',
     recurso='precos', params={'combustivel': 'gasolina'})."""
     conectores = _get()
@@ -141,7 +141,7 @@ async def energia_agora() -> list[dict]:
 @mcp.tool
 async def preco_combustivel(combustivel: str = "gasolina", uf: str | None = None) -> list[dict]:
     """Preço médio de um combustível (gasolina, etanol, diesel, diesel-s10,
-    gnv, glp) por estado — ou por cidade quando uf é informada."""
+    gnv, glp) por estado, ou por cidade quando uf é informada."""
     params: dict = {"combustivel": combustivel}
     if uf:
         params.update(por="municipio", uf=uf)

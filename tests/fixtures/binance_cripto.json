@@ -1,0 +1,28 @@
+[
+  {
+    "symbol": "BTCBRL",
+    "priceChange": "89.00000000",
+    "priceChangePercent": "0.027",
+    "weightedAvgPrice": "322972.37768929",
+    "prevClosePrice": "323730.00000000",
+    "lastPrice": "324000.00000000",
+    "bidPrice": "324095.00000000",
+    "askPrice": "324096.00000000",
+    "highPrice": "326800.00000000",
+    "lowPrice": "317373.00000000",
+    "closeTime": 1785799947996
+  },
+  {
+    "symbol": "ETHBRL",
+    "priceChange": "-115.44000000",
+    "priceChangePercent": "-1.203",
+    "weightedAvgPrice": "9468.55432685",
+    "prevClosePrice": "9598.33000000",
+    "lastPrice": "9482.89000000",
+    "bidPrice": "9482.00000000",
+    "askPrice": "9483.50000000",
+    "highPrice": "9610.15000000",
+    "lowPrice": "9317.84000000",
+    "closeTime": 1785799947141
+  }
+]

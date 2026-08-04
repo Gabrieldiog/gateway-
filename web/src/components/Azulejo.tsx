@@ -1,4 +1,4 @@
-// motivo de azulejo português (quadrifólio num losango) — a assinatura
+// motivo de azulejo português (quadrifólio num losango), a assinatura
 // visual recorrente: micro-glifo no canto dos cards e marca-d'água nos cadernos
 
 export function AzulejoGlifo({

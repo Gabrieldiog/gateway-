@@ -1,4 +1,4 @@
-// A cadência de atualização de cada caderno — de quanto em quanto tempo a
+// A cadência de atualização de cada caderno, de quanto em quanto tempo a
 // FONTE oficial publica dado novo (e o Balcão busca). Cada linha foi apurada
 // no connector + no calendário real do órgão; é o selo-dateline que o
 // CadernoHeader estampa na página.
@@ -25,7 +25,7 @@ const FRESCOR: Record<string, Frescor> = {
   },
   "/votos": {
     rotulo: "dias de sessão",
-    detalhe: "voto novo quando o plenário faz votação nominal — em geral de terça a quinta",
+    detalhe: "voto novo quando o plenário faz votação nominal, em geral de terça a quinta",
   },
   "/dinheiro": {
     rotulo: "mensal",
@@ -77,7 +77,7 @@ const FRESCOR: Record<string, Frescor> = {
   },
   "/ipeadata": {
     rotulo: "varia por série",
-    detalhe: "cada série tem sua periodicidade — câmbio quase diário, PIB trimestral; a maioria é mensal",
+    detalhe: "cada série tem sua periodicidade, câmbio quase diário, PIB trimestral; a maioria é mensal",
   },
   "/ibge": {
     rotulo: "quase estático",

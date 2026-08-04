@@ -1,4 +1,4 @@
-// nome de gente pra cada fonte do gateway — usado nas mensagens de erro
+// nome de gente pra cada fonte do gateway, usado nas mensagens de erro
 // pro leitor saber QUEM caiu ("o Banco Central"), não um codinome.
 export const NOME_FONTE: Record<string, string> = {
   ana: "a ANA (Agência Nacional de Águas)",

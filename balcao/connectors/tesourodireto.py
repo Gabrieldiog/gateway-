@@ -1,5 +1,5 @@
 """Tesouro Direto (Tesouro Transparente): preço e taxa dos títulos públicos.
-Não há API — é um CSV de ~14 MB com o histórico desde 2002, SEM ordem
+Não há API; é um CSV de ~14 MB com o histórico desde 2002, SEM ordem
 cronológica (o topo é 2015, o fim é 2005), separado por ponto e vírgula e
 com vírgula decimal. O conector baixa, varre tudo atrás da data-base mais
 recente e devolve só a foto de hoje, normalizada. O cache do gateway evita
@@ -19,12 +19,12 @@ ARQUIVO = (
 )
 
 FONTE = {
-    "nome": "Tesouro Direto — Tesouro Transparente",
+    "nome": "Tesouro Direto, Tesouro Transparente",
     "url": "https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto",
     "nota": (
         "Preços e taxas da manhã, publicados diariamente pelo Tesouro Nacional. "
         "PU é o preço unitário do título; a taxa é ao ano. Não é oferta de "
-        "investimento — confira no site do Tesouro Direto antes de operar."
+        "investimento, confira no site do Tesouro Direto antes de operar."
     ),
 }
 
@@ -49,7 +49,7 @@ class TesouroDiretoConnector(BaseConnector):
     async def _titulos(self, recurso: str, params: dict) -> NormalizedResponse:
         if params:
             raise ParametroInvalido(recurso, sorted(params), [])
-        # ~14 MB; a fonte é lenta e o arquivo só muda 1x por dia — o cache segura
+        # ~14 MB; a fonte é lenta e o arquivo só muda 1x por dia, o cache segura
         texto = await self.get_text(ARQUIVO, timeout=120)
 
         linhas = texto.splitlines()

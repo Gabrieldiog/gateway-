@@ -1,4 +1,4 @@
-"""Onda F8 — Brasil no Mundo: os indicadores do Banco Mundial."""
+"""Onda F8, Brasil no Mundo: os indicadores do Banco Mundial."""
 
 
 async def test_comparar_ordena_e_descarta_pais_sem_medicao(api):
@@ -14,7 +14,7 @@ async def test_comparar_ordena_e_descarta_pais_sem_medicao(api):
 
 async def test_bom_utf8_na_resposta_nao_quebra(api):
     # a fixture da expectativa é servida com BOM na frente do JSON, como a
-    # fonte real faz — o parse tolera
+    # fonte real faz, o parse tolera
     resp = await api.get("/v1/mundo/serie?indicador=expectativa-vida&pais=chile&ultimos=5")
     assert resp.status_code == 200
     assert resp.json()["total"] == 3

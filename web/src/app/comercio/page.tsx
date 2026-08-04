@@ -286,7 +286,7 @@ export default function CadernoComercio() {
         numero="XX"
         kicker="ComexStat · MDIC"
         titulo="Comércio exterior"
-        resumo="O que o Brasil vende e compra do mundo: a balança comercial mês a mês e os rankings de parceiros, estados exportadores e produtos — dos dados oficiais da Secretaria de Comércio Exterior."
+        resumo="O que o Brasil vende e compra do mundo: a balança comercial mês a mês e os rankings de parceiros, estados exportadores e produtos; dos dados oficiais da Secretaria de Comércio Exterior."
         referencia={referencia}
       />
       <Balanca />

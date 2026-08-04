@@ -1,5 +1,5 @@
 """TSE: doações de campanha, da prestação de contas eleitoral. O modo mais
-duro de fonte que existe — não é API, é um ZIP de centenas de MB (2022) a
+duro de fonte que existe, não é API, é um ZIP de centenas de MB (2022) a
 1,4 GB (2024) com 112 CSVs dentro, latin-1, ponto e vírgula e vírgula
 decimal. O conector baixa o ZIP UMA vez pro disco (streaming, sem estourar
 memória), lê só o CSV da UF pedida direto de dentro do arquivo e agrega as
@@ -28,14 +28,14 @@ from balcao.normalize import UFS, limpa_texto, valor_br
 def anos_de_eleicao() -> set[int]:
     """Eleicao a cada dois anos desde 2022. O ano corrente ja entra na lista:
     quando o TSE publicar o arquivo da eleicao nova, funciona sem mexer em
-    codigo — ate la, o download responde erro limpo de nao publicado."""
+    codigo, ate la, o download responde erro limpo de nao publicado."""
     return {a for a in range(2022, date.today().year + 1) if a % 2 == 0}
 NIVEIS = {"candidato", "partido", "doador", "origem"}
 
 PARAMS = {"ano", "uf", "por", "limit"}
 
 FONTE = {
-    "nome": "TSE — Prestação de Contas Eleitorais",
+    "nome": "TSE, Prestação de Contas Eleitorais",
     "url": "https://dadosabertos.tse.jus.br",
     "nota": (
         "Receitas declaradas pelos próprios candidatos ao TSE. CPF de doador "
@@ -54,7 +54,7 @@ class TseConnector(BaseConnector):
         "doacoes": (
             "doações agregadas de uma UF (params: uf obrigatória; ano = 2022|2024; "
             "por = candidato|partido|doador|origem; limit). A 1ª consulta de um ano "
-            "baixa um arquivo grande (minutos) — depois fica em cache no disco"
+            "baixa um arquivo grande (minutos), depois fica em cache no disco"
         ),
     }
 
@@ -95,7 +95,7 @@ class TseConnector(BaseConnector):
             raise ParametroInvalido(recurso, ["limit"], ["1..100"])
 
         caminho = await self._garante_zip(ano)
-        # parse de dezenas de MB é trabalho de CPU/disco — sai do event loop
+        # parse de dezenas de MB é trabalho de CPU/disco, sai do event loop
         grupos, total_doacoes = await asyncio.to_thread(self._agrega, caminho, ano, uf, por)
 
         itens = [
@@ -124,7 +124,7 @@ class TseConnector(BaseConnector):
         return (time.time() - caminho.stat().st_mtime) < 24 * 3600
 
     async def _garante_zip(self, ano: int) -> Path:
-        """Baixa o ZIP do ano por streaming direto pro disco — uma vez pra
+        """Baixa o ZIP do ano por streaming direto pro disco, uma vez pra
         eleicao fechada, com revalidacao diaria pra eleicao em curso."""
         caminho = self.pasta / f"prestacao-{ano}.zip"
         if self._zip_fresco(caminho, ano):

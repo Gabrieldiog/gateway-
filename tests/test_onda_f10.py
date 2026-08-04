@@ -1,4 +1,4 @@
-"""Onda F10 — Educação: IDEB e Censo Escolar por município (via IBGE)."""
+"""Onda F10, Educação: IDEB e Censo Escolar por município (via IBGE)."""
 
 
 async def test_ideb_traz_as_tres_etapas_em_serie(api):
@@ -16,7 +16,7 @@ async def test_ideb_traz_as_tres_etapas_em_serie(api):
 
 
 async def test_ideb_ignora_ano_sem_nota(api):
-    # o Censo tem "2013": "-" na fixture do fundamental — não entra na série
+    # o Censo tem "2013": "-" na fixture do fundamental, não entra na série
     resp = await api.get("/v1/educacao/censo?municipio=3550308")
     fundamental = next(i for i in resp.json()["dados"] if "fundamental" in i["etapa"].lower())
     anos = [p["ano"] for p in fundamental["serie"]]

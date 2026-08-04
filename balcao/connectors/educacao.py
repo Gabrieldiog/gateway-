@@ -1,6 +1,6 @@
 """Educação (INEP, servido pela API de Pesquisas do IBGE): a nota do IDEB e o
 tamanho da rede de ensino de cada município, ano a ano. O INEP não tem API de
-consulta — mas o IBGE republica IDEB (pesquisa 40) e Censo Escolar (pesquisa
+consulta, mas o IBGE republica IDEB (pesquisa 40) e Censo Escolar (pesquisa
 13) num JSON limpo por município. Cada indicador é uma chamada; o conector
 dispara as etapas em paralelo e devolve a série pronta.
 
@@ -37,7 +37,7 @@ CENSO = {
 ETAPAS_CENSO = {"infantil": "Educação infantil", "fundamental": "Ensino fundamental", "medio": "Ensino médio"}
 
 FONTE = {
-    "nome": "INEP — IDEB e Censo Escolar (via IBGE)",
+    "nome": "INEP, IDEB e Censo Escolar (via IBGE)",
     "url": "https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/ideb",
     "nota": (
         "O IDEB combina aprovação e nota da Prova Brasil numa escala de 0 a 10 e "

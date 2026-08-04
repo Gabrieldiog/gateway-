@@ -28,7 +28,7 @@ const splineMono = Spline_Sans_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Balcão — Diário de Dados Públicos",
+  title: "Balcão, Diário de Dados Públicos",
   description:
     "Gateway que unifica APIs públicas brasileiras numa porta só: Câmara, Senado, Banco Central e IBGE, normalizados, com cache e busca unificada.",
 };

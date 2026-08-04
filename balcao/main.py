@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
     app.state.arquivo_votos = ArquivoVotos(client)
     # CSVs diários do SICONV: a nota de empenho e o contrato final das obras
     app.state.siconv = ArquivosSiconv(client)
-    # ZIP anual do Sinesp (ocorrências criminais) — injetado no conector
+    # ZIP anual do Sinesp (ocorrências criminais), injetado no conector
     app.state.seguranca = ArquivosSeguranca(client)
     app.state.connectors["seguranca"]._arquivos = app.state.seguranca
     yield
@@ -89,7 +89,7 @@ def create_app() -> FastAPI:
     app.include_router(meta.router)
     app.include_router(unified.router)
     app.include_router(sources.router)
-    # relay WebSocket do modo 1v1 do joguinho "Maior ou Menor?" — isolado do
+    # relay WebSocket do modo 1v1 do joguinho "Maior ou Menor?", isolado do
     # gateway, só junta dois jogadores e repassa mensagens (ver multiplayer.py)
     app.include_router(multiplayer_router)
 

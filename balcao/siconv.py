@@ -1,15 +1,15 @@
 """Os CSVs diários do SICONV/Transferegov que ligam a obra ao dinheiro de
-verdade — as duas pontas que a API do Obrasgov não entrega:
+verdade, as duas pontas que a API do Obrasgov não entrega:
 
 - siconv_empenho_cipi.csv.zip (~1MB): a nota de empenho de cada obra (UG +
   número), que abre a porta do detalhe no Portal da Transparência.
-- siconv_contrato_cipi.csv.zip (~3,5MB): o contrato que o município assinou —
+- siconv_contrato_cipi.csv.zip (~3,5MB): o contrato que o município assinou,
   a EMPREITEIRA final, com CNPJ, valor e modalidade de licitação.
 
 Os dois são keyed por ID_PROJETO_INVESTIMENTO (o idUnico do Obrasgov). O
 repositório atualiza toda manhã, então o índice em memória vence em 24h.
 Formato: UTF-8 com BOM, ponto e vírgula, vírgula decimal e datas ora
-dd/mm/aaaa ora ISO — tudo normalizado aqui."""
+dd/mm/aaaa ora ISO, tudo normalizado aqui."""
 
 import asyncio
 import csv
@@ -111,7 +111,7 @@ class ArquivosSiconv:
             if guardado and self._relogio() - guardado[1] < self.FRESCOR:
                 return guardado[0]
             # a fonte acabou de falhar: quem chega em seguida não repete o
-            # download de 120s — serve o índice de ontem ou o erro limpo
+            # download de 120s; serve o índice de ontem ou o erro limpo
             falhou_em = self._falha_em.get(nome)
             if falhou_em is not None and self._relogio() - falhou_em < self.ESPERA_POS_FALHA:
                 if guardado:
@@ -126,7 +126,7 @@ class ArquivosSiconv:
             except httpx.HTTPStatusError as exc:
                 self._falha_em[nome] = self._relogio()
                 if guardado:
-                    return guardado[0]  # vencido, mas é o dado de ontem — serve
+                    return guardado[0]  # vencido, mas é o dado de ontem; serve
                 raise ErroUpstream("siconv", exc.response.status_code) from exc
             except (
                 httpx.HTTPError,

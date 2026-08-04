@@ -2,7 +2,7 @@ import { formataBRL, formataReaisCompacto } from "@/lib/api";
 
 // ranking de gastos por tipo em barras finas; o maior recebe o acento, o
 // resto fica em tinta. valores em mono na ponta, como gráfico de jornal.
-// compacto=true encurta os valores (R$ 1,9 bi) — útil pra cifras grandes.
+// compacto=true encurta os valores (R$ 1,9 bi), útil pra cifras grandes.
 export function BarrasGasto({
   porTipo,
   compacto = false,

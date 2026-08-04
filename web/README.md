@@ -1,4 +1,4 @@
-# Balcão — Diário de Dados Públicos (view)
+# Balcão: Diário de Dados Públicos (view)
 
 Dashboard web do [Balcão](../README.md): um "jornal de dados públicos" que consome o gateway e mostra Câmara, Senado, Banco Central e IBGE numa interface única, com busca unificada que dispara as fontes em paralelo e mostra a latência e o estado do cache de cada uma.
 
@@ -28,7 +28,7 @@ Com Docker, o `docker compose up` na raiz sobe a API e a view juntas.
 
 ## Como está organizado
 
-- `src/app/` — um caderno por rota: capa (busca unificada), `camara`, `senado`, `bacen`, `ibge`, `fontes`
-- `src/components/` — masthead, índice, carimbo de cache, gráficos, busca unificada
-- `src/hooks/` — `useBalcao` (fetch com cancelamento e latência), `useContagem` (count-up)
-- `src/lib/` — tipos do gateway, cliente, formatação BRL/data, store do "pulso"
+- `src/app/`: um caderno por rota: capa (busca unificada), `camara`, `senado`, `bacen`, `ibge`, `fontes`
+- `src/components/`: masthead, índice, carimbo de cache, gráficos, busca unificada
+- `src/hooks/`: `useBalcao` (fetch com cancelamento e latência), `useContagem` (count-up)
+- `src/lib/`: tipos do gateway, cliente, formatação BRL/data, store do "pulso"

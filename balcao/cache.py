@@ -10,7 +10,7 @@ from pydantic import BaseModel
 class CacheRespostas:
     """Dois niveis: o fresco respeita o TTL normal; o velho dura bem mais
     e so e servido quando a fonte esta fora do ar (stale e melhor que erro).
-    O velho carrega a hora em que foi guardado — e o carimbo de honestidade
+    O velho carrega a hora em que foi guardado, e o carimbo de honestidade
     que a resposta stale mostra ao leitor."""
 
     def __init__(

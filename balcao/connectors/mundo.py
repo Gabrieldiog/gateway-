@@ -1,6 +1,6 @@
 """Banco Mundial: o Brasil comparado com o resto do planeta. A API v2 é
 aberta e multi-país ("BRA;ARG;CHL" numa URL só), e mrv=N devolve os N valores
-mais recentes de cada país — o comparador inteiro sai numa chamada. Quirks:
+mais recentes de cada país, o comparador inteiro sai numa chamada. Quirks:
 parte das respostas chega com BOM UTF-8 na frente do JSON (o parse tolera),
 a resposta é um array [metadados, dados], e ano sem medição vem value=null."""
 
@@ -38,11 +38,11 @@ PAISES = {
 PADRAO_COMPARAR = "brasil,argentina,chile,colombia,mexico,eua,china,india"
 
 FONTE = {
-    "nome": "Banco Mundial — World Development Indicators",
+    "nome": "Banco Mundial, World Development Indicators",
     "url": "https://data.worldbank.org",
     "nota": (
         "Indicadores comparáveis entre países, compilados pelo Banco Mundial a "
-        "partir das estatísticas oficiais de cada um. Cada país mede no seu ritmo — "
+        "partir das estatísticas oficiais de cada um. Cada país mede no seu ritmo, "
         "o ano ao lado do valor diz de quando é o dado."
     ),
 }
@@ -52,7 +52,7 @@ FONTE = {
 class MundoConnector(BaseConnector):
     name = "mundo"
     base_url = "https://api.worldbank.org/v2"
-    description = "Banco Mundial: o Brasil comparado com o mundo — PIB, vida, desemprego, CO₂"
+    description = "Banco Mundial: o Brasil comparado com o mundo, PIB, vida, desemprego, CO₂"
     resources = {
         "comparar": (
             f"o último valor de um indicador em vários países numa chamada "
@@ -76,7 +76,7 @@ class MundoConnector(BaseConnector):
                 raise RecursoNaoEncontrado(self.name, recurso, sorted(self.resources))
 
     async def _wb(self, caminho: str, consulta: dict) -> list:
-        # parte das respostas vem com BOM UTF-8 antes do JSON — o json() padrão
+        # parte das respostas vem com BOM UTF-8 antes do JSON, o json() padrão
         # engasga, então o parse é manual e tolerante
         texto = await self.get_text(caminho, params={"format": "json", **consulta}, timeout=40)
         try:

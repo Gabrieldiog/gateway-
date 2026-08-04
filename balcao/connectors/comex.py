@@ -1,5 +1,5 @@
 """ComexStat (MDIC): o que o Brasil vende e compra do mundo. A API é de
-consulta-por-POST com corpo estruturado — e cheia de dialeto próprio: todas
+consulta-por-POST com corpo estruturado, e cheia de dialeto próprio: todas
 as métricas chegam como STRING, o fluxo é 'export'/'import' em inglês e a
 resposta vem embrulhada em data.list. O conector fala português e devolve
 Decimal."""
@@ -27,7 +27,7 @@ PARAMS_BALANCA = {"de", "ate"}
 PARAMS_RANKING = {"fluxo", "de", "ate", "limit"}
 
 FONTE = {
-    "nome": "ComexStat — MDIC",
+    "nome": "ComexStat, MDIC",
     "url": "https://comexstat.mdic.gov.br",
     "nota": (
         "Estatísticas oficiais de comércio exterior, fechadas mês a mês pela "
@@ -72,7 +72,7 @@ class ComexConnector(BaseConnector):
     async def _consulta(self, corpo: dict) -> list[dict]:
         # o MDIC soluça: responde 200 com success=false de vez em quando e
         # funciona logo em seguida. O retry do transporte não vê isso (não é
-        # erro HTTP), então a nova tentativa é daqui — sem ela, o primeiro
+        # erro HTTP), então a nova tentativa é daqui; sem ela, o primeiro
         # acesso com cache frio vira 502 na cara do usuário
         ultimo_erro: ErroUpstream | None = None
         for tentativa in range(3):

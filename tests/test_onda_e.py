@@ -1,4 +1,4 @@
-"""Onda E — agro turbinado: LSPA mensal, abate e leite trimestrais,
+"""Onda E, agro turbinado: LSPA mensal, abate e leite trimestrais,
 municípios campeões e os arquivos diários da CONAB."""
 
 

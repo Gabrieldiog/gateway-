@@ -13,9 +13,9 @@ import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoSerie } from "@/lib/types";
 
 const FONTE_BACEN = {
-  nome: "Banco Central — Sistema Gerenciador de Séries (SGS)",
+  nome: "Banco Central, Sistema Gerenciador de Séries (SGS)",
   url: "https://www3.bcb.gov.br/sgspub/",
-  nota: "As séries oficiais do Banco Central — Selic, IPCA, câmbio e mais de 190 indicadores. O Balcão entrega os pontos já normalizados, com data em ISO.",
+  nota: "As séries oficiais do Banco Central, Selic, IPCA, câmbio e mais de 190 indicadores. O Balcão entrega os pontos já normalizados, com data em ISO.",
 };
 
 const SERIES = [

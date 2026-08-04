@@ -22,9 +22,9 @@ import type {
 import type { IndicadorAgro, NormalizedResponse } from "@/lib/types";
 
 const FONTE_SIDRA = {
-  nome: "IBGE — SIDRA (PAM e PPM)",
+  nome: "IBGE, SIDRA (PAM e PPM)",
   url: "https://sidra.ibge.gov.br/",
-  nota: "Produção Agrícola Municipal e Pesquisa da Pecuária Municipal do IBGE. O SIDRA fala em códigos de tabela — o Balcão traduz e devolve o ranking pronto.",
+  nota: "Produção Agrícola Municipal e Pesquisa da Pecuária Municipal do IBGE. O SIDRA fala em códigos de tabela; o Balcão traduz e devolve o ranking pronto.",
 };
 
 const PRODUTOS: [string, string][] = [
@@ -45,16 +45,16 @@ function compacto(valor: number, unidade: string | null): string {
 }
 
 const num = (v: number | null | undefined, casas = 1) =>
-  v == null ? "—" : new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: casas }).format(v);
+  v == null ? "sem dado" : new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: casas }).format(v);
 
 const FONTE_LSPA = {
-  nome: "IBGE — LSPA (safra em curso)",
+  nome: "IBGE, LSPA (safra em curso)",
   url: "https://sidra.ibge.gov.br/pesquisa/lspa",
   nota: "A estimativa oficial da safra deste ano, revisada todo mês. É previsão que amadurece: os números se ajustam a cada levantamento.",
 };
 
 const FONTE_CONAB = {
-  nome: "CONAB — Companhia Nacional de Abastecimento",
+  nome: "CONAB, Companhia Nacional de Abastecimento",
   url: "https://portaldeinformacoes.conab.gov.br",
   nota: "Levantamentos de safra e preços agropecuários da CONAB, atualizados diariamente a partir dos arquivos oficiais.",
 };
@@ -149,7 +149,7 @@ function SafraAgora() {
                 <div>
                   <p className="kicker mb-1">rendimento</p>
                   <p className="num font-display text-3xl font-semibold leading-none tracking-tight text-ink">
-                    {s.rendimento_kg_ha ? `${s.rendimento_kg_ha.toLocaleString("pt-BR")} kg/ha` : "—"}
+                    {s.rendimento_kg_ha ? `${s.rendimento_kg_ha.toLocaleString("pt-BR")} kg/ha` : "sem dado"}
                   </p>
                 </div>
               </div>
@@ -187,7 +187,7 @@ function SafraAgora() {
 }
 
 // o trimestre da proteína: quantos animais viraram carne e quanto leite
-// chegou aos laticínios — com o preço pago na porteira
+// chegou aos laticínios, com o preço pago na porteira
 function AbateLeite() {
   const bois = useBalcao<NormalizedResponse<Abate>>(caminho("sidra/abate", { tipo: "bovino" }));
   const suinos = useBalcao<NormalizedResponse<Abate>>(caminho("sidra/abate", { tipo: "suino" }));
@@ -241,7 +241,7 @@ function AbateLeite() {
           ) : (
             <>
               <p className="num pl-4 font-display text-3xl font-semibold leading-none tracking-tight text-accent">
-                {l?.preco_medio ? `R$ ${l.preco_medio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "—"}
+                {l?.preco_medio ? `R$ ${l.preco_medio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "sem dado"}
                 <span className="ml-1 text-base font-normal text-muted">/litro</span>
               </p>
               <p className="num mt-1.5 pl-4 text-xs text-muted">{num(l?.litros ?? null)} litros captados</p>
@@ -326,7 +326,7 @@ const PRODUTOS_MUNICIPIO: [string, string][] = [
   ["soja", "Soja"], ["milho", "Milho"], ["cafe", "Café"], ["cana", "Cana"],
 ];
 
-// os municípios que mais produzem — o zoom que o ranking por estado não dá
+// os municípios que mais produzem, o zoom que o ranking por estado não dá
 function MunicipiosCampeoes() {
   const [produto, setProduto] = useState("soja");
   const [uf, setUf] = useState("MT");
@@ -394,7 +394,7 @@ export default function CadernoAgro() {
   const [produto, setProduto] = useState("soja");
   const [animal, setAnimal] = useState("bovino");
   const [variavel, setVariavel] = useState("quantidade");
-  // null = "o mais recente que o IBGE publicou" — quem decide é o gateway
+  // null = "o mais recente que o IBGE publicou", quem decide é o gateway
   const [ano, setAno] = useState<number | null>(null);
 
   const url =
@@ -417,7 +417,7 @@ export default function CadernoAgro() {
         numero="IX"
         kicker="IBGE + CONAB · agro"
         titulo="O agro, do campo à porteira"
-        resumo="A safra que está no campo agora (estimativa mensal do IBGE e da CONAB), o trimestre da proteína (abate e leite com preço), o que o produtor recebe por kg em cada estado e os rankings anuais — por estado e por município."
+        resumo="A safra que está no campo agora (estimativa mensal do IBGE e da CONAB), o trimestre da proteína (abate e leite com preço), o que o produtor recebe por kg em cada estado e os rankings anuais; por estado e por município."
       />
 
       <SafraAgora />

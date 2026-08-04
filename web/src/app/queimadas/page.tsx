@@ -75,7 +75,7 @@ export default function CadernoQueimadas() {
         numero="XVI"
         kicker="INPE · Programa Queimadas"
         titulo="Queimadas"
-        resumo="Focos de incêndio detectados por satélite no Brasil, agregados por estado e bioma. O INPE atualiza o arquivo do dia ao longo das horas — o Balcão transforma milhares de pontos crus num ranking pronto."
+        resumo="Focos de incêndio detectados por satélite no Brasil, agregados por estado e bioma. O INPE atualiza o arquivo do dia ao longo das horas; o Balcão transforma milhares de pontos crus num ranking pronto."
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -131,7 +131,7 @@ export default function CadernoQueimadas() {
         // servidor do INPE (o de hoje só aparece ao longo da manhã)
         q.erro.status === 404 ? (
           <Vazio>
-            o INPE ainda não publicou o arquivo de {rotuloData.toLowerCase()} — o dia costuma
+            o INPE ainda não publicou o arquivo de {rotuloData.toLowerCase()}, o dia costuma
             aparecer ao longo da manhã e ir crescendo até a noite. Enquanto isso, veja
             &ldquo;Ontem&rdquo;, que já está completo.
           </Vazio>

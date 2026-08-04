@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-// selos de frescor dos cadernos: etiquetas de impressão em duas células —
+// selos de frescor dos cadernos: etiquetas de impressão em duas células,
 // a da esquerda é o carimbo (o que é), a da direita é o papel (o detalhe).
 // Nos ao-vivo o relógio anda e a célula pisca a cada dado novo, pra
 // atualização ficar visível de verdade.
 
 export function BadgeAoVivo({ atualizadoEm }: { atualizadoEm: number | null }) {
-  // os segundos vivem em estado e só o timer os atualiza — nada de relógio
+  // os segundos vivem em estado e só o timer os atualiza, nada de relógio
   // impuro no render. O cronômetro carrega o timestamp a que pertence: quando
   // chega dado novo, a contagem velha é descartada na hora.
   const [cron, setCron] = useState<{ de: number; s: number } | null>(null);

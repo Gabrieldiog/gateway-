@@ -1,4 +1,4 @@
-"""Onda F1 — Minha Cidade: Censo 2022 e PIB municipal."""
+"""Onda F1, Minha Cidade: Censo 2022 e PIB municipal."""
 
 
 async def test_censo_da_cidade_junta_as_duas_tabelas(api):

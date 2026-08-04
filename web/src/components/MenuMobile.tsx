@@ -47,7 +47,7 @@ export function MenuMobile() {
       </button>
 
       {/* a gaveta vai pro <body> via portal: o cabeçalho tem backdrop-blur, que
-          cria um containing block e prenderia um position:fixed ali dentro —
+          cria um containing block e prenderia um position:fixed ali dentro,
           fora do header, o inset-0 volta a valer pela viewport inteira */}
       {aberto &&
         createPortal(

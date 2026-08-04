@@ -1,4 +1,4 @@
-# Netlify — hospeda só o front (Next.js em web/). O backend FastAPI vive no
+# Netlify: hospeda só o front (Next.js em web/). O backend FastAPI vive no
 # Render; o front fala com ele por proxy server-to-server (BALCAO_API_URL),
 # então não há CORS entre os dois.
 #

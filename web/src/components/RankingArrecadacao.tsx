@@ -131,7 +131,7 @@ export function RankingArrecadacao({ ano }: { ano: number }) {
             <p className="mt-5 border-t border-line pt-3 font-editorial text-sm italic text-muted">
               {r.dados?.total_entes ?? linhas.length}{" "}
               {nivel === "estado" ? "estados" : "capitais"} com contas declaradas em {ano}.
-              {nivel === "capital" && " Ranking entre as capitais — não inclui as demais cidades."}
+              {nivel === "capital" && " Ranking entre as capitais, não inclui as demais cidades."}
             </p>
           </Card>
         </EmTransicao>

@@ -1,11 +1,11 @@
 """ANA (Agência Nacional de Águas), Sala de Situação/SAR: quanta água tem nos
-reservatórios do país — as hidrelétricas do SIN, os açudes do Nordeste e o
+reservatórios do país, as hidrelétricas do SIN, os açudes do Nordeste e o
 Sistema Cantareira que abastece São Paulo.
 
 A última medição sai de um endpoint JSON sem chave (o restportal, que apesar
 do nome "SIN" aceita qualquer código). Já a lista de reservatórios e a série
 histórica só existem nas páginas HTML do SAR: o conector parseia o dropdown e
-a tabela com regex mesmo — o HTML é ASP.NET estável e as colunas mudam por
+a tabela com regex mesmo, o HTML é ASP.NET estável e as colunas mudam por
 sistema, então o parse vai pelo cabeçalho, nunca pela posição."""
 
 import asyncio
@@ -25,7 +25,7 @@ SISTEMAS = {
     "cantareira": "/sar0/MedicaoCantareira",
 }
 
-# os que todo mundo conhece — a vitrine do caderno, uma medição por chamada
+# os que todo mundo conhece: a vitrine do caderno, uma medição por chamada
 PRINCIPAIS = [
     "19058",  # Itaipu
     "19121",  # Sobradinho
@@ -46,12 +46,12 @@ CELULA = re.compile(r"<t[dh][^>]*>(.*?)</t[dh]>", re.S)
 UF_NO_NOME = re.compile(r"\(([A-Z]{2})\)\s*$")
 
 FONTE = {
-    "nome": "ANA — Sala de Situação (SAR)",
+    "nome": "ANA, Sala de Situação (SAR)",
     "url": "https://www.ana.gov.br/sar",
     "nota": (
         "Medições diárias informadas pelos operadores dos reservatórios à "
         "Agência Nacional de Águas. Volume útil é a parte que dá pra usar; "
-        "olhe a data — açude pequeno do Nordeste pode passar meses sem medição nova."
+        "olhe a data, açude pequeno do Nordeste pode passar meses sem medição nova."
     ),
 }
 
@@ -66,7 +66,7 @@ def _sistema_do_codigo(codigo: str) -> str:
 
 def _numero(valor) -> float | None:
     # o restportal manda decimal com ponto e volumeUtil como STRING ("98.32",
-    # às vezes "") — float direto; valor_br aqui leria 98.32 como 9832
+    # às vezes ""), float direto; valor_br aqui leria 98.32 como 9832
     if valor is None or valor == "":
         return None
     try:
@@ -79,13 +79,13 @@ def _numero(valor) -> float | None:
 class AnaConnector(BaseConnector):
     name = "ana"
     base_url = "https://www.ana.gov.br"
-    description = "ANA/SAR: volume dos reservatórios — SIN, açudes do Nordeste e Cantareira"
+    description = "ANA/SAR: volume dos reservatórios, SIN, açudes do Nordeste e Cantareira"
     resources = {
         "reservatorios": (
             "lista dos reservatórios monitorados (params: sistema = sin|nordeste|cantareira, "
             "padrão sin; uf filtra os do Nordeste; busca por trecho do nome)"
         ),
-        "agora": "última medição de um reservatório (params: codigo obrigatório — pegue na lista)",
+        "agora": "última medição de um reservatório (params: codigo obrigatório, pegue na lista)",
         "principais": "última medição dos grandes reservatórios do país, numa chamada só",
         "historico": "série diária de um reservatório (params: codigo obrigatório; dias = 1..90, padrão 30)",
     }
@@ -218,7 +218,7 @@ class AnaConnector(BaseConnector):
             return [unescape(re.sub(r"<[^>]+>", "", c)).strip() for c in CELULA.findall(linha)]
 
         # cada sistema tem sua tabela: SIN fala "Volume Útil (%)", o Nordeste
-        # só "Volume (%)" (e tem "Capacidade (hm³)", que não é volume) — por
+        # só "Volume (%)" (e tem "Capacidade (hm³)", que não é volume); por
         # isso o mapa vai pelo cabeçalho, nunca pela posição
         cabecalho = celulas(linhas[0])
         col = {}

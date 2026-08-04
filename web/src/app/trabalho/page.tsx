@@ -11,7 +11,7 @@ import { caminho } from "@/lib/api";
 import type { FonteDado, IndicadorTrabalho, NormalizedResponse } from "@/lib/types";
 
 function reais(v: number | null): string {
-  return v == null ? "—" : `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
+  return v == null ? "sem dado" : `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
 }
 
 // mini gráfico de linha da série; devolve o caminho SVG normalizado
@@ -146,7 +146,7 @@ export default function CadernoTrabalho() {
         numero="XXXVII"
         kicker="IBGE · PNAD Contínua"
         titulo="Trabalho e Renda"
-        resumo="O retrato oficial do mercado de trabalho: quantos estão sem emprego e quanto ganha quem trabalha, medido pela PNAD Contínua do IBGE. Os trimestres são móveis — cada leitura anda um mês."
+        resumo="O retrato oficial do mercado de trabalho: quantos estão sem emprego e quanto ganha quem trabalha, medido pela PNAD Contínua do IBGE. Os trimestres são móveis, cada leitura anda um mês."
         referencia={periodo || undefined}
       />
 
@@ -154,7 +154,7 @@ export default function CadernoTrabalho() {
         <IndicadorNacional
           titulo={<Termo t="desocupacao">Desemprego</Termo>}
           url={caminho("sidra/desemprego", { ultimos: 8 })}
-          formata={(v) => (v == null ? "—" : `${v.toLocaleString("pt-BR")}%`)}
+          formata={(v) => (v == null ? "sem dado" : `${v.toLocaleString("pt-BR")}%`)}
           tom="text-ink"
           termo="taxa de desocupação, pessoas de 14 anos ou mais"
         />

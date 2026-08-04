@@ -85,7 +85,7 @@ class IndicadorEconomico(BaseModel):
 
 
 class ExpectativaMercado(BaseModel):
-    """O que o mercado espera para um indicador num ano de referência — a
+    """O que o mercado espera para um indicador num ano de referência, a
     projeção do Boletim Focus (BACEN), na coleta (semana) mais recente. É o
     olhar pra frente que o /serie do BACEN, retrospectivo, não dá."""
 
@@ -103,7 +103,7 @@ class ExpectativaMercado(BaseModel):
 
 
 class Acao(BaseModel):
-    """Uma ação ou índice da B3 — preço de mercado com o atraso do plano
+    """Uma ação ou índice da B3, preço de mercado com o atraso do plano
     gratuito da fonte (~15 minutos)."""
 
     fonte: str = "b3"
@@ -132,6 +132,13 @@ class Cotacao(BaseModel):
     maxima: Decimal | None = None
     minima: Decimal | None = None
     atualizado: str | None = None  # quando a fonte registrou (data/hora)
+    # de onde veio ESTE numero: a fonte principal exige cadastro e barra IP de
+    # datacenter, entao o gateway tem plano B em fontes abertas. Trocar de
+    # fonte calado seria pior que o erro, entao cada cotacao se identifica.
+    origem: str = "awesomeapi"
+    # preco de mercado agora (True) ou taxa de referencia do dia (False):
+    # o selo "ao vivo" da tela nao pode mentir
+    ao_vivo: bool = True
 
 
 class Emenda(BaseModel):
@@ -144,7 +151,7 @@ class Emenda(BaseModel):
     ano: int
     tipo: str | None = None  # individual, bancada...
     autor: str
-    localidade: str | None = None  # "CUIABÁ - MT" — onde o dinheiro vai
+    localidade: str | None = None  # "CUIABÁ - MT", onde o dinheiro vai
     funcao: str | None = None  # saúde, educação...
     valor_empenhado: Decimal | None = None
     valor_liquidado: Decimal | None = None
@@ -152,7 +159,7 @@ class Emenda(BaseModel):
 
 
 class Sancao(BaseModel):
-    """Empresa ou pessoa punida pelo poder público — impedida de contratar
+    """Empresa ou pessoa punida pelo poder público, impedida de contratar
     (CEIS) ou punida pela Lei Anticorrupção (CNEP)."""
 
     fonte: str = "transparencia"
@@ -221,7 +228,7 @@ class ContratoPublico(BaseModel):
 
 
 class DoacaoAgregada(BaseModel):
-    """Doações de campanha somadas por candidato, partido, doador ou origem —
+    """Doações de campanha somadas por candidato, partido, doador ou origem,
     a prestação de contas do TSE, agregada."""
 
     fonte: str = "tse"
@@ -236,7 +243,7 @@ class DoacaoAgregada(BaseModel):
 
 class Materia(BaseModel):
     """Uma matéria legislativa do Senado (PL, PEC...) na API nova de
-    processos — o que está tramitando e onde parou."""
+    processos, o que está tramitando e onde parou."""
 
     fonte: str = "senado"
     id: int
@@ -253,7 +260,7 @@ class Materia(BaseModel):
 
 class Processo(BaseModel):
     """A capa de um processo judicial no DataJud: classe, assuntos, órgão e o
-    último andamento. Só metadados públicos — partes e conteúdo não vêm
+    último andamento. Só metadados públicos, partes e conteúdo não vêm
     (segredo de justiça e LGPD)."""
 
     fonte: str = "datajud"
@@ -272,7 +279,7 @@ class Processo(BaseModel):
 
 
 class ClasseProcessual(BaseModel):
-    """Quantos processos de uma classe existem num tribunal — o retrato do
+    """Quantos processos de uma classe existem num tribunal, o retrato do
     que mais se processa."""
 
     fonte: str = "datajud"
@@ -300,8 +307,8 @@ class PrecoCombustivel(BaseModel):
 
 class PrecoProduto(BaseModel):
     """Um preço praticado por um estabelecimento. Vem de duas naturezas: nota
-    fiscal (NFC-e) publicada por app estadual — traz loja, endereço e quando foi
-    visto, inclusive de controlado — ou catálogo online (VTEX) de uma rede. O
+    fiscal (NFC-e) publicada por app estadual, traz loja, endereço e quando foi
+    visto, inclusive de controlado, ou catálogo online (VTEX) de uma rede. O
     campo `preco_tipo` diz qual, pro cliente rotular sem enganar."""
 
     fonte: str = "notaparana"
@@ -352,7 +359,7 @@ class BalancaMensal(BaseModel):
 
 
 class LinhaComercio(BaseModel):
-    """Uma linha de ranking do comércio exterior — por país, UF ou produto —
+    """Uma linha de ranking do comércio exterior (por país, UF ou produto)
     num fluxo (exportação ou importação) e período."""
 
     fonte: str = "comex"
@@ -367,7 +374,7 @@ class LinhaComercio(BaseModel):
 class AlertaDengue(BaseModel):
     """Uma semana epidemiológica de um município no InfoDengue: casos
     notificados, a estimativa corrigida (nowcast) e o nível de alerta do
-    modelo — de verde (1) a vermelho (4)."""
+    modelo, de verde (1) a vermelho (4)."""
 
     fonte: str = "infodengue"
     municipio: str
@@ -398,7 +405,7 @@ class Queimada(BaseModel):
 
 
 class GeracaoEnergia(BaseModel):
-    """Foto da geração de energia num instante — potência por fonte, carga e o
+    """Foto da geração de energia num instante, potência por fonte, carga e o
     percentual renovável. Vem do ONS quase em tempo real (atualiza a cada
     minuto). `regiao` é "SIN" (o Brasil todo) ou um subsistema."""
 
@@ -443,7 +450,7 @@ class VotoDeputado(BaseModel):
 
 
 class VotoSenador(BaseModel):
-    """Um voto de um senador numa votação — o histórico vem inteiro numa
+    """Um voto de um senador numa votação, o histórico vem inteiro numa
     chamada só, diferente da Câmara (que é por votação)."""
 
     fonte: str = "senado"
@@ -475,12 +482,12 @@ class Estabelecimento(BaseModel):
 
 
 class FinancaEnte(BaseModel):
-    """Panorama fiscal de um ente — União, estado ou município. A mesma fonte
+    """Panorama fiscal de um ente, União, estado ou município. A mesma fonte
     (SICONFI) responde pros três níveis, só muda o código IBGE consultado."""
 
     fonte: str = "tesouro"
     nivel: str  # uniao, estado ou municipio
-    ente: str  # "Brasil", "SP", "Goiânia" — nome legível do ente
+    ente: str  # "Brasil", "SP", "Goiânia"; nome legível do ente
     uf: str | None = None  # None na União
     ibge: int | None = None  # código IBGE do ente
     ano: int
@@ -562,7 +569,7 @@ class PontoIpea(BaseModel):
 
 
 class PerfilDeputado(BaseModel):
-    """O deputado por inteiro — o que a lista não conta: formação, origem,
+    """O deputado por inteiro, o que a lista não conta: formação, origem,
     gabinete pra cobrar e redes pra acompanhar."""
 
     fonte: str = "camara"
@@ -638,7 +645,7 @@ class VencedorItem(BaseModel):
 
 
 class DocumentoEmenda(BaseModel):
-    """Um empenho/documento por trás de uma emenda parlamentar — o rastro
+    """Um empenho/documento por trás de uma emenda parlamentar, o rastro
     concreto do dinheiro."""
 
     fonte: str = "transparencia"
@@ -682,7 +689,7 @@ class FichaEmpresa(BaseModel):
 
 
 class ProposicaoResumo(BaseModel):
-    """Uma proposição citada dentro de uma votação — o 'sobre o quê'."""
+    """Uma proposição citada dentro de uma votação, o 'sobre o quê'."""
 
     fonte: str = "camara"
     id: int
@@ -692,7 +699,7 @@ class ProposicaoResumo(BaseModel):
 
 class VotacaoCompleta(Votacao):
     """O detalhe que conta a história: o parecer votado e as proposições
-    afetadas com ementa — 'Aprovado o Parecer' deixa de ser enigma."""
+    afetadas com ementa, 'Aprovado o Parecer' deixa de ser enigma."""
 
     parecer: str | None = None
     proposicoes: list[ProposicaoResumo] = []
@@ -714,7 +721,7 @@ class ProposicaoDetalhe(Proposicao):
 
 class TramitacaoEvento(BaseModel):
     """Um passo na vida de uma proposição: quando, em que órgão/comissão, e o que
-    aconteceu. É aqui que mora "aprovada na CCJ" — o marco que o status atual (só a
+    aconteceu. É aqui que mora "aprovada na CCJ", o marco que o status atual (só a
     última linha) não conta. `marco` traduz os passos reconhecidos pra fala de gente."""
 
     fonte: str = "camara"
@@ -726,7 +733,7 @@ class TramitacaoEvento(BaseModel):
 
 
 class ProposicaoNovidade(BaseModel):
-    """Uma proposição que ANDOU no período — o feed de acompanhamento. Já vem com
+    """Uma proposição que ANDOU no período, o feed de acompanhamento. Já vem com
     os marcos que aconteceram na janela (aprovada na CCJ, rejeitada, virou norma),
     pra não precisar saber o id nem abrir a tramitação inteira."""
 
@@ -746,7 +753,7 @@ class ArquivoCompra(BaseModel):
 
 
 class ObraPublica(BaseModel):
-    """Uma obra/projeto de investimento federal no Obrasgov — inclusive as
+    """Uma obra/projeto de investimento federal no Obrasgov, inclusive as
     paradas, que são a pauta."""
 
     fonte: str = "obrasgov"
@@ -770,7 +777,7 @@ class ObraPublica(BaseModel):
 
 
 class EmpenhoObra(BaseModel):
-    """Um empenho da execução financeira de uma obra — dinheiro que já saiu."""
+    """Um empenho da execução financeira de uma obra, dinheiro que já saiu."""
 
     fonte: str = "obrasgov"
     obra: str  # idUnico
@@ -783,7 +790,7 @@ class EmpenhoObra(BaseModel):
 
 class DocumentoSiafi(BaseModel):
     """O detalhe de um documento do SIAFI (empenho/liquidação/pagamento) no
-    Portal da Transparência — é aqui que o favorecido aparece com CNPJ."""
+    Portal da Transparência; é aqui que o favorecido aparece com CNPJ."""
 
     fonte: str = "transparencia"
     documento: str
@@ -848,7 +855,7 @@ class PibCidade(BaseModel):
 
 
 class SafraMensal(BaseModel):
-    """A estimativa do LSPA/IBGE pra safra em curso — revisada todo mês."""
+    """A estimativa do LSPA/IBGE pra safra em curso, revisada todo mês."""
 
     fonte: str = "sidra"
     produto: str
@@ -1016,7 +1023,7 @@ class IndicadorMundial(BaseModel):
 
 
 class AlertaDesmatamento(BaseModel):
-    """Alertas DETER agregados numa janela de dias — por UF, classe ou município."""
+    """Alertas DETER agregados numa janela de dias, por UF, classe ou município."""
 
     fonte: str = "inpe"
     bioma: str  # amazonia | cerrado

@@ -1,5 +1,5 @@
 # Blueprint do Render (plano free): New + > Blueprint > apontar pro repo.
-# As chaves de API são secrets — configurar no dashboard, nunca aqui.
+# As chaves de API são secrets: configurar no dashboard, nunca aqui.
 services:
   - type: web
     name: balcao-api
@@ -15,16 +15,18 @@ services:
         value: 2000/minute
       - key: HTTP_TIMEOUT
         value: "15"
-      # chaves de fontes que exigem cadastro (opcionais — a fonte fica off sem elas)
+      # chaves de fontes que exigem cadastro (opcionais, a fonte fica off sem elas)
       - key: TRANSPARENCIA_API_KEY
         sync: false
       - key: BRAPI_TOKEN
         sync: false
       - key: DATAJUD_API_KEY
         sync: false
-      # chaves de acesso da PRÓPRIA API do Balcão (CSV; opcional — dá balde por chave)
+      # chaves de acesso da PRÓPRIA API do Balcão (CSV; opcional; dá balde por chave)
       - key: API_KEYS
         sync: false
-      # token grátis da AwesomeAPI (câmbio): sem ele o IP do Render leva 429
+      # token grátis da AwesomeAPI (câmbio): OPCIONAL. Sem ele o IP do Render
+      # leva 429 e o cotacoes serve pelas fontes abertas (Frankfurter, gold-api
+      # e Binance), com o câmbio virando taxa do dia em vez de tempo real.
       - key: AWESOMEAPI_TOKEN
         sync: false

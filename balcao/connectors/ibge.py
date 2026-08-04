@@ -18,10 +18,10 @@ UF_POR_CODIGO = {
 }
 
 FONTE_NOMES = {
-    "nome": "IBGE — Nomes do Censo 2010",
+    "nome": "IBGE, Nomes do Censo 2010",
     "url": "https://censo2010.ibge.gov.br/nomes/",
     "nota": (
-        "Frequência de primeiros nomes apurada no Censo 2010 — o retrato é "
+        "Frequência de primeiros nomes apurada no Censo 2010, o retrato é "
         "congelado ali: nome que virou moda depois de 2010 não aparece. A fonte "
         "devolve tudo em caixa alta e sem acento."
     ),
@@ -142,7 +142,7 @@ class IbgeConnector(BaseConnector):
 
     @staticmethod
     def _decada(periodo: str) -> str:
-        # a fonte fala "[1990,2000[" e "1930[" — o leitor entende "1990" e "até 1930"
+        # a fonte fala "[1990,2000[" e "1930[", o leitor entende "1990" e "até 1930"
         p = (periodo or "").strip("[]")
         if "," in p:
             return p.split(",")[0]

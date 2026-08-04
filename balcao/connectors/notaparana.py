@@ -1,8 +1,8 @@
 """Nota Paraná (SEFAZ-PR): menor preço praticado por estabelecimento, extraído
-das NFC-e emitidas no estado. É a única fonte pública de preço REAL de balcão —
+das NFC-e emitidas no estado. É a única fonte pública de preço REAL de balcão,
 inclusive de medicamento controlado (tarja preta), que não é vendido online mas
 emite nota quando vendido presencialmente. Vários estados têm um app assim; este
-é o do Paraná. Goiás não tem — por isso é a peça que falta pro comparador de
+é o do Paraná. Goiás não tem, por isso é a peça que falta pro comparador de
 remédio, e por que ele precisa de um proxy com cache na frente (esta camada)."""
 
 from decimal import Decimal, InvalidOperation
@@ -16,7 +16,7 @@ from balcao.normalize import limpa_texto, normaliza_uf
 PARAMS = {"termo", "lat", "lon", "local", "raio", "offset"}
 
 FONTE = {
-    "nome": "Nota Paraná — SEFAZ-PR",
+    "nome": "Nota Paraná, SEFAZ-PR",
     "url": "https://menorpreco.notaparana.pr.gov.br",
     "nota": (
         "Preço praticado por loja, extraído das notas fiscais (NFC-e) do Paraná. "
@@ -106,7 +106,7 @@ class NotaParanaConnector(BaseConnector):
 
 
 def _decimal(valor: Any) -> Decimal | None:
-    # a Nota Paraná manda o preço em formato US ("1.04"), NÃO brasileiro —
+    # a Nota Paraná manda o preço em formato US ("1.04"), NÃO brasileiro,
     # por isso Decimal direto, e não valor_br (que trataria 1.04 como 104)
     if valor is None or valor == "":
         return None

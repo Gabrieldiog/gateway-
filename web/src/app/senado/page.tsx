@@ -14,7 +14,7 @@ import { UFS } from "@/lib/ufs";
 import type { NormalizedResponse, Senador } from "@/lib/types";
 
 const FONTE_SENADO = {
-  nome: "Senado Federal — Dados Abertos Legislativos",
+  nome: "Senado Federal, Dados Abertos Legislativos",
   url: "https://legis.senado.leg.br/dadosabertos/",
   nota: "Lista oficial de senadores em exercício, direto da API do Senado. O Balcão pede JSON, desembrulha o envelope triplo e aplica os filtros de UF e partido.",
 };
@@ -32,7 +32,7 @@ export default function CadernoSenado() {
         numero="III"
         kicker="Senado Federal"
         titulo="O plenário dos estados"
-        resumo="Os senadores em exercício. A fonte responde XML por padrão e não filtra a lista — o Balcão pede JSON, desembrulha o envelope triplo e aplica o recorte por UF e partido aqui no gateway."
+        resumo="Os senadores em exercício. A fonte responde XML por padrão e não filtra a lista; o Balcão pede JSON, desembrulha o envelope triplo e aplica o recorte por UF e partido aqui no gateway."
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -82,7 +82,7 @@ export default function CadernoSenado() {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-display text-lg leading-tight text-ink">{s.nome}</p>
                 <p className="num text-xs text-muted">
-                  {[s.partido, s.uf].filter(Boolean).join(" · ") || "—"}
+                  {[s.partido, s.uf].filter(Boolean).join(" · ") || "sem dado"}
                 </p>
                 {s.email && (
                   <p className="mt-1 truncate text-xs text-accent-2" title={s.email}>

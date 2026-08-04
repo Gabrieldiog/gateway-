@@ -30,7 +30,7 @@ VARIAVEIS_PAM = {
     "rendimento": 112,    # rendimento médio (kg/ha)
 }
 
-# LSPA, tabela 6588 (safra em curso, estimativa mensal), classificação 48 —
+# LSPA, tabela 6588 (safra em curso, estimativa mensal), classificação 48,
 # os códigos de produto NÃO são os mesmos da PAM
 LSPA_PRODUTOS = {
     "soja": 39443, "milho1": 39441, "milho2": 39442, "arroz": 39432,
@@ -41,17 +41,17 @@ LSPA_PRODUTOS = {
 # abate trimestral: uma tabela por bicho, mesma estrutura
 ABATE_TABELAS = {"bovino": 1092, "suino": 1093, "frango": 1094}
 
-# PAM municipal, tabela 5457, classificação 782 — terceiro mapa de códigos
+# PAM municipal, tabela 5457, classificação 782: terceiro mapa de códigos
 PAM_MUNICIPAL = {"soja": 40124, "milho": 40122, "cafe": 40139, "cana": 40106}
 
 FONTE = {
-    "nome": "IBGE — SIDRA (PAM e PPM)",
+    "nome": "IBGE, SIDRA (PAM e PPM)",
     "url": "https://sidra.ibge.gov.br",
     "nota": "Produção Agrícola Municipal e Pesquisa da Pecuária Municipal, os censos anuais do campo.",
 }
 
 FONTE_LSPA = {
-    "nome": "IBGE — LSPA (Levantamento Sistemático da Produção Agrícola)",
+    "nome": "IBGE, LSPA (Levantamento Sistemático da Produção Agrícola)",
     "url": "https://sidra.ibge.gov.br/pesquisa/lspa",
     "nota": (
         "A estimativa oficial da safra em curso, revisada todo mês pelo IBGE. "
@@ -60,19 +60,19 @@ FONTE_LSPA = {
 }
 
 FONTE_CENSO = {
-    "nome": "IBGE — Censo Demográfico 2022",
+    "nome": "IBGE, Censo Demográfico 2022",
     "url": "https://censo2022.ibge.gov.br",
     "nota": "A contagem oficial de gente e moradia do país, município a município.",
 }
 
 FONTE_PIB = {
-    "nome": "IBGE — PIB dos Municípios",
+    "nome": "IBGE, PIB dos Municípios",
     "url": "https://sidra.ibge.gov.br/pesquisa/pib-munic",
-    "nota": "As contas municipais oficiais, publicadas com cerca de dois anos de defasagem — o retrato mais recente que existe.",
+    "nota": "As contas municipais oficiais, publicadas com cerca de dois anos de defasagem; o retrato mais recente que existe.",
 }
 
 FONTE_TRIMESTRAIS = {
-    "nome": "IBGE — pesquisas trimestrais do abate e do leite",
+    "nome": "IBGE, pesquisas trimestrais do abate e do leite",
     "url": "https://sidra.ibge.gov.br/pesquisa/abate",
     "nota": "Declaração obrigatória de frigoríficos e laticínios sob inspeção sanitária, consolidada por trimestre.",
 }
@@ -88,7 +88,7 @@ REBANHOS = {
 RENDIMENTO_VAR = {"real": 5933, "nominal": 5929}
 
 FONTE_PNAD = {
-    "nome": "IBGE — PNAD Contínua",
+    "nome": "IBGE, PNAD Contínua",
     "url": "https://www.ibge.gov.br/estatisticas/sociais/trabalho/9173-pesquisa-nacional-por-amostra-de-domicilios-continua-trimestral.html",
     "nota": (
         "A pesquisa oficial do mercado de trabalho, por amostra de domicílios. "
@@ -213,7 +213,7 @@ class SidraConnector(BaseConnector):
             ano = int(row["D3C"]) if str(row.get("D3C") or "").isdigit() else ano
             cru = str(row.get("V") or "")
             if row.get("D2C") == "37" and cru.replace(".", "", 1).isdigit():
-                # a fonte fala em mil reais; entregamos reais — Decimal do
+                # a fonte fala em mil reais; entregamos reais, Decimal do
                 # valor cru pra não passar por float
                 pib = Decimal(cru) * 1000
         item = PibCidade(municipio=nome or mun, ibge=int(mun), ano=ano or 0, pib=pib)
@@ -224,7 +224,7 @@ class SidraConnector(BaseConnector):
 
     async def _safra(self, recurso: str, params: dict) -> NormalizedResponse:
         """LSPA (tabela 6588): a estimativa mensal da safra em curso. O quirk
-        da fonte: o item Total responde '..' — só produto especifico tem dado."""
+        da fonte: o item Total responde '..', só produto especifico tem dado."""
         self._checa(recurso, params, {"produto", "uf"})
         produto = str(params.get("produto", "soja")).lower()
         if produto not in LSPA_PRODUTOS:
@@ -288,7 +288,7 @@ class SidraConnector(BaseConnector):
             local = row.get("D1N") or local
             if row.get("D2C") == "282":
                 litros = self._numero(row.get("V"))
-                # a fonte entrega em "Mil litros" — normaliza pra litros
+                # a fonte entrega em "Mil litros", normaliza pra litros
                 if litros is not None and "mil" in (row.get("MN") or "").lower():
                     litros *= 1000
             elif row.get("D2C") == "2522":
@@ -301,7 +301,7 @@ class SidraConnector(BaseConnector):
 
     async def _municipios(self, recurso: str, params: dict) -> NormalizedResponse:
         """PAM municipal (tabela 5457): os municipios que mais produzem uma
-        cultura numa UF. Os codigos de produto DIFEREM da 1612 — mapa proprio."""
+        cultura numa UF. Os codigos de produto DIFEREM da 1612, mapa proprio."""
         self._checa(recurso, params, {"produto", "uf", "limit"})
         produto = str(params.get("produto", "soja")).lower()
         if produto not in PAM_MUNICIPAL:
@@ -347,7 +347,7 @@ class SidraConnector(BaseConnector):
         ano = str(params.get("ano", "")).strip()
         if ano and not ano.isdigit():
             raise ParametroInvalido(recurso, ["ano"], ["ano (AAAA) ou vazio pro mais recente"])
-        # sem ano, o SIDRA resolve "last" pro ultimo periodo publicado — a
+        # sem ano, o SIDRA resolve "last" pro ultimo periodo publicado; a
         # pagina nunca fica presa num ano que ja virou historia
         periodo = ano or "last"
 
@@ -388,7 +388,7 @@ class SidraConnector(BaseConnector):
                 reg = IndicadorAgro(
                     localidade=row.get("D1N") or "",
                     localidade_id=int(row["D1C"]) if str(row.get("D1C") or "").isdigit() else None,
-                    # o ano de verdade vem em cada linha (D3C) — essencial no
+                    # o ano de verdade vem em cada linha (D3C), essencial no
                     # modo "last", em que nao sabemos o periodo de antemao
                     ano=int(row["D3C"]) if str(row.get("D3C") or "").isdigit() else ano,
                     item=row.get("D4N") or "",

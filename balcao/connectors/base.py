@@ -60,12 +60,17 @@ class BaseConnector(ABC):
         json: Any = None,
         timeout: float | None = None,
         headers: dict | None = None,
+        breaker: CircuitBreaker | None = None,
     ) -> httpx.Response:
-        if self.breaker.aberto:
+        # conector que fala com mais de um host (o cotacoes tem plano B em
+        # fontes abertas) passa um breaker por host: um upstream caido nao
+        # pode fechar a porta dos outros
+        breaker = breaker or self.breaker
+        if breaker.aberto:
             raise ErroUpstream(
                 self.name,
                 circuito_aberto=True,
-                tente_em_s=max(1, round(self.breaker.restante)),
+                tente_em_s=max(1, round(breaker.restante)),
             )
         # algumas fontes (Tesouro) respondem devagar; deixa o conector esticar.
         # headers extras servem pras fontes com chave (Transparencia, brapi)
@@ -86,12 +91,12 @@ class BaseConnector(ABC):
         except httpx.HTTPStatusError as exc:
             # 4xx e pedido errado, nao fonte doente; so 5xx conta pro breaker
             if exc.response.status_code >= 500:
-                self.breaker.registra_falha()
+                breaker.registra_falha()
             raise ErroUpstream(self.name, exc.response.status_code) from exc
         except httpx.HTTPError as exc:
-            self.breaker.registra_falha()
+            breaker.registra_falha()
             raise ErroUpstream(self.name) from exc
-        self.breaker.registra_sucesso()
+        breaker.registra_sucesso()
         assert resp is not None
         return resp
 
@@ -100,7 +105,7 @@ class BaseConnector(ABC):
             return resp.json()
         except ValueError as exc:
             # 200 com corpo que nao e JSON (pagina de manutencao, HTML de erro):
-            # fonte doente — vira 502 limpo em vez de 500 cru
+            # fonte doente; vira 502 limpo em vez de 500 cru
             self.breaker.registra_falha()
             raise ErroUpstream(self.name) from exc
 
@@ -110,8 +115,11 @@ class BaseConnector(ABC):
         params: dict | None = None,
         timeout: float | None = None,
         headers: dict | None = None,
+        breaker: CircuitBreaker | None = None,
     ) -> Any:
-        resp = await self._request("GET", path, params=params, timeout=timeout, headers=headers)
+        resp = await self._request(
+            "GET", path, params=params, timeout=timeout, headers=headers, breaker=breaker
+        )
         return self._parse_json(resp)
 
     async def post_json(
@@ -132,7 +140,7 @@ class BaseConnector(ABC):
         timeout: float | None = None,
         headers: dict | None = None,
     ) -> str:
-        # igual ao get_json, mas devolve o corpo cru — pra fontes que servem
+        # igual ao get_json, mas devolve o corpo cru; pra fontes que servem
         # CSV/arquivo (INPE, ANP, Tesouro Direto, TSE)
         resp = await self._request("GET", path, params=params, timeout=timeout, headers=headers)
         return resp.text

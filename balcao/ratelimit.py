@@ -15,7 +15,7 @@ def extrai_chave(request: Request) -> str | None:
 
 def cria_limiter(limite: str, chaves: set[str] | None = None) -> Limiter:
     """Cada requisição cai num balde: por chave (se mandou uma válida) ou por
-    IP (anônimo). Quem tem chave não disputa o balde do IP compartilhado —
+    IP (anônimo). Quem tem chave não disputa o balde do IP compartilhado,
     escritório, faculdade e operadora com NAT deixam de derrubar uns aos outros.
     headers_enabled expõe X-RateLimit-* pra quem consome saber onde está."""
     chaves = chaves or set()

@@ -18,9 +18,9 @@ import type {
 } from "@/lib/types";
 
 const FONTE_CAMARA = {
-  nome: "Câmara dos Deputados — Dados Abertos",
+  nome: "Câmara dos Deputados, Dados Abertos",
   url: "https://dadosabertos.camara.leg.br/",
-  nota: "Votações e proposições em tramitação, direto da API oficial da Câmara — o que o plenário decidiu e o que está na fila.",
+  nota: "Votações e proposições em tramitação, direto da API oficial da Câmara; o que o plenário decidiu e o que está na fila.",
 };
 
 interface Proposicao {
@@ -78,7 +78,7 @@ function curta(iso: string): string {
 }
 
 // a história por trás da votação: o parecer que foi votado e a(s)
-// proposição(ões) afetada(s), com ementa — "Aprovado o Parecer" deixa de
+// proposição(ões) afetada(s), com ementa; "Aprovado o Parecer" deixa de
 // ser enigma
 function MateriaDaVotacao({ id }: { id: string }) {
   const r = useBalcao<NormalizedResponse<VotacaoCompleta>>(caminho(`camara/votacoes/${id}`));
@@ -131,7 +131,7 @@ function MateriaDaVotacao({ id }: { id: string }) {
   );
 }
 
-// o voto a voto de uma votação, aberto sob demanda — placar, quem foi a
+// o voto a voto de uma votação, aberto sob demanda; placar, quem foi a
 // favor e quem foi contra (votação simbólica avisa que não tem)
 function VotosDaVotacao({ id }: { id: string }) {
   const r = useBalcao<NormalizedResponse<VotoDeputado>>(caminho(`camara/votacoes/${id}/votos`));
@@ -216,7 +216,7 @@ function corDoMarco(marco: string): string {
 
 // o feed que fecha o acompanhamento: só as proposições que DECIDIRAM algo no
 // período (aprovada na CCJ, rejeitada, virou norma), já com o marco em português.
-// Não é a lista de tudo que tramitou — é o que virou notícia.
+// Não é a lista de tudo que tramitou; é o que virou notícia.
 function Andou({ dias }: { dias: number }) {
   const r = useBalcao<NormalizedResponse<Novidade>>(
     caminho("camara/proposicoes/andaram", { dias }),
@@ -367,7 +367,7 @@ function Votacoes({ dias }: { dias: number }) {
 }
 
 // o dossiê de um projeto: onde está, com quem, em que regime e o texto
-// integral — aberto sob demanda
+// integral, aberto sob demanda
 function DossieProposicao({ id }: { id: number }) {
   const r = useBalcao<NormalizedResponse<ProposicaoDetalhe>>(caminho(`camara/proposicoes/${id}`));
   const p = r.dados?.dados?.[0];
@@ -541,7 +541,7 @@ export default function CadernoPauta() {
         numero="XVIII"
         kicker="Câmara dos Deputados"
         titulo="Em pauta"
-        resumo="O Congresso desta semana: o que o plenário votou e quais projetos andaram. A mesma API oficial da Câmara dos cadernos de gastos e votos, recortada pelo período que interessa — o agora."
+        resumo="O Congresso desta semana: o que o plenário votou e quais projetos andaram. A mesma API oficial da Câmara dos cadernos de gastos e votos, recortada pelo período que interessa; o agora."
         referencia={`${curta(dataISO(dias))} a ${curta(dataISO(0))}`}
       />
 

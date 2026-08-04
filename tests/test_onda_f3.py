@@ -1,4 +1,4 @@
-"""Onda F3 — Obrasgov: as obras federais, inclusive as paradas."""
+"""Onda F3, Obrasgov: as obras federais, inclusive as paradas."""
 
 
 async def test_obras_paralisadas_com_flag_de_atraso(api):
@@ -26,7 +26,7 @@ async def test_obras_situacao_invalida_da_400(api):
 
 
 async def test_obras_tolera_strings_vazias_da_fonte(api):
-    # a fonte manda "" onde deveria ser null — nada de 500
+    # a fonte manda "" onde deveria ser null, nada de 500
     resp = await api.get("/v1/obrasgov/obras?uf=GO&situacao=paralisada")
     assert resp.status_code == 200
     creche = next(o for o in resp.json()["dados"] if "Creche" in o["nome"])

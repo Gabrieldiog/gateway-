@@ -53,7 +53,7 @@ export default function CadernoCombustiveis() {
         numero="XXI"
         kicker="ANP · pesquisa semanal"
         titulo="Combustíveis"
-        resumo="Quanto tá a gasolina — e o etanol, o diesel e o botijão — em cada estado e cidade, na média real das coletas da ANP nos postos nas últimas quatro semanas. Do mais barato pro mais caro."
+        resumo="Quanto tá a gasolina (e o etanol, o diesel e o botijão) em cada estado e cidade, na média real das coletas da ANP nos postos nas últimas quatro semanas. Do mais barato pro mais caro."
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -152,7 +152,7 @@ export default function CadernoCombustiveis() {
             </ol>
             <p className="mt-5 border-t border-line pt-3 font-editorial text-sm italic text-muted">
               Média simples das coletas nos postos ({linhas.reduce((s, l) => s + l.coletas, 0).toLocaleString("pt-BR")}{" "}
-              no recorte). O preço do seu posto pode variar — a faixa mín–máx dá a dimensão.
+              no recorte). O preço do seu posto pode variar, a faixa mín–máx dá a dimensão.
             </p>
           </Card>
         </EmTransicao>

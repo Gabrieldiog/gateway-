@@ -48,7 +48,7 @@ export default function CadernoDesmatamento() {
         numero="XXXV"
         kicker="INPE · TerraBrasilis"
         titulo="Desmatamento"
-        resumo="Onde a floresta caiu nas últimas semanas, segundo os satélites do INPE. Alerta é o aviso quente — serve pra fiscalização chegar; a taxa oficial do ano (PRODES) é outra conta, mais lenta e completa."
+        resumo="Onde a floresta caiu nas últimas semanas, segundo os satélites do INPE. Alerta é o aviso quente; serve pra fiscalização chegar; a taxa oficial do ano (PRODES) é outra conta, mais lenta e completa."
         referencia={`últimos ${dias} dias${ultima ? ` · até ${formataData(ultima)}` : ""}`}
       />
 
@@ -85,19 +85,19 @@ export default function CadernoDesmatamento() {
             <Card className="p-4">
               <p className="kicker">alertas na janela</p>
               <p className="num mt-1 text-3xl font-semibold text-erro">
-                {totalAlertas?.toLocaleString("pt-BR") ?? "—"}
+                {totalAlertas?.toLocaleString("pt-BR") ?? "sem dado"}
               </p>
             </Card>
             <Card className="p-4">
               <p className="kicker">área com alerta</p>
               <p className="num mt-1 text-3xl font-semibold text-ink">
-                {areaTotal != null ? km2(areaTotal) : "—"}
+                {areaTotal != null ? km2(areaTotal) : "sem dado"}
               </p>
             </Card>
             <Card className="p-4">
               <p className="kicker">última detecção</p>
               <p className="num mt-1 text-3xl font-semibold text-ink">
-                {ultima ? formataData(ultima) : "—"}
+                {ultima ? formataData(ultima) : "sem dado"}
               </p>
             </Card>
           </div>
@@ -119,7 +119,7 @@ export default function CadernoDesmatamento() {
             </div>
           </div>
           <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
-            Cada linha soma os alertas do <Termo t="deter">DETER</Termo> na janela — do{" "}
+            Cada linha soma os alertas do <Termo t="deter">DETER</Termo> na janela, do{" "}
             <Termo t="corteraso">corte raso</Termo> à mineração. Nuvem esconde: o número é piso,
             não teto.
           </p>
@@ -149,7 +149,7 @@ export default function CadernoDesmatamento() {
               </ul>
             </Card>
           ) : (
-            <Vazio>nenhum alerta na janela — bom sinal (ou muita nuvem).</Vazio>
+            <Vazio>nenhum alerta na janela, bom sinal (ou muita nuvem).</Vazio>
           )}
         </EmTransicao>
       )}

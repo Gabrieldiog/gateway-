@@ -1,4 +1,4 @@
-"""Onda D — enriquecer: os recursos de detalhe que transformam lista em
+"""Onda D, enriquecer: os recursos de detalhe que transformam lista em
 história (perfil, discursos, orientações, itens de compra, juros por banco,
 documentos de emenda e a Ficha do Fornecedor)."""
 

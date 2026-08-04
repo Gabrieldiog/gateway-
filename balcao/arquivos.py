@@ -5,7 +5,7 @@ centenas de chamadas. Os arquivos anuais de dados abertos trazem tudo de uma vez
 - votacoesVotos-{ano}.json (~70MB): todo voto nominal do ano (votação, deputado, voto)
 - votacoes-{ano}.json (~11MB): a descrição e o resultado de cada votação
 
-Baixa os dois e monta um índice em memória por streaming (ijson — pico ~100MB,
+Baixa os dois e monta um índice em memória por streaming (ijson, pico ~100MB,
 não os 300MB de um json.load), servindo qualquer deputado instantâneo depois. O
 índice fica em cache por ano (poucos MB cada), limitado aos anos mais recentes."""
 
@@ -30,7 +30,7 @@ class IndiceAno:
 
 
 def _monta(votos_bytes: bytes, votacoes_bytes: bytes, ano: int) -> IndiceAno:
-    """Parse pesado (CPU-bound) — roda numa thread pra não travar o event loop."""
+    """Parse pesado (CPU-bound), roda numa thread pra não travar o event loop."""
     por_deputado: dict[int, list[dict]] = {}
     for rec in ijson.items(io.BytesIO(votos_bytes), "dados.item"):
         dep = rec.get("deputado_") or {}
@@ -61,7 +61,7 @@ class ArquivoVotos:
     BASE = "https://dadosabertos.camara.leg.br/arquivos"
     MAX_ANOS = 2  # quantos anos manter indexados em memória
     # o arquivo do ano corrente cresce a cada sessão do plenário: o índice
-    # dele vence e é remontado sozinho. Ano fechado é história — não vence.
+    # dele vence e é remontado sozinho. Ano fechado é história, não vence.
     FRESCOR_ANO_CORRENTE = 6 * 3600.0
 
     def __init__(self, client: httpx.AsyncClient, relogio=time.monotonic):

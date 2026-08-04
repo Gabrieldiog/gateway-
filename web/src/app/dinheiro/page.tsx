@@ -64,9 +64,9 @@ function DocumentosDaEmenda({ codigo }: { codigo: string }) {
         <li key={`${d.documento_resumido}-${i}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
           <span className="num w-20 shrink-0 text-xs text-muted">{formataData(d.data)}</span>
           <span className={`num w-24 shrink-0 text-xs font-semibold uppercase tracking-wider ${corFase(d.fase)}`}>
-            {d.fase ?? "—"}
+            {d.fase ?? "sem dado"}
           </span>
-          <span className="num text-xs text-ink">{d.documento_resumido ?? "—"}</span>
+          <span className="num text-xs text-ink">{d.documento_resumido ?? "sem dado"}</span>
           {d.especie && <span className="text-xs text-muted">{d.especie}</span>}
         </li>
       ))}
@@ -163,11 +163,11 @@ function Emendas({ ano, setAno }: { ano: number; setAno: (ano: number) => void }
                   </div>
                   <div className="text-right">
                     <p className="num text-sm text-ink">
-                      {e.valor_empenhado ? formataReaisCompacto(e.valor_empenhado) : "—"}
+                      {e.valor_empenhado ? formataReaisCompacto(e.valor_empenhado) : "sem dado"}
                       <span className="ml-1 text-xs text-muted">empenhado</span>
                     </p>
                     <p className="num text-xs text-muted">
-                      pago {e.valor_pago ? formataReaisCompacto(e.valor_pago) : "—"}
+                      pago {e.valor_pago ? formataReaisCompacto(e.valor_pago) : "sem dado"}
                     </p>
                   </div>
                 </div>

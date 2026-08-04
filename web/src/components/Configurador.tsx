@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-// amostra ilustrativa só pra mostrar como um filtro molda a resposta —
+// amostra ilustrativa só pra mostrar como um filtro molda a resposta,
 // não é uma chamada real (por isso vem rotulada como amostra).
 const AMOSTRA = [
   { nome: "Ana Ribeiro", partido: "PSB", uf: "SP" },
