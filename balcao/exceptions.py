@@ -55,7 +55,7 @@ class ChaveFaltando(BalcaoError):
 class ErroUpstream(BalcaoError):
     """A fonte upstream falhou ou respondeu algo inesperado. Alem da mensagem,
     os detalhes dizem ao cliente se a falha e passageira e quando vale tentar
-    de novo — e o que o ErroBox da view usa pra contagem regressiva."""
+    de novo, e o que o ErroBox da view usa pra contagem regressiva."""
 
     status_code = 502
 
@@ -71,7 +71,7 @@ class ErroUpstream(BalcaoError):
             # nao encontrado na fonte e um 404 nosso, nao falha de gateway
             self.status_code = 404
             mensagem = (
-                f"nao encontrado na fonte {fonte!r} — o dado pode nao existir "
+                f"nao encontrado na fonte {fonte!r}, o dado pode nao existir "
                 "ou o orgao ainda nao publicou esse recorte"
             )
         elif circuito_aberto:
@@ -84,8 +84,8 @@ class ErroUpstream(BalcaoError):
             detalhes["tente_em_s"] = tente_em_s or 30
         else:
             mensagem = (
-                f"a fonte oficial {fonte!r} esta fora do ar ou respondeu com erro "
-                "— e comum em API de governo e costuma se resolver sozinho em minutos"
+                f"a fonte oficial {fonte!r} esta fora do ar ou respondeu com erro; "
+                "e comum em API de governo e costuma se resolver sozinho em minutos"
             )
             detalhes["passageiro"] = True
             detalhes["tente_em_s"] = tente_em_s or 15
