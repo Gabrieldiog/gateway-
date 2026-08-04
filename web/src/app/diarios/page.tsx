@@ -12,7 +12,7 @@ import { caminho, formataData } from "@/lib/api";
 import { CAPITAIS, UFS } from "@/lib/ufs";
 import type { DiarioOficial, FonteDado, Municipio, NormalizedResponse } from "@/lib/types";
 
-// as buscas que rendem história — um toque e a pauta abre
+// as buscas que rendem história, um toque e a pauta abre
 const SUGESTOES = [
   "“dispensa de licitação”",
   "nomeação",
@@ -52,7 +52,7 @@ export default function CadernoDiarios() {
         numero="XXIX"
         kicker="Querido Diário · Open Knowledge Brasil"
         titulo="Diários Oficiais"
-        resumo="O papel oficial da sua prefeitura, aberto pra busca: digite um termo — o nome de uma empresa, “dispensa de licitação”, uma nomeação — e leia os trechos exatos onde ele aparece, dia a dia. Aspas buscam a frase exata."
+        resumo="O papel oficial da sua prefeitura, aberto pra busca: digite um termo (o nome de uma empresa, “dispensa de licitação”, uma nomeação) e leia os trechos exatos onde ele aparece, dia a dia. Aspas buscam a frase exata."
       />
 
       <form
@@ -117,7 +117,7 @@ export default function CadernoDiarios() {
 
       {!busca ? (
         <Vazio>
-          escolha a cidade, digite um termo e leia o diário oficial dela — a cobertura passa de
+          escolha a cidade, digite um termo e leia o diário oficial dela; a cobertura passa de
           400 municípios e cresce.
         </Vazio>
       ) : r.erro ? (
@@ -206,14 +206,14 @@ export default function CadernoDiarios() {
       ) : (
         <Vazio>
           {aviso ??
-            "nada encontrado — pode ser falta de cobertura da cidade ou o termo não aparece."}
+            "nada encontrado; pode ser falta de cobertura da cidade ou o termo não aparece."}
         </Vazio>
       )}
 
       <SeloFonte
         fonte={
           fonte ?? {
-            nome: "Querido Diário — Open Knowledge Brasil",
+            nome: "Querido Diário, Open Knowledge Brasil",
             url: "https://queridodiario.ok.org.br",
             nota: "Projeto da sociedade civil que liberta os diários oficiais municipais: coleta, extrai o texto e abre a busca.",
           }

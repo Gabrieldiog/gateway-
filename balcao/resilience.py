@@ -55,7 +55,7 @@ class CircuitBreaker:
 
     @property
     def restante(self) -> float:
-        """Segundos ate a proxima sondagem — vira o 'tente de novo em Xs'
+        """Segundos ate a proxima sondagem; vira o 'tente de novo em Xs'
         que o cliente mostra pro leitor."""
         if self._aberto_em is None:
             return 0.0

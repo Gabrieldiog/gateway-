@@ -34,7 +34,7 @@ async def test_arrecadacao_total_inclui_contribuicoes(api):
     # arrecadação total = impostos+taxas (1.1) + contribuições (1.2)
     assert Decimal(fin["receita_contribuicoes"]) == Decimal("1221000000000")
     assert Decimal(fin["arrecadacao_total"]) == Decimal("940000000000") + Decimal("1221000000000")
-    # e é bem maior que só impostos — é a diferença que confunde quem compara
+    # e é bem maior que só impostos; é a diferença que confunde quem compara
     assert Decimal(fin["arrecadacao_total"]) > Decimal(fin["receita_impostos"])
 
 

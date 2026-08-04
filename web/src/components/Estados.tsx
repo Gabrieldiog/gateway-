@@ -27,7 +27,7 @@ export function Esqueleto({ linhas = 5 }: { linhas?: number }) {
 }
 
 // traduz a falha pro leitor: quem caiu, se é passageiro e o que vai
-// acontecer — com contagem regressiva e nova tentativa sozinha quando a
+// acontecer, com contagem regressiva e nova tentativa sozinha quando a
 // falha se declara temporária (fonte fora do ar volta sem ninguém apertar nada)
 function explicaErro(erro: BalcaoError): { titulo: string; corpo: string } {
   const fonte = nomeDaFonte(erro.detalhes?.fonte as string | undefined);
@@ -36,14 +36,14 @@ function explicaErro(erro: BalcaoError): { titulo: string; corpo: string } {
     return {
       titulo: `${F} falhou várias vezes seguidas`,
       corpo:
-        "Demos uma pausa nas chamadas pra não sobrecarregar o órgão. Em instantes a gente sonda de novo — se a fonte voltou, tudo reaparece sozinho.",
+        "Demos uma pausa nas chamadas pra não sobrecarregar o órgão. Em instantes a gente sonda de novo, se a fonte voltou, tudo reaparece sozinho.",
     };
   }
   if (erro.status === 502) {
     return {
       titulo: `${F} está fora do ar agora`,
       corpo:
-        "Isso é comum em API de governo e costuma se resolver sozinho, em minutos. Não é nada do seu lado — a página tenta de novo automaticamente.",
+        "Isso é comum em API de governo e costuma se resolver sozinho, em minutos. Não é nada do seu lado, a página tenta de novo automaticamente.",
     };
   }
   if (erro.status === 429) {
@@ -56,13 +56,13 @@ function explicaErro(erro: BalcaoError): { titulo: string; corpo: string } {
     return {
       titulo: "Falta uma chave no servidor",
       corpo:
-        "Essa fonte exige uma chave de API gratuita que não está configurada aqui. Não depende de você — é ajuste do servidor.",
+        "Essa fonte exige uma chave de API gratuita que não está configurada aqui. Não depende de você; é ajuste do servidor.",
     };
   }
   if (erro.status === 404) {
     return {
       titulo: "Não encontrado na fonte",
-      corpo: `Esse recorte pode não existir — ou ${fonte} ainda não publicou o dado (arquivos diários costumam sair ao longo do dia).`,
+      corpo: `Esse recorte pode não existir, ou ${fonte} ainda não publicou o dado (arquivos diários costumam sair ao longo do dia).`,
     };
   }
   if (erro.status === 400) {
@@ -71,7 +71,7 @@ function explicaErro(erro: BalcaoError): { titulo: string; corpo: string } {
   if (erro.status === 0) {
     return {
       titulo: "Sem conexão com o Balcão",
-      corpo: "Não conseguimos falar com o servidor. Confira sua internet — a página tenta de novo sozinha.",
+      corpo: "Não conseguimos falar com o servidor. Confira sua internet, a página tenta de novo sozinha.",
     };
   }
   return { titulo: "Algo deu errado", corpo: erro.message };
@@ -168,7 +168,7 @@ export function Vazio({ children }: { children: React.ReactNode }) {
   );
 }
 
-// quando um filtro muda, o useBalcao segura os dados antigos enquanto rebusca —
+// quando um filtro muda, o useBalcao segura os dados antigos enquanto rebusca,
 // sem isso a tela parece travada. O conteúdo velho esmaece e o mesmo spinner do
 // carregando aparece centralizado por cima, deixando claro que tem coisa vindo.
 export function EmTransicao({ ativo, children }: { ativo: boolean; children: React.ReactNode }) {

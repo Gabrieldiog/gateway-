@@ -14,7 +14,7 @@ import type {
 } from "@/lib/types";
 
 // o coração vivo da capa: uma fita de agência rolando com os números de
-// agora e um painel que se atualiza sozinho — câmbio a cada 30s, energia a
+// agora e um painel que se atualiza sozinho, câmbio a cada 30s, energia a
 // cada 60s, o resto no ritmo de cada fonte.
 
 const PARES = "USD-BRL,EUR-BRL,BTC-BRL";

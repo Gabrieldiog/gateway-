@@ -66,7 +66,7 @@ function CartaoMedicao({ m, grande = false }: { m: MedicaoReservatorio; grande?:
         </>
       ) : (
         <p className="mt-1.5 font-editorial text-sm italic text-muted">
-          a fonte não informa o percentual — acompanhe pela cota e pela evolução abaixo.
+          a fonte não informa o percentual, acompanhe pela cota e pela evolução abaixo.
         </p>
       )}
       <div className="num mt-2 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted">
@@ -80,7 +80,7 @@ function CartaoMedicao({ m, grande = false }: { m: MedicaoReservatorio; grande?:
   );
 }
 
-// os últimos 30 dias em barras — % quando a fonte dá, senão a cota (normalizada)
+// os últimos 30 dias em barras, % quando a fonte dá, senão a cota (normalizada)
 function Evolucao({ codigo }: { codigo: string }) {
   const r = useBalcao<NormalizedResponse<MedicaoReservatorio>>(
     caminho("ana/historico", { codigo, dias: 30 }),
@@ -92,7 +92,7 @@ function Evolucao({ codigo }: { codigo: string }) {
   if (!medidas.length) {
     return (
       <p className="font-editorial text-sm italic text-muted">
-        sem medições no último mês — açude pequeno pode passar meses sem informar.
+        sem medições no último mês, açude pequeno pode passar meses sem informar.
       </p>
     );
   }
@@ -179,7 +179,7 @@ export default function CadernoAgua() {
         numero="XXXI"
         kicker="ANA · Sala de Situação"
         titulo="Água"
-        resumo="Quanta água tem nos reservatórios do país — das hidrelétricas que acendem a luz aos açudes do Semiárido e ao Cantareira que abastece São Paulo. Medição diária informada à ANA, reservatório por reservatório."
+        resumo="Quanta água tem nos reservatórios do país, das hidrelétricas que acendem a luz aos açudes do Semiárido e ao Cantareira que abastece São Paulo. Medição diária informada à ANA, reservatório por reservatório."
         referencia={dataMed ? `medição de ${formataData(dataMed)}` : undefined}
       />
 
@@ -196,7 +196,7 @@ export default function CadernoAgua() {
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
           O número grande é o <Termo t="volumeutil">volume útil</Termo>: quanto da água aproveitável
           ainda está lá. Verde é folga, ocre é atenção, vermelho é seca. E a seta diz se a{" "}
-          <Termo t="afluencia">afluência</Termo> está vencendo a <Termo t="defluencia">defluência</Termo> —
+          <Termo t="afluencia">afluência</Termo> está vencendo a <Termo t="defluencia">defluência</Termo>,
           ou seja, se o reservatório enche ou baixa.
         </p>
         {principais.erro ? (
@@ -220,7 +220,7 @@ export default function CadernoAgua() {
         <h2 className="mb-1 font-display text-lg font-semibold text-ink">Procure o seu</h2>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
           São mais de 700 reservatórios monitorados. Escolha o sistema e ache o que abastece a sua
-          região — a <Termo t="cota">cota</Termo> e a evolução dos últimos 30 dias vêm juntas.
+          região, a <Termo t="cota">cota</Termo> e a evolução dos últimos 30 dias vêm juntas.
         </p>
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div className="-mx-1 overflow-x-auto px-1">
@@ -292,7 +292,7 @@ export default function CadernoAgua() {
         ) : lista.erro ? (
           <ErroBox erro={lista.erro} aoTentar={lista.recarregar} />
         ) : (
-          <Vazio>escolha um reservatório na lista — ou toque numa sugestão.</Vazio>
+          <Vazio>escolha um reservatório na lista, ou toque numa sugestão.</Vazio>
         )}
       </section>
 

@@ -39,7 +39,7 @@ export async function apiGet<T>(url: string, signal?: AbortSignal): Promise<T> {
 const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 export function formataBRL(valor: string | number): string {
   const n = typeof valor === "string" ? Number(valor) : valor;
-  return Number.isFinite(n) ? brl.format(n) : "—";
+  return Number.isFinite(n) ? brl.format(n) : "sem dado";
 }
 
 // escolhe a unidade certa pro valor: a União vem em trilhões, um estado em
@@ -63,7 +63,7 @@ export function formataReaisCompacto(valor: string | number): string {
 }
 
 export function formataData(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "sem dado";
   const [a, m, d] = iso.split("-");
   return d ? `${d}/${m}/${a}` : iso;
 }

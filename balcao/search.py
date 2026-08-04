@@ -1,5 +1,5 @@
 """Núcleo cross-fonte, sem FastAPI: a busca em leque e a agregação de
-gastos. Reusado pelo router HTTP e pelo MCP server — o mesmo miolo
+gastos. Reusado pelo router HTTP e pelo MCP server, o mesmo miolo
 respondendo por duas portas."""
 
 import asyncio
@@ -126,7 +126,7 @@ async def votos_deputado(
     alvos = recentes.dados
 
     # cada votos é uma chamada lenta da Câmara; dispara todas em paralelo com
-    # teto de tempo por chamada — a que estourar é descartada, não trava o lote.
+    # teto de tempo por chamada, a que estourar é descartada, não trava o lote.
     async def busca_votos(vid: str):
         return await asyncio.wait_for(camara.fetch(f"votacoes/{vid}/votos"), timeout=6)
 
@@ -196,7 +196,7 @@ async def votos_deputado_ano(camara: BaseConnector, deputado: str, ano: int, arq
 async def votos_senador(senado: BaseConnector, senador: str) -> dict:
     """O histórico de voto de um senador. Diferente da Câmara, o Senado
     entrega tudo numa chamada só (a API nova filtra por parlamentar), então
-    aqui não há fan-out — e o histórico vem completo, não só o recente."""
+    aqui não há fan-out, e o histórico vem completo, não só o recente."""
     alvo = senador.strip()
     if alvo.isdigit():
         detalhe = await senado.fetch(f"senadores/{int(alvo)}")
@@ -237,7 +237,7 @@ async def _municipio_por_nome(ibge: BaseConnector, nome: str, uf: str | None) ->
     if len(candidatos) > 1 and not sigla:
         ufs = sorted({m["uf"] for m in candidatos if m.get("uf")})
         raise ParametroInvalido(
-            f"arrecadacao?ente={nome}", ["uf"], [f"{nome} existe em {', '.join(ufs)} — informe a uf"]
+            f"arrecadacao?ente={nome}", ["uf"], [f"{nome} existe em {', '.join(ufs)}; informe a uf"]
         )
     return candidatos[0]["id"]
 
@@ -363,8 +363,8 @@ async def ranking_arrecadacao(
 
 
 async def arrecadacao_todas_esferas(tesouro: BaseConnector, ano: int) -> dict:
-    """Soma as 55 maiores contas publicas do pais — Uniao + 27 estados + 27
-    capitais — direto dos balancos do SICONFI. E a versao honesta do painel
+    """Soma as 55 maiores contas publicas do pais, Uniao + 27 estados + 27
+    capitais, direto dos balancos do SICONFI. E a versao honesta do painel
     'todas as esferas': cada parcela e um balanco oficial de verdade. Os
     municipios fora das capitais ficam declaradamente de fora (nao existe
     agregado oficial e somar 5.570 balancos por visita nao e viavel)."""
@@ -416,7 +416,7 @@ async def arrecadacao_todas_esferas(tesouro: BaseConnector, ano: int) -> dict:
 
 
 # modalidade de aplicação = dígitos 3-4 da natureza da despesa (MTO). Nos
-# repasses a ente, o favorecido do empenho É o executor da obra — resolve
+# repasses a ente, o favorecido do empenho É o executor da obra: resolve
 # sem nenhuma chamada externa.
 MODALIDADES_REPASSE = {
     "30": "transferência a estado",
@@ -431,7 +431,7 @@ MODALIDADES_REPASSE = {
     "46": "transferência a município",
 }
 MODALIDADES_INTERNAS = {"91", "92", "93", "94", "95", "96"}
-# quantos empenhos por obra enriquecer no SIAFI — protege o rate limit da CGU
+# quantos empenhos por obra enriquecer no SIAFI: protege o rate limit da CGU
 MAX_CONSULTAS_SIAFI = 8
 
 
@@ -443,7 +443,7 @@ def _modalidade(natureza: str | None) -> str | None:
 async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra: str) -> dict:
     """O follow-the-money de uma obra: os empenhos com favorecido resolvido
     em cascata (Obrasgov → regra orçamentária → CSV SICONV → SIAFI) e o
-    contrato final — a empreiteira que o ente contratou."""
+    contrato final, a empreiteira que o ente contratou."""
     obrasgov = conectores["obrasgov"]
 
     async def tenta(coro):
@@ -474,7 +474,7 @@ async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra
     executor_codigo = (obra or {}).get("executor_codigo") or ""
 
     # o CSV do SICONV tem a nota que o Obrasgov esconde: casa por UG + valor
-    # (numérico — o CSV diz "477500" e o Obrasgov "477500.0")
+    # (numérico, o CSV diz "477500" e o Obrasgov "477500.0")
     def mesmo_valor(a, b):
         return bool(a and b) and Decimal(a) == Decimal(b)
 
@@ -500,7 +500,7 @@ async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra
                 break
 
     # com UG + nota dá pra pedir o detalhe no SIAFI (gestão 00001, a da
-    # administração direta — UG com gestão própria volta vazio e segue a vida)
+    # administração direta, UG com gestão própria volta vazio e segue a vida)
     transparencia = conectores.get("transparencia")
 
     async def detalhe_siafi(e: dict) -> dict | None:
@@ -513,7 +513,7 @@ async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra
             erros.setdefault("transparencia", exc.mensagem)
             return None
 
-    # o orçamento de consultas vale só pra quem TEM ug+nota — empenho sem nota
+    # o orçamento de consultas vale só pra quem TEM ug+nota, empenho sem nota
     # não gasta vaga, e empenho consultável depois da 8ª posição não fica de fora
     elegiveis = [
         i for i, e in enumerate(empenhos) if transparencia and e.get("ug") and e.get("nota")
@@ -539,7 +539,7 @@ async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra
             e["origem"] = "siafi"
         elif mod in MODALIDADES_REPASSE and executor:
             e["favorecido"] = executor
-            # o codigo do executor é o CNPJ sem zeros à esquerda — SÓ em repasse
+            # o codigo do executor é o CNPJ sem zeros à esquerda, SÓ em repasse
             e["favorecido_doc"] = executor_codigo.zfill(14) if executor_codigo.isdigit() else None
             e["origem"] = "repasse"
         elif mod in MODALIDADES_INTERNAS:
@@ -561,9 +561,9 @@ async def dinheiro_da_obra(conectores: dict[str, BaseConnector], siconv, id_obra
         "meta": {
             "fontes_consultadas": ["obrasgov", "siconv", "transparencia"],
             "fonte_contratos": {
-                "nome": "SICONV/Transferegov — contratos das transferências",
+                "nome": "SICONV/Transferegov, contratos das transferências",
                 "url": "https://portaldatransparencia.gov.br/download-de-dados",
-                "nota": "CSV oficial diário que liga a obra ao contrato assinado pelo ente — a empreiteira, com CNPJ e valor.",
+                "nota": "CSV oficial diário que liga a obra ao contrato assinado pelo ente, a empreiteira, com CNPJ e valor.",
             },
         },
     }

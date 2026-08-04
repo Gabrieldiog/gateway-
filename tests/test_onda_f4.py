@@ -1,11 +1,11 @@
-"""Onda F4 — ANA/SAR: quanta água tem nos reservatórios do país."""
+"""Onda F4, ANA/SAR: quanta água tem nos reservatórios do país."""
 
 
 async def test_principais_junta_os_grandes(api):
     resp = await api.get("/v1/ana/principais")
     assert resp.status_code == 200
     corpo = resp.json()
-    # 10 pedidos, todos respondem com a fixture — e normalizados
+    # 10 pedidos, todos respondem com a fixture, e normalizados
     assert corpo["meta"]["pedidos"] == 10
     assert corpo["total"] == 10
     m = corpo["dados"][0]
@@ -88,7 +88,7 @@ async def test_historico_nordeste_e_a_terceira_tabela(api):
     resp = await api.get("/v1/ana/historico?codigo=12112&dias=7")
     corpo = resp.json()
     m = corpo["dados"][0]
-    # o Nordeste fala "Volume (%)" e tem "Capacidade (hm³)" — que NÃO é volume
+    # o Nordeste fala "Volume (%)" e tem "Capacidade (hm³)", que NÃO é volume
     assert m["volume_util_pct"] == 33.22
     assert m["volume_hm3"] == 2225.82
     assert m["cota"] == 91.56

@@ -12,10 +12,10 @@ import { caminho, formataData } from "@/lib/api";
 import type { FonteDado, NormalizedResponse, TituloPublico } from "@/lib/types";
 
 const brl = (v: string | null) =>
-  v == null ? "—" : `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  v == null ? "sem dado" : `R$ ${Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const pct = (v: string | null) =>
-  v == null ? "—" : `${Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
+  v == null ? "sem dado" : `${Number(v).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 
 export default function CadernoTitulos() {
   const [tipo, setTipo] = useState("");
@@ -33,7 +33,7 @@ export default function CadernoTitulos() {
         numero="XXII"
         kicker="Tesouro Nacional"
         titulo="Títulos públicos"
-        resumo="A taxa e o preço do dia de cada título do Tesouro Direto — Selic, IPCA+, Prefixado, Educa+ e Renda+. O Balcão garimpa a foto mais recente de um arquivo histórico de 14 MB sem ordem nenhuma."
+        resumo="A taxa e o preço do dia de cada título do Tesouro Direto, Selic, IPCA+, Prefixado, Educa+ e Renda+. O Balcão garimpa a foto mais recente de um arquivo histórico de 14 MB sem ordem nenhuma."
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">

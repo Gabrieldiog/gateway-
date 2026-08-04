@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// alguns órgãos servem PDF como binary/octet-stream — no iOS isso vira aba
+// alguns órgãos servem PDF como binary/octet-stream, no iOS isso vira aba
 // em branco e no Android um download que o sistema não sabe abrir. Este
 // proxy corrige o Content-Type pela extensão e dá um nome de arquivo
 // amigável, aí o visualizador nativo dos dois assume.
-// Allowlist rígida de hosts: proxy aberto é SSRF — só passa quem conhecemos.
+// Allowlist rígida de hosts: proxy aberto é SSRF, só passa quem conhecemos.
 const HOSTS_PERMITIDOS = new Set([
   "data.queridodiario.ok.org.br",
   "querido-diario.nyc3.cdn.digitaloceanspaces.com",

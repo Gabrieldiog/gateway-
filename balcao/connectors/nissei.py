@@ -1,6 +1,6 @@
-"""Farmácias Nissei (plataforma RetailON/Inteliger — NÃO é VTEX): a rede com mais
+"""Farmácias Nissei (plataforma RetailON/Inteliger, NÃO é VTEX): a rede com mais
 lojas físicas em Goiânia (uma 24h). Prova que o mesmo contrato de conector cobre
-uma plataforma diferente da VTEX — a graça do gateway. O fluxo tem 3 passos: pega
+uma plataforma diferente da VTEX, a graça do gateway. O fluxo tem 3 passos: pega
 o token CSRF na home, busca os produtos (índice Elasticsearch) e pega os preços
 num segundo POST. Preço do site da rede, que tem loja em Goiânia (preco_tipo local)."""
 
@@ -21,7 +21,7 @@ FONTE = {
     "nome": "Farmácias Nissei",
     "url": "https://www.farmaciasnissei.com.br",
     "preco_tipo": "local",
-    "nota": "Preço do site da rede (RetailON), que tem lojas em Goiânia — é preço de internet e pode diferir do balcão.",
+    "nota": "Preço do site da rede (RetailON), que tem lojas em Goiânia; é preço de internet e pode diferir do balcão.",
 }
 
 

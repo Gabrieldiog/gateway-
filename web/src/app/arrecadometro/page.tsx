@@ -48,7 +48,7 @@ export default function CadernoArrecadometro() {
     nivel !== "todas" && ente ? caminho("arrecadacao", { ente, ano: baseAno }) : null,
   );
   // o modo "todas as esferas" soma de verdade os 55 balanços do SICONFI
-  // (União + estados + capitais) — a consulta é pesada, o gateway cacheia
+  // (União + estados + capitais), a consulta é pesada, o gateway cacheia
   const geral = useBalcao<TodasEsferasOut>(
     nivel === "todas" ? caminho("arrecadacao/geral", { ano: baseAno }) : null,
   );
@@ -56,7 +56,7 @@ export default function CadernoArrecadometro() {
   const impostos = arr.dados?.impostos ?? [];
 
   // ao trocar de ente tenta de novo o ano corrente; se as contas ainda não
-  // fecharam, cai pro anterior — sem ano cravado, vira com o calendário
+  // fecharam, cai pro anterior; sem ano cravado, vira com o calendário
   useEffect(() => setBaseAno(ANO_ATUAL), [ente]);
   useEffect(() => {
     if (baseAno !== ANO_ATUAL) return;
@@ -95,7 +95,7 @@ export default function CadernoArrecadometro() {
         numero="XIII"
         kicker="ao vivo · estimado"
         titulo="Arrecadômetro"
-        resumo={`Quanto o Brasil (ou um estado, ou uma cidade) já arrecadou em ${ANO_ATUAL}, subindo a cada instante. Igual ao painel da Associação Comercial de SP: é o valor oficial do último ano projetado no tempo — estimativa, não medição por segundo (esse dado não existe).`}
+        resumo={`Quanto o Brasil (ou um estado, ou uma cidade) já arrecadou em ${ANO_ATUAL}, subindo a cada instante. Igual ao painel da Associação Comercial de SP: é o valor oficial do último ano projetado no tempo, estimativa, não medição por segundo (esse dado não existe).`}
         referencia={base > 0 ? `ano-base ${baseAno}` : undefined}
       />
 
@@ -164,7 +164,7 @@ export default function CadernoArrecadometro() {
               .filter((i) => i.sigla !== "OUTROS")
               .map((i) => (
                 <option key={i.sigla} value={i.sigla}>
-                  {i.sigla} — {i.nome}
+                  {i.sigla}, {i.nome}
                 </option>
               ))}
           </Seletor>
@@ -214,7 +214,7 @@ export default function CadernoArrecadometro() {
         fonte={
           nivel === "todas"
             ? {
-                nome: "Tesouro Nacional — SICONFI (55 balanços somados)",
+                nome: "Tesouro Nacional, SICONFI (55 balanços somados)",
                 url: "https://siconfi.tesouro.gov.br",
                 nota: "União + 27 estados + 27 capitais, balanço a balanço. Os municípios fora das capitais não entram: não existe agregado oficial deles.",
               }
@@ -281,14 +281,14 @@ function Painel({
       <p className="mt-5 max-w-[64ch] border-t border-line pt-3 font-editorial text-sm italic text-muted">
         Estimativa ao vivo: o total oficial de <strong className="not-italic">{baseAno}</strong> (R${" "}
         {baseEsc.valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} {baseEsc.unidade})
-        projetado nos segundos do ano — a mesma lógica do Impostômetro. O dado é real; o movimento
+        projetado nos segundos do ano, a mesma lógica do Impostômetro. O dado é real; o movimento
         por segundo é projeção, porque arrecadação por segundo não existe em lugar nenhum.
         {esferas && (
           <>
             {" "}
             Aqui somamos, balanço a balanço, {esferas.entes_somados} contas oficiais do SICONFI;
             os municípios fora das capitais ficam de fora porque não existe agregado oficial deles
-            — painéis como o Impostômetro os estimam por cima.
+, painéis como o Impostômetro os estimam por cima.
           </>
         )}
       </p>

@@ -195,7 +195,7 @@ class SenadoConnector(BaseConnector):
         return VotoSenador(
             votacao_id=str(it.get("codigoSessaoVotacao") or it.get("codigoVotacaoSve") or ""),
             data=para_data(it.get("dataSessao")),
-            voto=MAP_VOTO_SENADO.get(sigla, sigla or "—"),
+            voto=MAP_VOTO_SENADO.get(sigla, sigla or "sem dado"),
             descricao=limpa_texto(it.get("ementa") or it.get("descricaoVotacao")),
             materia=it.get("identificacao") or None,
             aprovada=(resultado == "A") if resultado in ("A", "R") else None,

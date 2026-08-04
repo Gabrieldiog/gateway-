@@ -1,7 +1,7 @@
-"""INPE — Programa Queimadas: focos de incêndio no Brasil detectados por
+"""INPE, Programa Queimadas: focos de incêndio no Brasil detectados por
 satélite. O dataserver serve um CSV por dia (Brasil inteiro) que vai enchendo
 ao longo das horas. O conector baixa o arquivo do dia e agrega os focos por
-estado ou bioma — de milhares de linhas cruas pra um ranking pronto."""
+estado ou bioma, de milhares de linhas cruas pra um ranking pronto."""
 
 import csv
 import io
@@ -37,17 +37,17 @@ CLASSES_DETER = {
 }
 
 FONTE_DETER = {
-    "nome": "INPE — DETER (TerraBrasilis)",
+    "nome": "INPE, DETER (TerraBrasilis)",
     "url": "https://terrabrasilis.dpi.inpe.br/app/dashboard/alerts/legal/amazon/aggregated/",
     "nota": (
         "Alertas de desmatamento detectados por satélite, quase em tempo real. "
-        "Alerta serve pra fiscalização acudir — a taxa oficial do ano é outra "
+        "Alerta serve pra fiscalização acudir, a taxa oficial do ano é outra "
         "conta (PRODES). Nuvem esconde e alerta pequeno escapa: é piso, não teto."
     ),
 }
 
 FONTE = {
-    "nome": "INPE — Programa Queimadas",
+    "nome": "INPE, Programa Queimadas",
     "url": "https://terrabrasilis.dpi.inpe.br/queimadas/portal/",
     "nota": (
         "Focos de incêndio detectados por satélite e consolidados pelo INPE. O "
@@ -100,7 +100,7 @@ class InpeConnector(BaseConnector):
         frp: dict[str, float] = {}
         total = 0
         for linha in csv.DictReader(io.StringIO(texto)):
-            nome = limpa_texto(linha.get(coluna)) or "—"
+            nome = limpa_texto(linha.get(coluna)) or "sem dado"
             focos[nome] = focos.get(nome, 0) + 1
             frp[nome] = frp.get(nome, 0.0) + _num(linha.get("frp"))
             total += 1

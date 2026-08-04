@@ -1,4 +1,4 @@
-"""Onda F6 — Consumidor: o ranking oficial de reclamações do Banco Central."""
+"""Onda F6, Consumidor: o ranking oficial de reclamações do Banco Central."""
 
 
 async def test_sem_ano_vem_o_periodo_mais_recente(api):
@@ -62,7 +62,7 @@ async def test_consorcio_fala_outro_dialeto_de_colunas(api):
     itens = resp.json()["dados"]
     ademicon = next(i for i in itens if "ADEMICON" in i["instituicao"])
     # "Administradora de consórcio" + "reclamações reguladas procedentes" +
-    # "clientes Consorciados" — e sem coluna Categoria o ranking é um só
+    # "clientes Consorciados", e sem coluna Categoria o ranking é um só
     assert ademicon["posicao"] == 1
     assert ademicon["indice"] == 34.56
     assert ademicon["reclamacoes_procedentes"] == 17

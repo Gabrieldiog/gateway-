@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// igual ao count-up, mas anima do valor ATUAL até o novo alvo — então quando
+// igual ao count-up, mas anima do valor ATUAL até o novo alvo; então quando
 // a cotação muda de 5,18 pra 5,19 o número desliza entre os dois, sem voltar a
 // zero. Na primeira montagem conta de 0 (efeito de entrada). Respeita
 // prefers-reduced-motion.

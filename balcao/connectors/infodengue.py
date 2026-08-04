@@ -1,6 +1,6 @@
 """InfoDengue (Fiocruz/FGV): alerta de dengue, zika e chikungunya por
-município, semana a semana. A fonte devolve o ano inteiro com nowcasting —
-as semanas recentes são estimativa de modelo, não contagem fechada — e
+município, semana a semana. A fonte devolve o ano inteiro com nowcasting,
+as semanas recentes são estimativa de modelo, não contagem fechada; e
 datas em epoch de milissegundos. O conector traduz tudo pro schema comum."""
 
 from datetime import date, datetime, timezone
@@ -17,7 +17,7 @@ NIVEIS = {1: "verde", 2: "amarelo", 3: "laranja", 4: "vermelho"}
 PARAMS = {"municipio", "doenca", "ano"}
 
 FONTE = {
-    "nome": "InfoDengue — Fiocruz / FGV",
+    "nome": "InfoDengue, Fiocruz / FGV",
     "url": "https://info.dengue.mat.br",
     "nota": (
         "Alerta semanal por município. 'Casos estimados' é nowcasting: o modelo "

@@ -5,7 +5,7 @@ import { PromptIA } from "@/components/PromptIA";
 
 // base pública da API pros exemplos de curl. Local aponta pro uvicorn; em
 // produção, BALCAO_PUBLIC_URL aponta pro domínio publicado. Os exemplos abaixo
-// guardam só o caminho (/v1/...) — a base entra aqui, uma vez só.
+// guardam só o caminho (/v1/...), a base entra aqui, uma vez só.
 const BASE = process.env.BALCAO_PUBLIC_URL || "https://balcao-api.onrender.com";
 
 // uma linha de exemplo: curl + url com o path em tinta e a query em destaque
@@ -58,7 +58,7 @@ export default function CadernoDocs() {
         numero="XXV"
         kicker="Desenvolvedores"
         titulo="Como chamar o Balcão"
-        resumo="Tudo que o jornal mostra sai desta API — e ela é sua também. Uma URL para cada coisa, todas no mesmo formato: você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK — só HTTP."
+        resumo="Tudo que o jornal mostra sai desta API, e ela é sua também. Uma URL para cada coisa, todas no mesmo formato: você escolhe a fonte, filtra com nomes nossos e o gateway traduz para o jeito de cada órgão. Sem chave, sem SDK; só HTTP."
       />
 
       <section className="mb-6 rounded-lg border border-accent/30 bg-accent/5 p-6">
@@ -70,7 +70,7 @@ export default function CadernoDocs() {
           <li>
             <span className="num mr-2 text-accent">1.</span>
             Pergunte à API o que ela sabe fazer:{" "}
-            <code className="num text-sm text-accent">curl {BASE}/v1/fontes</code> — vêm
+            <code className="num text-sm text-accent">curl {BASE}/v1/fontes</code>, vêm
             as dezenas de fontes, cada uma com seus recursos e filtros.
           </li>
           <li>
@@ -169,18 +169,18 @@ export default function CadernoDocs() {
         </pre>
         <ul className="mt-4 flex flex-col gap-2 font-editorial text-[1.0rem] leading-relaxed text-ink/80">
           <li>
-            <code className="num text-accent">dados</code> — sempre uma lista, já
+            <code className="num text-accent">dados</code>, sempre uma lista, já
             normalizada (datas em ISO, CNPJ só dígitos, UF padronizada).
           </li>
           <li>
-            <code className="num text-accent">meta.cache</code> —{" "}
+            <code className="num text-accent">meta.cache</code>, {" "}
             <span className="text-ok">hit</span> (veio do cache),{" "}
             <span className="text-accent-2">miss</span> (foi à fonte) ou{" "}
             <span className="text-ocre">stale</span> (a fonte caiu e o Balcão
             serviu o dado recente com aviso).
           </li>
           <li>
-            <code className="num text-accent">meta.descartados</code> — quantos
+            <code className="num text-accent">meta.descartados</code>, quantos
             registros podres foram filtrados sem derrubar o lote.
           </li>
         </ul>
@@ -198,11 +198,11 @@ export default function CadernoDocs() {
         </p>
         <div className="flex flex-col gap-2">
           <Erro codigo="400" nome="filtro inválido">
-            você mandou um parâmetro que o recurso não aceita — a resposta lista os aceitos.
+            você mandou um parâmetro que o recurso não aceita, a resposta lista os aceitos.
             Corrija e repita.
           </Erro>
           <Erro codigo="404" nome="não existe">
-            fonte, recurso ou dado inexistente — inclusive quando o órgão ainda não publicou o
+            fonte, recurso ou dado inexistente; inclusive quando o órgão ainda não publicou o
             arquivo daquele dia.
           </Erro>
           <Erro codigo="429" nome="calma">
@@ -210,12 +210,12 @@ export default function CadernoDocs() {
             cache a seu favor (chamadas idênticas nem contam contra a fonte).
           </Erro>
           <Erro codigo="502" nome="fonte fora do ar">
-            a API do órgão caiu — comum e passageiro. O gateway já tentou 3 vezes com backoff;
+            a API do órgão caiu, comum e passageiro. O gateway já tentou 3 vezes com backoff;
             se tiver cópia recente, responde 200 com <code className="num text-xs">meta.cache: &quot;stale&quot;</code>.
             Tente de novo em instantes.
           </Erro>
           <Erro codigo="503" nome="falta chave">
-            essa fonte exige chave de API (grátis) que não está configurada no servidor —
+            essa fonte exige chave de API (grátis) que não está configurada no servidor,
             veja o <code className="num text-xs">.env.example</code> do repositório.
           </Erro>
         </div>
@@ -233,7 +233,7 @@ export default function CadernoDocs() {
         <p className="mb-4 max-w-[64ch] font-editorial text-[1.05rem] leading-relaxed text-ink/80">
           Se você for usar uma IA (Claude, ChatGPT, Gemini…) pra explorar o Balcão, não
           precisa explicar nada pra ela: copie o prompt abaixo e cole na conversa. Ele ensina a
-          API inteira e — a parte boa — instrui a IA a <em>narrar o que está fazendo</em> a
+          API inteira e, a parte boa, instrui a IA a <em>narrar o que está fazendo</em> a
           cada passo: o que vai buscar, o que veio, e o que aconteceu quando der erro. Você
           nunca fica no escuro.
         </p>

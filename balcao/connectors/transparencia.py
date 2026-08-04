@@ -1,5 +1,5 @@
 """Portal da Transparência (CGU): pra onde vai o dinheiro público federal.
-Primeira fonte com chave do Balcão — o token é grátis (cadastro por e-mail)
+Primeira fonte com chave do Balcão, o token é grátis (cadastro por e-mail)
 e vai no header chave-api-dados, lido do .env. Os quirks da fonte ficam
 todos aqui: valores em formato brasileiro ("8.000,00"), datas dd/mm/aaaa,
 paginação por número fixo e rate limit que muda por horário."""
@@ -16,7 +16,7 @@ from balcao.models import BeneficioSocial, ContratoFederal, DocumentoEmenda, Doc
 from balcao.normalize import limpa_texto, para_data, so_digitos, valor_br
 
 FONTE = {
-    "nome": "Portal da Transparência — CGU",
+    "nome": "Portal da Transparência, CGU",
     "url": "https://portaldatransparencia.gov.br",
     "nota": (
         "Dados oficiais do governo federal publicados pela Controladoria-Geral da "
@@ -93,7 +93,7 @@ class TransparenciaConnector(BaseConnector):
         if len(codigo) < 17 or not codigo[:11].isdigit():
             raise ParametroInvalido(recurso, ["codigo"], exemplo)
         # documento inexistente (ou gestão errada no código) responde 200 com
-        # corpo VAZIO — vira aviso, não erro de parse
+        # corpo VAZIO; vira aviso, não erro de parse
         corpo = await self.get_text(
             f"/despesas/documentos/{codigo}", timeout=30,
             headers={"chave-api-dados": self.chave},
@@ -108,7 +108,7 @@ class TransparenciaConnector(BaseConnector):
         except ValueError as exc:
             raise ErroUpstream(self.name) from exc
         # CPF de pessoa física vem mascarado ("***.680.938-**") e códigos
-        # internos vêm como "-1" ou "RB0000050" — fragmento não é documento
+        # internos vêm como "-1" ou "RB0000050", fragmento não é documento
         digitos = so_digitos(bruto.get("codigoFavorecido"))
         item = DocumentoSiafi(
             documento=codigo,
@@ -206,7 +206,7 @@ class TransparenciaConnector(BaseConnector):
             orgao = (ug.get("orgaoVinculado") or {}).get("nome") or ug.get("nome")
             itens.append(
                 ContratoFederal(
-                    objeto=limpa_texto(c.get("objeto")) or "—",
+                    objeto=limpa_texto(c.get("objeto")) or "sem dado",
                     orgao=limpa_texto(orgao) or None,
                     valor=valor_br(c.get("valorInicialCompra")),
                     inicio=para_data(c.get("dataInicioVigencia")),
@@ -313,7 +313,7 @@ class TransparenciaConnector(BaseConnector):
             bruto = await self._api("/novo-bolsa-familia-por-municipio", consulta)
         else:
             # walk-back: a folha fecha com ~2 meses de atraso e mes nao
-            # publicado volta 200 com lista vazia — recua ate achar dados
+            # publicado volta 200 com lista vazia, recua ate achar dados
             cursor = date.today().replace(day=1)
             bruto = []
             for _ in range(8):

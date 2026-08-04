@@ -153,7 +153,7 @@ export default function CadernoSeguranca() {
         numero="XXXVIII"
         kicker="Sinesp · Ministério da Justiça"
         titulo="Segurança"
-        resumo="As ocorrências criminais que as polícias estaduais informam ao Ministério da Justiça, estado por estado. Cada UF registra do seu jeito, então a comparação tem ressalvas — por isso o ranking entre estados é sempre por 100 mil habitantes."
+        resumo="As ocorrências criminais que as polícias estaduais informam ao Ministério da Justiça, estado por estado. Cada UF registra do seu jeito, então a comparação tem ressalvas; por isso o ranking entre estados é sempre por 100 mil habitantes."
         referencia={`ano-base ${ano}`}
       />
 
@@ -181,7 +181,7 @@ export default function CadernoSeguranca() {
       <section>
         <h2 className="mb-1 font-display text-lg font-semibold text-ink">Entre os estados</h2>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
-          O mesmo crime nos 27 estados, do que mais sofre ao que menos sofre — {uf} aparece
+          O mesmo crime nos 27 estados, do que mais sofre ao que menos sofre; {uf} aparece
           destacado. Sempre por 100 mil habitantes, pra não confundir tamanho com risco.
         </p>
         <RankingEstados ano={ano} ufDestaque={uf} />

@@ -25,7 +25,7 @@ export async function GET(
     });
   } catch {
     return NextResponse.json(
-      { erro: "o Balcão não respondeu — confira se a API está no ar" },
+      { erro: "o Balcão não respondeu, confira se a API está no ar" },
       { status: 502 },
     );
   }

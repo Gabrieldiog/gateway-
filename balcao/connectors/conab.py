@@ -1,5 +1,5 @@
 """CONAB: a safra em curso e o preço pago ao produtor, dos arquivos TXT que
-a companhia publica diariamente (~11h UTC). Não há API — são CSVs com ';',
+a companhia publica diariamente (~11h UTC). Não há API; são CSVs com ';',
 Latin-1 e campos com padding de espaço; cada arquivo tem seu proprio dialeto
 de decimal (ponto no levantamento, vírgula nos preços). O parse mora aqui e
 o cache do gateway poupa os ~6 MB por consulta."""
@@ -12,7 +12,7 @@ from balcao.models import PrecoAgro, SafraConab
 from balcao.normalize import normaliza_uf
 
 FONTE = {
-    "nome": "CONAB — Companhia Nacional de Abastecimento",
+    "nome": "CONAB, Companhia Nacional de Abastecimento",
     "url": "https://portaldeinformacoes.conab.gov.br",
     "nota": (
         "Os levantamentos oficiais de safra (12 por ano agrícola) e os preços "
@@ -85,7 +85,7 @@ class ConabConnector(BaseConnector):
         ultimo_lev = max((l[5] for l in do_ano), default="")
         do_lev = [l for l in do_ano if l[5] == ultimo_lev]
 
-        # soma as safras (1ª/2ª/única) por produto — e por UF quando pedida
+        # soma as safras (1ª/2ª/única) por produto, e por UF quando pedida
         acum: dict[str, dict] = {}
         rotulo_lev = do_lev[0][6] if do_lev else ""
         for l in do_lev:

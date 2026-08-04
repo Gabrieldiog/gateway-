@@ -11,7 +11,7 @@ import { useBalcao } from "@/hooks/useBalcao";
 import { caminho, formataData, formataReaisCompacto } from "@/lib/api";
 import type { FornecedorOut } from "@/lib/types";
 
-// tradução humana das flags do dossiê da Transparência — as vermelhas pedem
+// tradução humana das flags do dossiê da Transparência, as vermelhas pedem
 // atenção, as neutras só contam a relação com o governo
 const ROTULO_FLAG: Record<string, { rotulo: string; alerta?: boolean }> = {
   favorecidoDespesas: { rotulo: "recebeu pagamentos federais" },
@@ -23,20 +23,20 @@ const ROTULO_FLAG: Record<string, { rotulo: string; alerta?: boolean }> = {
   beneficiadoRenunciaFiscal: { rotulo: "beneficiado por renúncia fiscal", alerta: true },
   habilitadoRenunciaFiscal: { rotulo: "habilitado a renúncia fiscal" },
   isentoImuneRenunciaFiscal: { rotulo: "isento/imune (renúncia fiscal)" },
-  sancionadoCEIS: { rotulo: "SANCIONADO — CEIS", alerta: true },
-  sancionadoCNEP: { rotulo: "SANCIONADO — CNEP", alerta: true },
-  sancionadoCEPIM: { rotulo: "SANCIONADO — CEPIM", alerta: true },
-  sancionadoCEAF: { rotulo: "SANCIONADO — CEAF", alerta: true },
+  sancionadoCEIS: { rotulo: "SANCIONADO, CEIS", alerta: true },
+  sancionadoCNEP: { rotulo: "SANCIONADO, CNEP", alerta: true },
+  sancionadoCEPIM: { rotulo: "SANCIONADO, CEPIM", alerta: true },
+  sancionadoCEAF: { rotulo: "SANCIONADO, CEAF", alerta: true },
 };
 
 const FONTES = [
   {
-    nome: "BrasilAPI — dados da Receita Federal",
+    nome: "BrasilAPI, dados da Receita Federal",
     url: "https://brasilapi.com.br",
     nota: "Ficha cadastral pública do CNPJ, espelhada da Receita Federal pela BrasilAPI.",
   },
   {
-    nome: "Portal da Transparência — CGU",
+    nome: "Portal da Transparência, CGU",
     url: "https://portaldatransparencia.gov.br",
     nota: "Vínculos com o governo federal, sanções (CEIS/CNEP) e contratos, direto da Controladoria-Geral da União.",
   },

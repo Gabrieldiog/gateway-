@@ -1,8 +1,8 @@
 """Obrasgov.br (Ministério da Gestão): o cadastro nacional de obras e
-projetos de investimento federais — incluindo as paralisadas, que são a
+projetos de investimento federais, incluindo as paralisadas, que são a
 pauta. Quirks da fonte: a paginação começa em 0, o totalElements MENTE
 (devolve o tamanho da página, não o total), e o valor previsto vem vazio
-com frequência — usamos o campo `last` pra paginar e declaramos o vazio."""
+com frequência, usamos o campo `last` pra paginar e declaramos o vazio."""
 
 from datetime import date
 from decimal import Decimal
@@ -14,11 +14,11 @@ from balcao.models import EmpenhoObra, ObraPublica
 from balcao.normalize import limpa_texto, normaliza_uf, para_data
 
 FONTE = {
-    "nome": "Obrasgov.br — Ministério da Gestão e da Inovação",
+    "nome": "Obrasgov.br, Ministério da Gestão e da Inovação",
     "url": "https://www.gov.br/obrasgov/pt-br",
     "nota": (
         "O cadastro oficial de obras e projetos de investimento com recursos "
-        "federais — situação, valores e datas previstas, obra a obra."
+        "federais, situação, valores e datas previstas, obra a obra."
     ),
 }
 
@@ -34,7 +34,7 @@ TERMINADAS = {"Concluída", "Cancelada"}
 
 
 def _int_ou_none(v: Any) -> int | None:
-    # a fonte manda "" onde deveria ser null — coercao defensiva
+    # a fonte manda "" onde deveria ser null, coercao defensiva
     s = str(v if v is not None else "").strip()
     return int(s) if s.isdigit() else None
 
@@ -47,13 +47,13 @@ PLACEHOLDER = Decimal("0.01")
 class ObrasgovConnector(BaseConnector):
     name = "obrasgov"
     base_url = "https://api.obrasgov.gestao.gov.br/obrasgov/api"
-    description = "Obrasgov: obras federais com situação, valores e datas — inclusive as paralisadas"
+    description = "Obrasgov: obras federais com situação, valores e datas; inclusive as paralisadas"
     resources = {
         "obras": (
             "obras e projetos de investimento federais "
             f"(params: uf, situacao = {', '.join(sorted(SITUACOES))}, pagina; ou id = idUnico)"
         ),
-        "execucao": "os empenhos de uma obra — o dinheiro que já saiu (params: id = idUnico, pagina)",
+        "execucao": "os empenhos de uma obra, o dinheiro que já saiu (params: id = idUnico, pagina)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -70,7 +70,7 @@ class ObrasgovConnector(BaseConnector):
     def _valor_previsto(o: dict) -> Decimal | None:
         """O valor NAO mora no top-level (vem sempre null): a verdade esta em
         fontesDeRecurso[].valorInvestimentoPrevisto, somando as origens
-        (Federal/Estadual/...). R$ 0,01 e marcador de vazio — vira None."""
+        (Federal/Estadual/...). R$ 0,01 e marcador de vazio; vira None."""
         total = Decimal(0)
         for f in o.get("fontesDeRecurso") or []:
             v = f.get("valorInvestimentoPrevisto")
@@ -85,7 +85,7 @@ class ObrasgovConnector(BaseConnector):
     async def _execucao(self, recurso: str, params: dict) -> NormalizedResponse:
         """O dinheiro que ja saiu: os empenhos da obra. Quirks da fonte:
         o filtro e idProjetoInvestimento (= idUnico) e obra sem empenho
-        responde HTTP 404 — aqui isso vira lista vazia, nao erro."""
+        responde HTTP 404, aqui isso vira lista vazia, nao erro."""
         aceitos = {"id", "pagina"}
         invalidos = sorted(set(params) - aceitos)
         if invalidos:
@@ -176,7 +176,7 @@ class ObrasgovConnector(BaseConnector):
             itens.append(
                 ObraPublica(
                     id=str(o.get("idUnico") or ""),
-                    nome=limpa_texto(o.get("nome")) or "—",
+                    nome=limpa_texto(o.get("nome")) or "sem dado",
                     descricao=limpa_texto(o.get("descricao")) or None,
                     uf=o.get("uf") or None,
                     endereco=limpa_texto(o.get("endereco")) or None,
@@ -199,7 +199,7 @@ class ObrasgovConnector(BaseConnector):
         meta = {
             "pagina": int(pagina),
             # os metadados de paginacao da fonte MENTEM (last=true em toda
-            # pagina, totalPages = pagina+1) — pagina cheia e o unico sinal
+            # pagina, totalPages = pagina+1); pagina cheia e o unico sinal
             # confiavel de que ha proxima
             "tem_proxima": len(itens) == tamanho,
             "situacao": SITUACOES.get(situacao) or "todas",

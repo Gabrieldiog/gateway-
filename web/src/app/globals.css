@@ -26,7 +26,7 @@
   color-scheme: light;
 }
 
-/* edição noturna: papel vira tinta. Sobrescreve os mesmos --color-* — as
+/* edição noturna: papel vira tinta. Sobrescreve os mesmos --color-*, as
    utilities do Tailwind e os var(--color-*) diretos (gráficos) seguem juntos.
    Vermelho e verde-petróleo levantados pra ter contraste no fundo escuro. */
 .dark {
@@ -71,7 +71,7 @@ body {
     radial-gradient(rgba(236, 228, 212, 0.025) 1px, transparent 1px);
 }
 
-/* régua editorial dupla — o motivo que abre cada caderno */
+/* régua editorial dupla, o motivo que abre cada caderno */
 .regua-dupla {
   border-top: 2px solid var(--color-ink);
   position: relative;
@@ -125,7 +125,7 @@ body {
 }
 .pulsar { animation: pulsar 1.4s ease-in-out infinite; }
 
-/* a célula do relógio do selo ao-vivo pisca quando chega dado novo — o
+/* a célula do relógio do selo ao-vivo pisca quando chega dado novo, o
    elemento remonta (key) e a animação roda de novo */
 @keyframes selo-flash {
   from { background-color: rgba(16, 185, 129, 0.45); }
@@ -156,7 +156,7 @@ body {
 }
 
 /* dedo não tem a mira do mouse: em tela de toque, os botões-pílula (as abas de
-   filtro, a paginação, os chips) e os seletores ganham 44px de altura mínima —
+   filtro, a paginação, os chips) e os seletores ganham 44px de altura mínima,
    o alvo confortável do iOS/Android. Botões de texto inline ("ler mais") não
    têm .rounded, então seguem discretos. */
 @media (pointer: coarse) {

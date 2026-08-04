@@ -13,7 +13,7 @@ import { UFS } from "@/lib/ufs";
 import type { Estabelecimento, NormalizedResponse } from "@/lib/types";
 
 const FONTE_CNES = {
-  nome: "Ministério da Saúde — CNES",
+  nome: "Ministério da Saúde, CNES",
   url: "https://cnes.datasus.gov.br/",
   nota: "O Cadastro Nacional de Estabelecimentos de Saúde: os 350 mil+ hospitais, UBS e clínicas do país, servidos pela API de dados abertos do Ministério da Saúde.",
 };
@@ -59,7 +59,7 @@ export default function CadernoSaude() {
         numero="VII"
         kicker="Ministério da Saúde · CNES"
         titulo="Os estabelecimentos do SUS"
-        resumo="Mais de 350 mil unidades de saúde do país — hospitais, UBS, prontos-socorros — filtráveis por estado e tipo. Cada uma com tipo, esfera administrativa, endereço e CNPJ."
+        resumo="Mais de 350 mil unidades de saúde do país (hospitais, UBS, prontos-socorros) filtráveis por estado e tipo. Cada uma com tipo, esfera administrativa, endereço e CNPJ."
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-4">

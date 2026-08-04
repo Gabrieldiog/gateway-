@@ -47,7 +47,7 @@ class GastosOut(BaseModel):
 
 class FornecedorOut(BaseModel):
     """A ficha follow-the-money de um CNPJ: quem é (Receita), que relação tem
-    com o governo federal, sanções e contratos — quatro consultas numa só."""
+    com o governo federal, sanções e contratos; quatro consultas numa só."""
 
     cnpj: str
     cadastro: dict | None = None  # ficha da Receita (BrasilAPI)
@@ -217,7 +217,7 @@ async def fornecedor(request: Request, cnpj: str) -> FornecedorOut:
 class ObraDinheiroOut(BaseModel):
     """O follow-the-money de uma obra: empenhos com o favorecido resolvido em
     cascata (Obrasgov → regra orçamentária → CSV SICONV → SIAFI) e o contrato
-    final — quem de fato construiu, com CNPJ."""
+    final, quem de fato construiu, com CNPJ."""
 
     id: str
     obra: dict | None = None

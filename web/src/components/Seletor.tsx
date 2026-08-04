@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from "react";
 
-// dropdown com a identidade do jornal em aberto E fechado — o <select> nativo
+// dropdown com a identidade do jornal em aberto E fechado, o <select> nativo
 // só deixa vestir a caixa fechada; a lista aberta é do sistema operacional.
 // Aqui é uma listbox própria (botão + lista), com teclado e leitor de tela.
 // Mantém a API do <select>: value, onChange({target:{value}}) e <option> filhos,

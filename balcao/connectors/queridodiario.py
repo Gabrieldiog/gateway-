@@ -1,6 +1,6 @@
 """Querido Diário (Open Knowledge Brasil): busca por texto nos diários
-oficiais de centenas de prefeituras. É a fonte hiperlocal por excelência —
-"dispensa de licitação", o nome de uma empresa, "nomeação" — direto do
+oficiais de centenas de prefeituras. É a fonte hiperlocal por excelência,
+"dispensa de licitação", o nome de uma empresa, "nomeação"; direto do
 papel oficial da cidade. Sem chave; a cobertura não é universal, então
 municipio sem diário é caso normal, não erro."""
 
@@ -12,12 +12,12 @@ from balcao.models import CidadeDiario, DiarioOficial
 from balcao.normalize import limpa_texto, para_data, so_digitos
 
 FONTE = {
-    "nome": "Querido Diário — Open Knowledge Brasil",
+    "nome": "Querido Diário, Open Knowledge Brasil",
     "url": "https://queridodiario.ok.org.br",
     "nota": (
         "Projeto da sociedade civil que liberta os diários oficiais municipais: "
         "coleta, extrai o texto e abre a busca. A cobertura cresce cidade a "
-        "cidade — nem todo município está no radar ainda."
+        "cidade, nem todo município está no radar ainda."
     ),
 }
 
@@ -102,7 +102,7 @@ class QueridoDiarioConnector(BaseConnector):
         }
         if not itens:
             meta["aviso"] = (
-                "nada encontrado — pode ser falta de cobertura da cidade ou o termo não aparece"
+                "nada encontrado; pode ser falta de cobertura da cidade ou o termo não aparece"
             )
         return NormalizedResponse(
             fonte=self.name, recurso=recurso, dados=itens, total=len(itens), meta=meta

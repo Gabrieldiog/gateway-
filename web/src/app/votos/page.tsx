@@ -22,13 +22,13 @@ import type {
 } from "@/lib/types";
 
 const FONTE_CAMARA = {
-  nome: "Câmara dos Deputados — Dados Abertos",
+  nome: "Câmara dos Deputados, Dados Abertos",
   url: "https://dadosabertos.camara.leg.br/",
   nota: "Cada voto nominal de cada deputado, direto da API oficial da Câmara.",
 };
 
 const FONTE_SENADO = {
-  nome: "Senado Federal — Dados Abertos Legislativos",
+  nome: "Senado Federal, Dados Abertos Legislativos",
   url: "https://legis.senado.leg.br/dadosabertos/",
   nota: "As votações nominais do plenário do Senado, direto da API oficial.",
 };
@@ -56,7 +56,7 @@ export default function CadernoVotos() {
         numero="VIII"
         kicker="Congresso Nacional"
         titulo="Como cada um votou"
-        resumo="Duas lentes sobre o plenário: por votação, o voto de todos num projeto; por parlamentar, como o seu candidato — deputado ou senador — votou. Votações simbólicas (de viva voz) não registram voto individual."
+        resumo="Duas lentes sobre o plenário: por votação, o voto de todos num projeto; por parlamentar, como o seu candidato, deputado ou senador, votou. Votações simbólicas (de viva voz) não registram voto individual."
       />
 
       <div className="mb-6 flex w-fit gap-1 rounded-md border border-line bg-surface p-1">
@@ -168,7 +168,7 @@ function PorVotacao() {
                   >
                     <span className="line-clamp-2 text-sm text-ink/90">{v.descricao}</span>
                     <span className="num text-xs text-muted">
-                      {v.data ?? "—"}
+                      {v.data ?? "sem dado"}
                       {v.aprovada != null && (
                         <span className={v.aprovada ? "text-ok" : "text-accent"}>
                           {" "}
@@ -478,7 +478,7 @@ function PorParlamentar() {
 
               {res.votos.length === 0 ? (
                 <Vazio>
-                  nenhum voto nominal recente — as votações do período foram simbólicas (de viva voz,
+                  nenhum voto nominal recente, as votações do período foram simbólicas (de viva voz,
                   sem registro individual) ou o parlamentar não estava presente.
                 </Vazio>
               ) : (

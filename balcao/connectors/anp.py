@@ -1,8 +1,8 @@
 """ANP: o preço dos combustíveis nos postos, do levantamento semanal oficial.
-Não há API — são CSVs rolantes das últimas quatro semanas, posto a posto
+Não há API; são CSVs rolantes das últimas quatro semanas, posto a posto
 (~80 mil coletas), atrás de um firewall que devolve 403 pra User-Agent que
 não pareça navegador. O conector baixa, agrega por estado ou município e
-devolve preço médio, mínimo e máximo — do jeito que a pergunta é feita:
+devolve preço médio, mínimo e máximo; do jeito que a pergunta é feita:
 "quanto tá a gasolina?"."""
 
 import csv
@@ -30,7 +30,7 @@ PARAMS = {"combustivel", "por", "uf", "limit"}
 
 # o firewall do gov.br barra cliente que não pareça navegador: 403 pra
 # User-Agent técnico E 401 pro Accept: application/json que o client
-# compartilhado usa (necessário pro Senado) — aqui os dois são sobrescritos
+# compartilhado usa (necessário pro Senado): aqui os dois são sobrescritos
 CABECALHOS_NAVEGADOR = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -40,11 +40,11 @@ CABECALHOS_NAVEGADOR = {
 }
 
 FONTE = {
-    "nome": "ANP — Levantamento de Preços de Combustíveis",
+    "nome": "ANP, Levantamento de Preços de Combustíveis",
     "url": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos",
     "nota": (
         "Pesquisa semanal da ANP nos postos, janela das últimas quatro semanas. "
-        "O preço médio é a média simples das coletas — o do seu posto pode variar."
+        "O preço médio é a média simples das coletas, o do seu posto pode variar."
     ),
 }
 
@@ -94,7 +94,7 @@ class AnpConnector(BaseConnector):
             headers=CABECALHOS_NAVEGADOR,
         )
 
-        # o CSV tem BOM, campo com ';' embutido entre aspas e vírgula decimal —
+        # o CSV tem BOM, campo com ';' embutido entre aspas e vírgula decimal,
         # parser de verdade, não split
         grupos: dict[tuple[str, str | None], list[Decimal]] = {}
         unidade = ""
@@ -140,7 +140,7 @@ class AnpConnector(BaseConnector):
                     unidade=unidade,
                 ).model_dump(mode="json")
             )
-        # mais barato primeiro — a pergunta é sempre "onde tá mais em conta?"
+        # mais barato primeiro, a pergunta é sempre "onde tá mais em conta?"
         itens.sort(key=lambda i: Decimal(i["preco_medio"]))
         itens = itens[: int(limit)]
 

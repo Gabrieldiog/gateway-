@@ -16,7 +16,7 @@ TIMEOUT = 30.0
 
 
 class CKANConnector(BaseConnector):
-    """Motor genérico de portais CKAN. Não é registrado — as fontes concretas
+    """Motor genérico de portais CKAN. Não é registrado, as fontes concretas
     (ANEEL, MME, ANTT...) são subclasses com name e base_url."""
 
     resources = {
@@ -141,4 +141,4 @@ class MmeConnector(CKANConnector):
 class AnttConnector(CKANConnector):
     name = "antt"
     base_url = "https://dados.antt.gov.br"
-    description = "ANTT (CKAN): transporte terrestre — fiscalização, fretes e concessões"
+    description = "ANTT (CKAN): transporte terrestre, fiscalização, fretes e concessões"

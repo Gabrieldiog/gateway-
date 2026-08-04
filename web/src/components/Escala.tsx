@@ -9,7 +9,7 @@ import type { FontesOut } from "@/lib/types";
 type Tom = "ink" | "accent" | "accent-2";
 
 // números reais, conferidos nas APIs ao vivo (Câmara, IBGE, Senado, CNES).
-// são estáveis o bastante pra ficarem aqui — só a contagem de fontes vem
+// são estáveis o bastante pra ficarem aqui, só a contagem de fontes vem
 // viva do próprio gateway, pra nunca mentir quando plugarmos uma nova.
 const ACERVO: { valor: number; sufixo?: string; rotulo: string; fonte: string; tom: Tom }[] = [
   { valor: 350000, sufixo: "+", rotulo: "estabelecimentos de saúde", fonte: "SUS · CNES", tom: "accent-2" },
@@ -51,11 +51,11 @@ export function Escala() {
         O acervo, pelos números
       </p>
       <h2 className="compor font-display text-3xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-4xl">
-        <span className="italic text-accent">Milhões</span> de registros públicos —
+        <span className="italic text-accent">Milhões</span> de registros públicos,
         uma porta só.
       </h2>
       <p className="mt-4 max-w-[60ch] font-editorial text-[1.05rem] leading-relaxed text-ink/80">
-        Vinte e cinco fontes oficiais — do Congresso ao satélite do INPE — cada
+        Vinte e cinco fontes oficiais, do Congresso ao satélite do INPE, cada
         uma com seu jeito de responder, atrás de um endereço único e do mesmo
         formato. De gastos de parlamentar a hospitais do SUS e ao preço da
         gasolina no seu estado.

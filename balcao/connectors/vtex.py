@@ -1,6 +1,6 @@
 """Conector VTEX genérico: várias redes de farmácia rodam na MESMA plataforma
 (VTEX), com o mesmo endpoint público de catálogo. Então o conector é um só,
-parametrizado por host — plugar uma rede nova é escrever uma subclasse com o
+parametrizado por host, plugar uma rede nova é escrever uma subclasse com o
 domínio e como rotular o preço. Casa por GTIN/EAN com a base do comparador.
 
 O preço do canal padrão da VTEX é o do e-commerce, que pode diferir do balcão.
@@ -111,19 +111,19 @@ class RosarioConnector(VtexConnector):
     municipio = "Goiânia"
     uf = "GO"
     preco_tipo = "local"
-    fonte_nota = "Preço do e-commerce da rede (sede em Goiânia) — é preço de internet e pode diferir do balcão."
+    fonte_nota = "Preço do e-commerce da rede (sede em Goiânia); é preço de internet e pode diferir do balcão."
 
 
 @register
 class AlexfarmaConnector(VtexConnector):
     name = "alexfarma"
     base_url = "https://www.alexfarma.com.br"
-    description = "Alexfarma: preço online da rede goiana (catálogo VTEX) — preço local de Goiânia"
+    description = "Alexfarma: preço online da rede goiana (catálogo VTEX), preço local de Goiânia"
     rede_nome = "Alexfarma"
     municipio = "Goiânia"
     uf = "GO"
     preco_tipo = "local"
-    fonte_nota = "Rede com loja em Goiânia que entrega na cidade — o preço online reflete a praça."
+    fonte_nota = "Rede com loja em Goiânia que entrega na cidade, o preço online reflete a praça."
 
 
 @register

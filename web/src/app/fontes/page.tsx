@@ -18,11 +18,11 @@ export default function CadernoExpediente() {
         numero="XXVI"
         kicker="Expediente"
         titulo="As repartições do Balcão"
-        resumo="Cada fonte implementa o mesmo contrato: traduz a chamada genérica para a sua API e devolve no schema normalizado. Plugar uma nova é escrever uma classe e registrá-la — esta página se monta a partir do que o gateway de fato expõe em /v1/fontes."
+        resumo="Cada fonte implementa o mesmo contrato: traduz a chamada genérica para a sua API e devolve no schema normalizado. Plugar uma nova é escrever uma classe e registrá-la; esta página se monta a partir do que o gateway de fato expõe em /v1/fontes."
       />
 
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <NotaTecnica titulo="Normalização" texto="Datas em ISO, CNPJ só dígitos, UF validada — o mesmo formato venha de onde vier." />
+        <NotaTecnica titulo="Normalização" texto="Datas em ISO, CNPJ só dígitos, UF validada; o mesmo formato venha de onde vier." />
         <NotaTecnica titulo="Resiliência" texto="Retry com backoff, circuit breaker e fallback para cache stale quando a fonte cai." />
         <NotaTecnica titulo="Cache" texto="Resposta repetida sai da memória; o carimbo de cada caderno mostra hit, miss ou stale." />
       </div>
@@ -70,7 +70,7 @@ export default function CadernoExpediente() {
       <p className="mt-8 flex items-center justify-center gap-2 text-center">
         <Carimbo fonte="BALCÃO" cache={null} ms={null} />
         <span className="num text-xs text-muted">
-          gateway de dados públicos · {dados?.total ?? "—"} fontes registradas
+          gateway de dados públicos · {dados?.total ?? "sem dado"} fontes registradas
         </span>
       </p>
     </div>

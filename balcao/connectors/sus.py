@@ -67,7 +67,7 @@ LIMITE_MAX = 100
 class SusConnector(BaseConnector):
     name = "sus"
     base_url = "https://apidadosabertos.saude.gov.br"
-    description = "Ministério da Saúde (CNES): estabelecimentos de saúde — hospitais, UBS, prontos-socorros"
+    description = "Ministério da Saúde (CNES): estabelecimentos de saúde, hospitais, UBS, prontos-socorros"
     resources = {
         "estabelecimentos": f"estabelecimentos de saúde; filtros: {', '.join(sorted(FILTROS))}",
         "estabelecimentos/{cnes}": "detalhe de um estabelecimento pelo código CNES",

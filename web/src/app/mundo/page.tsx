@@ -141,7 +141,7 @@ export default function CadernoMundo() {
         numero="XXXIV"
         kicker="Banco Mundial · WDI"
         titulo="Brasil no Mundo"
-        resumo="Como o país se compara com os vizinhos, os BRICS e os ricos — PIB por pessoa, expectativa de vida, desigualdade, internet e carbono, tudo na mesma régua do Banco Mundial. O ano ao lado de cada número diz de quando é a medição."
+        resumo="Como o país se compara com os vizinhos, os BRICS e os ricos; PIB por pessoa, expectativa de vida, desigualdade, internet e carbono, tudo na mesma régua do Banco Mundial. O ano ao lado de cada número diz de quando é a medição."
         referencia={anoMax ? `dados de ${anoMax}` : undefined}
       />
 
@@ -196,7 +196,7 @@ export default function CadernoMundo() {
           </Seletor>
         </div>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
-          Brasil, vizinhos, China, Índia e Estados Unidos — o mesmo indicador, medido do mesmo
+          Brasil, vizinhos, China, Índia e Estados Unidos; o mesmo indicador, medido do mesmo
           jeito. Cada país publica no seu ritmo; o ano entre parênteses é a medição mais recente.
         </p>
         <Comparador indicador={indicador} />

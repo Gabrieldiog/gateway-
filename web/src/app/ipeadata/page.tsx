@@ -14,7 +14,7 @@ import { caminho, formataData } from "@/lib/api";
 import type { NormalizedResponse, PontoIpea, SerieIpea } from "@/lib/types";
 
 const FONTE_IPEA = {
-  nome: "IPEADATA — Instituto de Pesquisa Econômica Aplicada",
+  nome: "IPEADATA, Instituto de Pesquisa Econômica Aplicada",
   url: "http://www.ipeadata.gov.br/",
   nota: "Milhares de séries históricas da economia brasileira mantidas pelo IPEA, servidas via OData e normalizadas pelo Balcão.",
 };
@@ -51,7 +51,7 @@ export default function CadernoIpea() {
         numero="X"
         kicker="IPEADATA"
         titulo="O termômetro da economia"
-        resumo="Milhares de séries macroeconômicas, regionais e sociais — PIB, inflação, emprego, renda — compiladas pelo Ipea. Busque pelo nome; a fonte despeja décadas de pontos e o Balcão recorta os recentes."
+        resumo="Milhares de séries macroeconômicas, regionais e sociais (PIB, inflação, emprego, renda) compiladas pelo Ipea. Busque pelo nome; a fonte despeja décadas de pontos e o Balcão recorta os recentes."
         referencia={ultimo ? `até ${formataData(ultimo.data)}` : undefined}
       />
 
@@ -96,7 +96,7 @@ export default function CadernoIpea() {
           ) : busca.carregando && !busca.dados ? (
             <Esqueleto linhas={8} />
           ) : series.length === 0 ? (
-            <Vazio>nenhuma série. A busca é pelo início do nome — tente “IPCA”, “PIB”, “Taxa”…</Vazio>
+            <Vazio>nenhuma série. A busca é pelo início do nome, tente “IPCA”, “PIB”, “Taxa”…</Vazio>
           ) : (
             <EmTransicao ativo={busca.carregando}>
             <ul className="flex max-h-160 flex-col gap-1 overflow-y-auto pr-1">

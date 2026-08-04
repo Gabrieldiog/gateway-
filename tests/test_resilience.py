@@ -50,7 +50,7 @@ async def test_breaker_abre_e_para_de_chamar_a_fonte():
     assert breaker.aberto
     chamadas_antes = contagem["chamadas"]
 
-    # circuito aberto: erro imediato, sem nem tentar a fonte — e o erro
+    # circuito aberto: erro imediato, sem nem tentar a fonte, e o erro
     # ja diz em quantos segundos vale voltar
     with pytest.raises(ErroUpstream) as exc:
         await conector.fetch("deputados")

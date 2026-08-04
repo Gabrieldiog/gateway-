@@ -8,10 +8,10 @@ import { azulejoFundo } from "./Azulejo";
 
 // abre cada seção: marca-d'água de azulejo, kicker em mono, manchete em
 // Fraunces e a régua dupla que se desenha ao entrar. O número é derivado da
-// posição do caderno no grupo (via pathname), não fixado na página — cada tema
+// posição do caderno no grupo (via pathname), não fixado na página; cada tema
 // recomeça em I, II, III. O prop `numero` é só reserva pra página fora do sumário.
 // Abaixo da régua vem o selo de frescor: de quanto em quanto tempo aquela fonte
-// solta dado novo — a dateline do caderno (páginas ao vivo trazem o próprio selo).
+// solta dado novo, a dateline do caderno (páginas ao vivo trazem o próprio selo).
 export function CadernoHeader({
   numero,
   kicker,
@@ -24,7 +24,7 @@ export function CadernoHeader({
   titulo: string;
   resumo?: string;
   // a data/janela exata do dado carregado (ex.: "maio/2026"); quando a página
-  // sabe dizer, ela vira o detalhe do selo — senão fica o texto da cadência
+  // sabe dizer, ela vira o detalhe do selo; senão fica o texto da cadência
   referencia?: string;
 }) {
   const path = usePathname();
@@ -40,7 +40,7 @@ export function CadernoHeader({
         />
         <p className="kicker mb-2 flex items-center gap-2">
           <span className="text-accent">CADERNO {num}</span>
-          <span className="text-line">—</span>
+          <span className="text-line">, </span>
           <span>{kicker}</span>
         </p>
         <h1 className="compor font-display text-4xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-5xl">

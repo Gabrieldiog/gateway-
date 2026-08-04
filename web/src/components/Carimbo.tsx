@@ -1,4 +1,4 @@
-// carimbo cartorial funcional: mostra o estado REAL da resposta — a fonte,
+// carimbo cartorial funcional: mostra o estado REAL da resposta, a fonte,
 // se veio do cache (hit/miss/stale) e a latência medida. a resiliência do
 // gateway aparece como feature, não fica escondida.
 

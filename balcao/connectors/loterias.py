@@ -1,5 +1,5 @@
 """Loterias CAIXA: o resultado de cada jogo, direto da API que abastece o
-portal oficial. Não é documentada, mas é JSON limpo e sem chave — um GET por
+portal oficial. Não é documentada, mas é JSON limpo e sem chave; um GET por
 jogo devolve o último concurso, e /{jogo}/{numero} devolve um específico.
 Quirks: valores vêm como float (viram Decimal via str), a data é dd/mm/aaaa,
 a Dupla Sena tem segundo sorteio e o Dia de Sorte tem o "Mês da Sorte"."""
@@ -44,7 +44,7 @@ def _dinheiro(valor: Any) -> Decimal | None:
 class LoteriasConnector(BaseConnector):
     name = "loterias"
     base_url = "https://servicebus2.caixa.gov.br/portaldeloterias/api"
-    description = "Loterias CAIXA: resultado dos sorteios — Mega-Sena, Lotofácil, Quina e os outros"
+    description = "Loterias CAIXA: resultado dos sorteios, Mega-Sena, Lotofácil, Quina e os outros"
     resources = {
         "resultado": (
             f"o resultado de um sorteio (params: jogo = {'|'.join(sorted(JOGOS))}, "

@@ -19,7 +19,7 @@ const TIPOS: [string, string][] = [
 const SUGESTOES = ["Nu", "Caixa", "Itaú", "Banco do Brasil", "Mercado Pago"];
 
 function numero(n: number | null): string {
-  return n == null ? "—" : n.toLocaleString("pt-BR");
+  return n == null ? "sem dado" : n.toLocaleString("pt-BR");
 }
 
 function LinhaRanking({ i, maior }: { i: RankingReclamacao; maior: number }) {
@@ -36,7 +36,7 @@ function LinhaRanking({ i, maior }: { i: RankingReclamacao; maior: number }) {
           <span className="font-semibold">{i.instituicao}</span>
         </span>
         <span className="num shrink-0 text-sm font-semibold text-erro">
-          {i.indice != null ? i.indice.toLocaleString("pt-BR") : "—"}
+          {i.indice != null ? i.indice.toLocaleString("pt-BR") : "sem dado"}
         </span>
       </div>
       {i.indice != null && (
@@ -64,7 +64,7 @@ function ResultadoBusca({ tipo, termo }: { tipo: string; termo: string }) {
   if (!itens.length) {
     return (
       <Vazio>
-        nada com “{termo}” — o BC costuma usar o nome do conglomerado (tente “Nu” em vez de
+        nada com “{termo}”, o BC costuma usar o nome do conglomerado (tente “Nu” em vez de
         “Nubank”, “BB” pode ser “Banco do Brasil”).
       </Vazio>
     );
@@ -86,7 +86,7 @@ function ResultadoBusca({ tipo, termo }: { tipo: string; termo: string }) {
                   {i.posicao != null ? `${i.posicao}º no ranking oficial (Top 15)` : "Top 15"}
                 </span>
               ) : (
-                <span>fora do Top 15 — índice não comparável com os grandes</span>
+                <span>fora do Top 15, índice não comparável com os grandes</span>
               )}
               <span>{numero(i.reclamacoes_procedentes)} procedentes</span>
               <span>{numero(i.clientes)} clientes</span>
@@ -118,7 +118,7 @@ export default function CadernoConsumidor() {
         numero="XXXII"
         kicker="Banco Central · ranking oficial"
         titulo="Consumidor"
-        resumo="Qual banco mais dá dor de cabeça? O Banco Central conta as reclamações que ele mesmo julgou procedentes e divide pelo tamanho de cada instituição. Este é o ranking oficial — e dá pra procurar o seu banco pelo nome."
+        resumo="Qual banco mais dá dor de cabeça? O Banco Central conta as reclamações que ele mesmo julgou procedentes e divide pelo tamanho de cada instituição. Este é o ranking oficial, e dá pra procurar o seu banco pelo nome."
         referencia={periodo || undefined}
       />
 
@@ -145,7 +145,7 @@ export default function CadernoConsumidor() {
         </div>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
           O número é o <Termo t="indicereclamacoes">índice de reclamações</Termo>: quanto maior,
-          pior. Só os grandes entram na fila — comparar um banco de 400 clientes com um de 100
+          pior. Só os grandes entram na fila, comparar um banco de 400 clientes com um de 100
           milhões seria maldade estatística.
         </p>
         {r.erro ? (
@@ -171,7 +171,7 @@ export default function CadernoConsumidor() {
         <h2 className="mb-1 font-display text-lg font-semibold text-ink">Procure o seu</h2>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
           Todas as {String(r.dados?.meta?.instituicoes_no_ranking ?? "")} instituições do período
-          estão aqui — inclusive as pequenas, que ficam fora do ranking oficial.
+          estão aqui, inclusive as pequenas, que ficam fora do ranking oficial.
         </p>
         <form
           onSubmit={(e) => {
@@ -212,7 +212,7 @@ export default function CadernoConsumidor() {
         {consultado ? (
           <ResultadoBusca tipo={tipo} termo={consultado} />
         ) : (
-          <Vazio>digite o nome — ou toque numa sugestão.</Vazio>
+          <Vazio>digite o nome, ou toque numa sugestão.</Vazio>
         )}
       </section>
 

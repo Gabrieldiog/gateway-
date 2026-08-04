@@ -1,4 +1,4 @@
-"""Onda F11 — Trabalho: desemprego e renda da PNAD Contínua (SIDRA)."""
+"""Onda F11, Trabalho: desemprego e renda da PNAD Contínua (SIDRA)."""
 
 
 async def test_desemprego_brasil_vem_em_ordem_cronologica(api):

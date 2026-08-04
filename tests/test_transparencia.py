@@ -65,7 +65,7 @@ async def test_bolsa_familia_mes_invalido_da_400(api):
 
 async def test_bolsa_familia_sem_mes_recua_ate_o_publicado():
     # a folha fecha com atraso: mes sem dado responde 200 com []. Sem o
-    # parametro, o conector recua mes a mes ate achar — e conta qual usou
+    # parametro, o conector recua mes a mes ate achar, e conta qual usou
     atual = date.today().replace(day=1)
     anterior = _mes_anterior(atual)
     publicado = _mes_anterior(anterior)

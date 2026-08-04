@@ -1,6 +1,6 @@
 """ONS (Operador Nacional do Sistema Elétrico): geração de energia do SIN
 quase em tempo real. O endpoint BalancoEnergetico devolve o dia inteiro
-minuto a minuto — a gente pega o último instante válido e soma os quatro
+minuto a minuto, a gente pega o último instante válido e soma os quatro
 subsistemas pra montar o total do Brasil (o SIN), com o mix por fonte e o
 percentual renovável. Fonte "tempo real": não cacheia."""
 
@@ -21,7 +21,7 @@ SUBSISTEMAS = {
 FONTES = ("hidraulica", "termica", "eolica", "solar", "nuclear")
 
 FONTE = {
-    "nome": "ONS — Operador Nacional do Sistema Elétrico",
+    "nome": "ONS, Operador Nacional do Sistema Elétrico",
     "url": "https://www.ons.org.br/paginas/energia-agora/carga-e-geracao",
     "nota": (
         "Geração verificada do Sistema Interligado Nacional, atualizada a cada "

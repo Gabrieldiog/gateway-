@@ -38,7 +38,7 @@ UF_IBGE = {
     "SC": 42, "RS": 43, "MS": 50, "MT": 51, "GO": 52, "DF": 53,
 }
 
-# código IBGE de 7 dígitos da capital de cada UF — base do ranking de cidades
+# código IBGE de 7 dígitos da capital de cada UF: base do ranking de cidades
 CAPITAIS = {
     "AC": 1200401, "AL": 2704302, "AM": 1302603, "AP": 1600303, "BA": 2927408,
     "CE": 2304400, "DF": 5300108, "ES": 3205309, "GO": 5208707, "MA": 2111300,
@@ -58,9 +58,9 @@ SUFIXO_UF = re.compile(r"\s*-\s*[A-Z]{2}\s*$")
 # o SICONFI responde devagar e manda relatórios grandes
 TIMEOUT = 45.0
 
-# de onde o dado vem — vai junto na resposta pra qualquer um conferir a origem
+# de onde o dado vem: vai junto na resposta pra qualquer um conferir a origem
 FONTE = {
-    "nome": "Tesouro Nacional — SICONFI",
+    "nome": "Tesouro Nacional, SICONFI",
     "url": "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
     "nota": (
         "Arrecadação tributária pelo balanço oficial da União/ente (DCA): impostos + taxas + "
@@ -78,10 +78,10 @@ class TesouroConnector(BaseConnector):
     resources = {
         "uniao": "receita total, quanto vem de impostos e despesa total da União num ano",
         "uniao/impostos": "quanto a União arrecadou de cada imposto (IR, IPI, IOF, II...)",
-        "uniao/despesas": "despesa por função da União — onde o governo federal gasta",
+        "uniao/despesas": "despesa por função da União, onde o governo federal gasta",
         "estados/{uf}": "receita total, quanto vem de impostos e despesa total do estado num ano",
         "estados/{uf}/impostos": "quanto o estado arrecadou de cada imposto (ICMS, IPVA, ITCMD...)",
-        "estados/{uf}/despesas": "despesa por função — onde o estado gasta (saúde, educação, segurança...)",
+        "estados/{uf}/despesas": "despesa por função, onde o estado gasta (saúde, educação, segurança...)",
         "municipios/{ibge}": "receita total, impostos e despesa total de um município (código IBGE de 7 dígitos)",
         "municipios/{ibge}/impostos": "quanto o município arrecadou de cada imposto (ISS, IPTU, ITBI...)",
         "municipios/{ibge}/despesas": "despesa por função de um município",

@@ -1,12 +1,12 @@
 """Relay 1v1 do joguinho "Maior ou Menor?".
 
 Isto NÃO é gateway: não chama nenhuma fonte pública nem entra no registro de
-conectores. O servidor só faz duas coisas — junta dois jogadores (matchmaking
+conectores. O servidor só faz duas coisas, junta dois jogadores (matchmaking
 de fila de um) e repassa, sem ler, tudo que um manda pro outro. As rodadas cada
 cliente gera localmente a partir da semente da sala (o mesmo motor do desafio
 diário), então aqui não mora regra de jogo nem placar. É de propósito: mantém o
 Balcão leve e o modo online é casual, client-side. Como o servidor nunca olha o
-conteúdo, um cliente malicioso só engana o próprio oponente — não há dado
+conteúdo, um cliente malicioso só engana o próprio oponente; não há dado
 sensível trafegando.
 
 Protocolo (mensagens de controle que o servidor emite):
@@ -110,7 +110,7 @@ async def um_contra_um(ws: WebSocket) -> None:
 
     # Daqui pra frente o servidor é só um cano: o que chega de um lado sai
     # igualzinho no outro. Quem sabe o que é palpite, placar e fim de jogo é o
-    # cliente — o servidor nunca abre o envelope.
+    # cliente, o servidor nunca abre o envelope.
     try:
         while True:
             msg = await ws.receive_text()

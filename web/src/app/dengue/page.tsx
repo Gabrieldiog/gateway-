@@ -28,7 +28,7 @@ const COR_ALERTA: Record<string, { texto: string; fundo: string; barra: string }
 };
 
 const inteiro = (v: number | null) =>
-  v == null ? "—" : Math.round(v).toLocaleString("pt-BR");
+  v == null ? "sem dado" : Math.round(v).toLocaleString("pt-BR");
 
 export default function CadernoDengue() {
   const [uf, setUf] = useState("GO");
@@ -118,7 +118,7 @@ export default function CadernoDengue() {
                     <Termo t="rt">Rt</Termo>
                   </p>
                   <p className={`num text-3xl font-semibold ${(atual.rt ?? 0) > 1 ? "text-rose-600" : "text-ink"}`}>
-                    {atual.rt?.toFixed(2) ?? "—"}
+                    {atual.rt?.toFixed(2) ?? "sem dado"}
                   </p>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function CadernoDengue() {
               })}
             </div>
             <p className="mt-4 border-t border-line pt-3 font-editorial text-sm italic text-muted">
-              As semanas recentes são estimativa (<Termo t="nowcast">nowcast</Termo>) — o modelo
+              As semanas recentes são estimativa (<Termo t="nowcast">nowcast</Termo>), o modelo
               corrige o atraso de notificação, então os números se ajustam a cada atualização.
             </p>
           </Card>

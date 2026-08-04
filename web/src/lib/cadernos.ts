@@ -12,7 +12,7 @@ export interface Grupo {
 }
 
 // a Capa fica solta no topo do sumário; o número é a "edição" fixa de cada
-// caderno (por isso pula dentro dos grupos) — o grupo é o tema, não a ordem.
+// caderno (por isso pula dentro dos grupos), o grupo é o tema, não a ordem.
 export const CAPA: Caderno = { num: "I", nome: "Capa", sub: "busca unificada", href: "/" };
 
 export const GRUPOS: Grupo[] = [
@@ -64,7 +64,7 @@ export const GRUPOS: Grupo[] = [
     desc: "A máquina funcionando: a geração de energia do país em tempo real e os dados abertos de transporte.",
     cadernos: [
       { num: "XV", nome: "Energia", sub: "geração do país ao vivo", href: "/energia" },
-      { num: "XXX", nome: "Obras Públicas", sub: "as federais — inclusive as paradas", href: "/obras" },
+      { num: "XXX", nome: "Obras Públicas", sub: "as federais, inclusive as paradas", href: "/obras" },
       { num: "XI", nome: "Dados Abertos", sub: "energia, transporte (CKAN)", href: "/dados" },
     ],
   },
@@ -97,12 +97,12 @@ export const GRUPOS: Grupo[] = [
   },
 ];
 
-// os grupos de leitura — a vitrine da capa não mostra as seções institucionais
+// os grupos de leitura, a vitrine da capa não mostra as seções institucionais
 export const TEMAS: Grupo[] = GRUPOS.filter(
   (g) => g.nome !== "Sobre" && g.nome !== "Desenvolvedores",
 );
 
-// lista plana na ordem do sumário — pro índice mobile e contagens
+// lista plana na ordem do sumário, pro índice mobile e contagens
 export const CADERNOS: Caderno[] = [CAPA, ...GRUPOS.flatMap((g) => g.cadernos)];
 
 export function cadernoAtivo(path: string, href: string): boolean {

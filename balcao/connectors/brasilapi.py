@@ -1,6 +1,6 @@
 """BrasilAPI: a ficha cadastral de um CNPJ na Receita Federal, sem chave.
 É o conector utilitário que dá nome, situação e sócios a qualquer CNPJ que
-aparecer nas outras fontes — a cola da Ficha do Fornecedor."""
+aparecer nas outras fontes, a cola da Ficha do Fornecedor."""
 
 from typing import Any
 
@@ -10,7 +10,7 @@ from balcao.models import FichaEmpresa
 from balcao.normalize import limpa_texto, para_data, so_digitos, valor_br
 
 FONTE = {
-    "nome": "BrasilAPI — dados da Receita Federal",
+    "nome": "BrasilAPI, dados da Receita Federal",
     "url": "https://brasilapi.com.br",
     "nota": (
         "Ficha cadastral pública do CNPJ (razão social, situação, sócios), "
@@ -46,7 +46,7 @@ class BrasilApiConnector(BaseConnector):
 
         ficha = FichaEmpresa(
             cnpj=cnpj,
-            razao_social=limpa_texto(b.get("razao_social")) or "—",
+            razao_social=limpa_texto(b.get("razao_social")) or "sem dado",
             nome_fantasia=limpa_texto(b.get("nome_fantasia")) or None,
             situacao=limpa_texto(b.get("descricao_situacao_cadastral")) or None,
             natureza=limpa_texto(b.get("natureza_juridica")) or None,

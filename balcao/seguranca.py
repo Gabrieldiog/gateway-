@@ -1,11 +1,11 @@
 """Base de Dados VDE (Sinesp / Ministério da Justiça): as ocorrências
-criminais do país inteiro, município a município, mês a mês. Não é API —
+criminais do país inteiro, município a município, mês a mês. Não é API,
 é um ZIP de 35 MB com um CSV por ano (2015→hoje), cada um com ~1 milhão de
 linhas. O conector baixa o ZIP uma vez pro disco e, quando alguém pede um
 ano, lê aquele CSV por streaming e monta um índice pequeno agregado por UF
 e por tipo de crime.
 
-Quirks tratados aqui: o número real fica em duas colunas conforme o crime —
+Quirks tratados aqui: o número real fica em duas colunas conforme o crime,
 'total' pros crimes de ocorrência (roubo, furto), 'total_vitima' pros de
 vítima (homicídio, estupro), e o outro vem zero; a data é dd/mm/aaaa mensal
 (dia sempre 1); e há eventos que são de bombeiro/administração (alvará,
@@ -31,7 +31,7 @@ URL_VDE = (
 )
 
 # os tipos de crime que o caderno mostra (o CSV também traz bombeiro e
-# administração — alvará, vistoria, incêndio — que ficam de fora)
+# administração: alvará, vistoria, incêndio; que ficam de fora)
 EVENTOS = {
     "homicidio": "Homicídio doloso",
     "feminicidio": "Feminicídio",
@@ -51,7 +51,7 @@ EVENTOS = {
 }
 LABEL_PARA_SLUG = {label: slug for slug, label in EVENTOS.items()}
 
-# população por UF (Censo 2022) — pra taxa por 100 mil no ranking, senão
+# população por UF (Censo 2022): pra taxa por 100 mil no ranking, senão
 # comparar SP com o Acre em números absolutos seria estatística de mentira
 POP_UF = {
     "RO": 1581196, "AC": 830018, "AM": 3941613, "RR": 636707, "PA": 8120131,

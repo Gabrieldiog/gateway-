@@ -88,7 +88,7 @@ function Sorteio({ jogo }: { jogo: string }) {
                   : `${p.ganhadores.toLocaleString("pt-BR")} ganhador${p.ganhadores > 1 ? "es" : ""}`}
               </span>
               <span className="num text-sm text-ink">
-                {Number(p.valor) > 0 ? formataReaisCompacto(p.valor) : "—"}
+                {Number(p.valor) > 0 ? formataReaisCompacto(p.valor) : "sem dado"}
               </span>
             </li>
           ))}
@@ -144,7 +144,7 @@ function MeuNome({ nome }: { nome: string }) {
           {pico && (
             <>
               {" "}
-              — o auge foi {pico.decada.startsWith("até") ? pico.decada : `nos anos ${pico.decada}`}
+, o auge foi {pico.decada.startsWith("até") ? pico.decada : `nos anos ${pico.decada}`}
             </>
           )}
           .
@@ -262,7 +262,7 @@ export default function CadernoAlmanaque() {
         numero="XXXIII"
         kicker="Loterias CAIXA · IBGE"
         titulo="Almanaque"
-        resumo="A parte do jornal que todo mundo abre primeiro: deu quanto na Mega? E o dado que ninguém sabia que queria: quantos brasileiros têm o seu nome — e quando ele esteve na moda."
+        resumo="A parte do jornal que todo mundo abre primeiro: deu quanto na Mega? E o dado que ninguém sabia que queria: quantos brasileiros têm o seu nome, e quando ele esteve na moda."
         referencia={s ? `concurso ${s.concurso}${s.data ? ` · ${formataData(s.data)}` : ""}` : undefined}
       />
 
@@ -323,13 +323,13 @@ export default function CadernoAlmanaque() {
             </button>
           ))}
         </div>
-        {consultado ? <MeuNome nome={consultado} /> : <Vazio>digite um nome — ou toque numa sugestão.</Vazio>}
+        {consultado ? <MeuNome nome={consultado} /> : <Vazio>digite um nome, ou toque numa sugestão.</Vazio>}
       </section>
 
       <section>
         <h2 className="mb-1 font-display text-lg font-semibold text-ink">Os nomes do Brasil</h2>
         <p className="mb-4 max-w-2xl font-editorial text-sm leading-relaxed text-ink/75">
-          Os dez mais registrados em cada década — dá pra ver a moda mudando.
+          Os dez mais registrados em cada década; dá pra ver a moda mudando.
         </p>
         <RankingDeNomes />
       </section>

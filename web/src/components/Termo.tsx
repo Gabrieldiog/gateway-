@@ -5,7 +5,7 @@ import { GLOSSARIO } from "@/lib/glossario";
 
 // o "o que é isso?" do jornal: sublinha o jargão com pontilhado e, no
 // clique/toque, abre um verbete curto. Termo desconhecido passa reto,
-// sem sublinhar — dá pra usar com chave dinâmica sem medo.
+// sem sublinhar; dá pra usar com chave dinâmica sem medo.
 export function Termo({ t, children }: { t: string; children: React.ReactNode }) {
   const def = GLOSSARIO[t];
   const [aberto, setAberto] = useState(false);

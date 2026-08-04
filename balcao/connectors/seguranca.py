@@ -1,5 +1,5 @@
 """Segurança pública: as ocorrências criminais do país pela Base VDE do
-Sinesp/MJ. O peso está no arquivo — a leitura e a agregação vivem em
+Sinesp/MJ. O peso está no arquivo, a leitura e a agregação vivem em
 balcao/seguranca.py; aqui ficam a validação, os dois recortes (panorama de
 um estado e ranking entre estados) e a normalização final."""
 
@@ -12,7 +12,7 @@ from balcao.models import OcorrenciaSeguranca
 from balcao.seguranca import EVENTOS, NOME_UF, POP_UF
 
 FONTE = {
-    "nome": "Sinesp — Base de Dados VDE (Ministério da Justiça)",
+    "nome": "Sinesp, Base de Dados VDE (Ministério da Justiça)",
     "url": "https://www.gov.br/mj/pt-br/acesso-a-informacao/dados-abertos",
     "nota": (
         "Ocorrências informadas pelas polícias estaduais ao Ministério da Justiça, "
@@ -31,7 +31,7 @@ def _ano_padrao() -> int:
 class SegurancaConnector(BaseConnector):
     name = "seguranca"
     base_url = "https://dados.mj.gov.br"
-    description = "Sinesp/MJ: ocorrências criminais por estado — homicídio, roubo, feminicídio e mais"
+    description = "Sinesp/MJ: ocorrências criminais por estado, homicídio, roubo, feminicídio e mais"
     # o dado sai de um arquivo file-backed (ArquivosSeguranca), não do get_json
     resources = {
         "panorama": (

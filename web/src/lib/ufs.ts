@@ -4,7 +4,7 @@ export const UFS = [
   "SE", "SP", "TO",
 ];
 
-// código IBGE da capital de cada UF — default sensato no modo cidade, pra
+// código IBGE da capital de cada UF, default sensato no modo cidade, pra
 // já mostrar algo sem o usuário precisar escolher.
 export const CAPITAIS: Record<string, string> = {
   AC: "1200401", AL: "2704302", AM: "1302603", AP: "1600303", BA: "2927408",

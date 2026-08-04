@@ -1,5 +1,5 @@
-"""PNCP (Portal Nacional de Contratações Públicas): o que o governo — todas
-as esferas — está comprando. API de consulta aberta, sem chave, mas cheia de
+"""PNCP (Portal Nacional de Contratações Públicas): o que o governo, todas
+as esferas; está comprando. API de consulta aberta, sem chave, mas cheia de
 manha: datas em AAAAMMDD sem separador, modalidade obrigatória por código de
 enum que só vive num manual em PDF, tamanhoPagina com mínimo de 10 e um
 envelope de erro próprio. O conector esconde tudo isso."""
@@ -37,7 +37,7 @@ PARAMS_LICITACOES = {"de", "ate", "modalidade", "uf", "municipio", "pagina"}
 PARAMS_CONTRATOS = {"de", "ate", "cnpj", "pagina"}
 
 FONTE = {
-    "nome": "PNCP — Portal Nacional de Contratações Públicas",
+    "nome": "PNCP, Portal Nacional de Contratações Públicas",
     "url": "https://pncp.gov.br",
     "nota": (
         "Licitações e contratos que União, estados e municípios são obrigados a "
@@ -59,7 +59,7 @@ class PncpConnector(BaseConnector):
         "contratos": "contratos assinados no período (params: de, ate, cnpj do órgão, pagina)",
         "itens": "o que está sendo comprado numa contratação, item a item (params: controle = numeroControlePNCP)",
         "resultado": "quem venceu um item: fornecedor, porte, valor homologado (params: controle, item)",
-        "arquivos": "os documentos da compra — edital e anexos em PDF (params: controle)",
+        "arquivos": "os documentos da compra, edital e anexos em PDF (params: controle)",
     }
 
     async def fetch(self, recurso: str, **params: Any) -> NormalizedResponse:
@@ -93,7 +93,7 @@ class PncpConnector(BaseConnector):
             ) from None
 
     async def _itens(self, recurso: str, params: dict) -> NormalizedResponse:
-        """O que exatamente está sendo comprado numa contratação — item a item.
+        """O que exatamente está sendo comprado numa contratação, item a item.
         Vive no lado operacional (/api/pncp), irmão da API de consulta."""
         self._valida(recurso, params, {"controle", "pagina"})
         controle = str(params.get("controle", ""))
@@ -108,7 +108,7 @@ class PncpConnector(BaseConnector):
             itens.append(
                 ItemCompra(
                     numero=int(i.get("numeroItem") or 0),
-                    descricao=limpa_texto(i.get("descricao")) or "—",
+                    descricao=limpa_texto(i.get("descricao")) or "sem dado",
                     quantidade=float(i["quantidade"]) if i.get("quantidade") is not None else None,
                     unidade=limpa_texto(i.get("unidadeMedida")) or None,
                     valor_unitario=_decimal(i.get("valorUnitarioEstimado")),
@@ -124,7 +124,7 @@ class PncpConnector(BaseConnector):
         )
 
     async def _arquivos(self, recurso: str, params: dict) -> NormalizedResponse:
-        """Os documentos publicados junto da compra — o edital em PDF é a
+        """Os documentos publicados junto da compra, o edital em PDF é a
         leitura completa que a listagem não dá."""
         self._valida(recurso, params, {"controle"})
         controle = str(params.get("controle", ""))
@@ -171,7 +171,7 @@ class PncpConnector(BaseConnector):
             itens.append(
                 VencedorItem(
                     item=int(item),
-                    fornecedor=limpa_texto(r.get("nomeRazaoSocialFornecedor")) or "—",
+                    fornecedor=limpa_texto(r.get("nomeRazaoSocialFornecedor")) or "sem dado",
                     documento=so_digitos(r.get("niFornecedor")),
                     porte=limpa_texto(r.get("porteFornecedorNome")) or None,
                     valor_unitario=_decimal(r.get("valorUnitarioHomologado")),
@@ -280,7 +280,7 @@ class PncpConnector(BaseConnector):
 
     def _periodo(self, recurso: str, params: dict) -> tuple[str, str]:
         # o PNCP quer AAAAMMDD sem separador; o Balcão aceita ISO e traduz.
-        # sem recorte, olha os últimos 7 dias — a fonte publica milhares por dia
+        # sem recorte, olha os últimos 7 dias; a fonte publica milhares por dia
         hoje = date.today()
         de = params.get("de") or (hoje - timedelta(days=7)).isoformat()
         ate = params.get("ate") or hoje.isoformat()

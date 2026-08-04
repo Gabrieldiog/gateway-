@@ -25,7 +25,7 @@ function formataCnpj(doc: string | null | undefined): string | null {
   return `${doc.slice(0, 2)}.${doc.slice(2, 5)}.${doc.slice(5, 8)}/${doc.slice(8, 12)}-${doc.slice(12)}`;
 }
 
-// como cada favorecido foi descoberto — a cascata explicada em meia palavra
+// como cada favorecido foi descoberto, a cascata explicada em meia palavra
 const ORIGEM: Record<string, string> = {
   siafi: "confirmado no SIAFI",
   repasse: "repasse ao executor",
@@ -56,7 +56,7 @@ function DinheiroDaObra({ id }: { id: string }) {
     }
     return (
       <p className="font-editorial text-sm italic text-muted">
-        nenhum empenho ou contrato registrado — o dinheiro ainda não começou a sair (ou o órgão
+        nenhum empenho ou contrato registrado, o dinheiro ainda não começou a sair (ou o órgão
         não informou).
       </p>
     );
@@ -65,7 +65,7 @@ function DinheiroDaObra({ id }: { id: string }) {
     <div className="flex flex-col gap-4">
       {mensagensDeErro.length > 0 && (
         <p className="font-editorial text-xs italic text-muted">
-          parte das fontes falhou agora ({mensagensDeErro.join(" · ")}) — o que está aqui pode
+          parte das fontes falhou agora ({mensagensDeErro.join(" · ")}), o que está aqui pode
           estar incompleto.{" "}
           <button onClick={r.recarregar} className="not-italic text-accent hover:underline">
             tentar de novo
@@ -116,7 +116,7 @@ function DinheiroDaObra({ id }: { id: string }) {
                         : "favorecido não informado pela fonte")}
                   </span>
                   <span className="num shrink-0 text-sm text-ink">
-                    {e.valor ? formataReaisCompacto(e.valor) : "—"}
+                    {e.valor ? formataReaisCompacto(e.valor) : "sem dado"}
                   </span>
                 </div>
                 <p className="num flex flex-wrap gap-x-3 text-[0.7rem] text-muted">
@@ -137,7 +137,7 @@ function DinheiroDaObra({ id }: { id: string }) {
   );
 }
 
-// cor do carimbo de situação — parada é vermelho, andando é verde
+// cor do carimbo de situação, parada é vermelho, andando é verde
 function corSituacao(s: string | null): string {
   if (s === "Paralisada") return "bg-erro/10 text-erro";
   if (s === "Em execução") return "bg-ok/10 text-ok";
@@ -164,7 +164,7 @@ export default function CadernoObras() {
         numero="XXX"
         kicker="Obrasgov · Ministério da Gestão"
         titulo="Obras Públicas"
-        resumo="Toda obra com dinheiro federal, do cadastro oficial — com situação, valores e datas previstas. Comece pelas paralisadas: quando o prazo já passou e a obra parou, o selo de atraso acende sozinho."
+        resumo="Toda obra com dinheiro federal, do cadastro oficial; com situação, valores e datas previstas. Comece pelas paralisadas: quando o prazo já passou e a obra parou, o selo de atraso acende sozinho."
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">

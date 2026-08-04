@@ -6,12 +6,12 @@ import { caminho } from "@/lib/api";
 import type { Fonte, FontesOut } from "@/lib/types";
 
 // o prompt pronto pra colar em qualquer assistente de IA. Ensina a API
-// inteira — como chamar cada dado, como acender só as fontes que interessam,
-// como ler o erro — e ainda instrui a IA a narrar o que faz. O catálogo das
+// inteira, como chamar cada dado, como acender só as fontes que interessam,
+// como ler o erro, e ainda instrui a IA a narrar o que faz. O catálogo das
 // fontes é montado AO VIVO do próprio /v1/fontes: nunca envelhece, e lista
 // exatamente os recursos e filtros que o servidor aceita neste momento.
 
-const NUCLEO = (catalogo: string, base: string, fontesTxt: string) => `Você é meu assistente para consultar o Balcão, um gateway que unifica os dados abertos do Brasil (${fontesTxt} — Câmara, Senado, Banco Central, IBGE, INPE, ANP, Tesouro e muitas outras) numa API só, já normalizada.
+const NUCLEO = (catalogo: string, base: string, fontesTxt: string) => `Você é meu assistente para consultar o Balcão, um gateway que unifica os dados abertos do Brasil (${fontesTxt}; Câmara, Senado, Banco Central, IBGE, INPE, ANP, Tesouro e muitas outras) numa API só, já normalizada.
 
 ━━ COMO A API FUNCIONA ━━
 - Base: ${base} (se eu te passar outra URL, use a minha).
@@ -21,14 +21,14 @@ const NUCLEO = (catalogo: string, base: string, fontesTxt: string) => `Você é 
 - meta.cache diz de onde veio o dado: "hit" (veio da memória), "miss" (buscou na fonte agora), "stale" (a fonte oficial caiu e o gateway serviu a cópia recente que tinha guardado).
 
 ━━ COMO PEDIR EXATAMENTE O DADO QUE EU QUERO ━━
-1. DESCUBRA primeiro: GET /v1/fontes devolve a lista das fontes, os recursos de cada uma e os filtros que cada recurso aceita. É o índice vivo — na dúvida, consulte antes de montar a chamada.
+1. DESCUBRA primeiro: GET /v1/fontes devolve a lista das fontes, os recursos de cada uma e os filtros que cada recurso aceita. É o índice vivo, na dúvida, consulte antes de montar a chamada.
 2. UM DADO ESPECÍFICO: monte GET /v1/{fonte}/{recurso} e use os filtros pra estreitar. Exemplos:
    /v1/camara/deputados?uf=SP&partido=PT      → deputados de SP no PT
    /v1/bacen/selic?ultimos=10                 → as 10 últimas taxas Selic
    /v1/anp/precos?combustivel=gasolina&por=estado
    /v1/inpe/queimadas?por=bioma&data=2026-07-01
    Os filtros (entre parênteses no catálogo abaixo) são como você DEIXA DE FORA o que não interessa: peça só a UF, o ano ou o produto que importam.
-3. VÁRIAS FONTES DE UMA VEZ — acender umas e apagar outras: GET /v1/buscar?q={termo}&fontes={lista}
+3. VÁRIAS FONTES DE UMA VEZ: acender umas e apagar outras: GET /v1/buscar?q={termo}&fontes={lista}
    /v1/buscar?q=educacao&fontes=camara,senado  → dispara SÓ essas duas em paralelo e junta o resultado
    /v1/buscar?q=educacao                        → sem "fontes", bate em TODAS as fontes de uma vez
    Uma fonte que falhe não derruba as outras: você recebe o que respondeu.
@@ -38,10 +38,10 @@ const NUCLEO = (catalogo: string, base: string, fontesTxt: string) => `Você é 
 ${catalogo}
 
 ━━ SE DER ERRO ━━
-- 400: algum filtro está inválido — a própria resposta lista os aceitos; corrija e repita.
+- 400: algum filtro está inválido, a própria resposta lista os aceitos; corrija e repita.
 - 404: essa fonte/recurso não existe, ou o arquivo do dia ainda não foi publicado pelo órgão.
-- 429: passou de 2000 chamadas por minuto — espere alguns segundos antes de continuar.
-- 502: a fonte oficial está fora do ar (comum em API de governo; costuma voltar em minutos) — tente de novo; se meta.cache vier "stale", é a cópia recente que o gateway guardou.
+- 429: passou de 2000 chamadas por minuto, espere alguns segundos antes de continuar.
+- 502: a fonte oficial está fora do ar (comum em API de governo; costuma voltar em minutos), tente de novo; se meta.cache vier "stale", é a cópia recente que o gateway guardou.
 - 503: essa fonte exige uma chave de API que não está configurada no servidor.
 
 ━━ O QUE EU ESPERO DE VOCÊ ━━
@@ -54,16 +54,16 @@ ${catalogo}
 Minha primeira pergunta é: [escreva aqui o que você quer saber]`;
 
 const CATALOGO_OFFLINE =
-  "(Rode GET /v1/fontes pra ver a lista completa e atualizada — o servidor estava fora de alcance quando este prompt foi gerado.)";
+  "(Rode GET /v1/fontes pra ver a lista completa e atualizada, o servidor estava fora de alcance quando este prompt foi gerado.)";
 
 function montaCatalogo(fontes: Fonte[]): string {
   return fontes
     .map((f) => {
       const chave = f.precisa_chave ? " [requer chave de API]" : "";
       const recursos = Object.entries(f.recursos)
-        .map(([r, desc]) => `    · /v1/${f.nome}/${r} — ${desc}`)
+        .map(([r, desc]) => `    · /v1/${f.nome}/${r}; ${desc}`)
         .join("\n");
-      return `▸ ${f.nome}${chave} — ${f.descricao}\n${recursos}`;
+      return `▸ ${f.nome}${chave}, ${f.descricao}\n${recursos}`;
     })
     .join("\n\n");
 }
@@ -85,7 +85,7 @@ export function PromptIA({ base = "https://balcao-api.onrender.com" }: { base?: 
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => setCopiado(false), 2500);
     } catch {
-      // clipboard bloqueado (http sem tls etc) — o leitor ainda pode selecionar o texto
+      // clipboard bloqueado (http sem tls etc), o leitor ainda pode selecionar o texto
     }
   }
 

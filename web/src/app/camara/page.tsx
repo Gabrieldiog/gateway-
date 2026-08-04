@@ -26,9 +26,9 @@ import type {
 } from "@/lib/types";
 
 const FONTE_CAMARA = {
-  nome: "Câmara dos Deputados — Dados Abertos",
+  nome: "Câmara dos Deputados, Dados Abertos",
   url: "https://dadosabertos.camara.leg.br/",
-  nota: "Deputados em exercício e a cota parlamentar (CEAP) de cada um, agregada por tipo de despesa — direto da API oficial da Câmara.",
+  nota: "Deputados em exercício e a cota parlamentar (CEAP) de cada um, agregada por tipo de despesa; direto da API oficial da Câmara.",
 };
 
 // "todos" agrega o mandato inteiro (legislatura 57, que começou em 2023);

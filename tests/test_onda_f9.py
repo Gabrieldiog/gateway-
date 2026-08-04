@@ -1,4 +1,4 @@
-"""Onda F9 — Desmatamento: os alertas DETER agregados."""
+"""Onda F9, Desmatamento: os alertas DETER agregados."""
 
 
 async def test_agrega_por_uf_e_ordena_por_area(api):

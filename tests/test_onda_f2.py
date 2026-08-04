@@ -1,4 +1,4 @@
-"""Onda F2 — Querido Diário: busca nos diários oficiais municipais."""
+"""Onda F2, Querido Diário: busca nos diários oficiais municipais."""
 
 
 async def test_busca_no_diario_oficial(api):

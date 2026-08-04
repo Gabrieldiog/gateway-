@@ -12,7 +12,7 @@ import { useTicker } from "@/hooks/useTicker";
 import { caminho } from "@/lib/api";
 import type { FonteDado, GeracaoEnergia, NormalizedResponse } from "@/lib/types";
 
-const INTERVALO = 30000; // 30s — o ONS publica um novo minuto a cada ~60s
+const INTERVALO = 30000; // 30s, o ONS publica um novo minuto a cada ~60s
 
 // ordem fixa (não reordena a cada poll) + cor por fonte
 const FONTES: {
@@ -32,7 +32,7 @@ const mw = (v: number) => Math.round(v).toLocaleString("pt-BR");
 const pct = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 
 function horaDe(instante: string): string {
-  return instante.match(/T(\d{2}:\d{2})/)?.[1] ?? "—";
+  return instante.match(/T(\d{2}:\d{2})/)?.[1] ?? "sem dado";
 }
 
 function Telao({ sin }: { sin: GeracaoEnergia }) {
@@ -160,7 +160,7 @@ export default function CadernoEnergia() {
         numero="XV"
         kicker="ONS · tempo real"
         titulo="Energia ao vivo"
-        resumo="Quanto o Brasil está gerando de energia neste minuto, e de onde ela vem. O Sistema Interligado Nacional atualiza a cada minuto — a página acompanha e o número desliza pro novo valor. Dado real do ONS, não estimativa."
+        resumo="Quanto o Brasil está gerando de energia neste minuto, e de onde ela vem. O Sistema Interligado Nacional atualiza a cada minuto; a página acompanha e o número desliza pro novo valor. Dado real do ONS, não estimativa."
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">

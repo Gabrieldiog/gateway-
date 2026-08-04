@@ -1,6 +1,6 @@
 """DataJud (CNJ): metadados dos processos judiciais do país. A API é um
-Elasticsearch cru — um índice por tribunal, query em DSL, resposta enterrada
-em hits.hits[]._source — atrás de uma chave PÚBLICA que o próprio CNJ
+Elasticsearch cru, um índice por tribunal, query em DSL, resposta enterrada
+em hits.hits[]._source, atrás de uma chave PÚBLICA que o próprio CNJ
 publica (e rotaciona) na wiki. O conector esconde o Elasticsearch: recebe
 tribunal e número, devolve capa normalizada; e transforma agregações no
 retrato do que mais se processa."""
@@ -16,11 +16,11 @@ from balcao.normalize import limpa_texto, para_data, so_digitos
 PARAMS_PROCESSOS = {"numero", "limit"}
 
 FONTE = {
-    "nome": "DataJud — CNJ",
+    "nome": "DataJud, CNJ",
     "url": "https://datajud-wiki.cnj.jus.br/api-publica/",
     "nota": (
         "Base nacional de metadados processuais do Conselho Nacional de Justiça. "
-        "Só a capa e as movimentações de processos públicos — partes e conteúdo "
+        "Só a capa e as movimentações de processos públicos, partes e conteúdo "
         "não são expostos. A atualização depende de cada tribunal informar o CNJ."
     ),
 }

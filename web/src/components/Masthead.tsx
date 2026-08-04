@@ -48,7 +48,7 @@ export function Masthead() {
           </span>
           <span className="h-3 w-px bg-line" />
           <span className="num uppercase tracking-wider text-muted">
-            {fontes != null ? `${fontes} fontes ativas` : "—"}
+            {fontes != null ? `${fontes} fontes ativas` : "sem dado"}
           </span>
           <span className="h-3 w-px bg-line" />
           <PulsoBadge ms={pulso?.ms ?? null} cache={pulso?.cache ?? null} />
@@ -56,7 +56,7 @@ export function Masthead() {
           <TemaToggle />
         </div>
 
-        {/* versão compacta no mobile — no celular estreito o pulso sai de cena
+        {/* versão compacta no mobile, no celular estreito o pulso sai de cena
             pra sobrar espaço; volta no sm+ */}
         <div className="ml-auto flex items-center gap-3 text-[0.7rem] lg:hidden">
           <span className="hidden items-center sm:flex">

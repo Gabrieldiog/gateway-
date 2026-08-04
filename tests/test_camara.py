@@ -108,7 +108,7 @@ async def test_andaram_rejeita_param_desconhecido(api):
 
 
 async def test_andaram_valida_datas_e_dias(api):
-    # data_fim inválida não pode virar "hoje" calada — 400, igual a data_inicio
+    # data_fim inválida não pode virar "hoje" calada, 400, igual a data_inicio
     assert (await api.get("/v1/camara/proposicoes/andaram?data_fim=2026-13-01")).status_code == 400
     assert (
         await api.get("/v1/camara/proposicoes/andaram?data_inicio=2026-07-01&data_fim=lixo")

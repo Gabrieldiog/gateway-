@@ -15,7 +15,7 @@ Tudo em plano **gratuito**. A arquitetura separa as duas metades:
 
 O front nunca chama o backend direto do navegador: ele passa pelo proxy
 `web/src/app/api/balcao/[...path]/route.ts`, que lê a env `BALCAO_API_URL`.
-Por isso **não há CORS** entre os dois — e a URL do backend não precisa
+Por isso **não há CORS** entre os dois, e a URL do backend não precisa
 ser pública/adivinhável.
 
 ---
@@ -30,9 +30,9 @@ healthcheck em `/health`).
    lê o `render.yaml` sozinho e cria o serviço `balcao-api`.
 3. As chaves opcionais ficam como *secret* (a aba mostra `sync: false`):
    `TRANSPARENCIA_API_KEY`, `BRAPI_TOKEN`, `DATAJUD_API_KEY`, `API_KEYS`.
-   Pode deixar **todas em branco** — a app sobe sem nenhuma (as fontes que
+   Pode deixar **todas em branco**, a app sobe sem nenhuma (as fontes que
    dependem de chave só ficam desligadas). Preencha depois se quiser.
-4. Espere o primeiro build/deploy. Quando ficar **Live**, copie a URL —
+4. Espere o primeiro build/deploy. Quando ficar **Live**, copie a URL,
    algo como `https://balcao-api.onrender.com`.
 5. Teste: abra `https://<sua-url>/health` (deve responder ok) e
    `https://<sua-url>/scalar` (a referência interativa da API).
@@ -54,7 +54,7 @@ e o runtime do Next.
    **Site configuration → Environment variables**, adicione:
    - `BALCAO_API_URL` = a URL do Render do passo 1
      (ex.: `https://balcao-api.onrender.com`, **sem** barra no fim).
-4. **Deploy**. Quando terminar, abra o site — cada caderno deve puxar dado
+4. **Deploy**. Quando terminar, abra o site; cada caderno deve puxar dado
    real (o proxy → Render → API oficial).
 
 > Se você configurar a env **depois** do primeiro deploy, dispare um
@@ -84,5 +84,5 @@ Sem isso, o backend do Render dorme e a primeira visita do dia trava ~50s.
   conector `tse` desligado; as outras 32 fontes rodam de boa.
 - **Segredos nunca no Git.** As chaves vão só nos painéis (Render secrets /
   Netlify env). O `.env` está no `.gitignore`.
-- É um **projeto de portfólio**, servido "como está" — a página `/termos`
+- É um **projeto de portfólio**, servido "como está"; a página `/termos`
   deixa isso explícito.
