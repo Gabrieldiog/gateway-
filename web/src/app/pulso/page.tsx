@@ -24,6 +24,11 @@ const FONTES_CAMBIO: Record<string, { nome: string; url: string; nota: string }>
     url: "https://frankfurter.dev/",
     nota: "O BCE publica uma taxa de referência por dia útil, no fim da tarde. É câmbio de verdade e conferível, mas não é o mercado de segundo a segundo: por isso estas moedas não levam selo de ao vivo.",
   },
+  mercadobitcoin: {
+    nome: "Mercado Bitcoin, preço à vista das criptomoedas",
+    url: "https://www.mercadobitcoin.com.br/",
+    nota: "Preço da última negociação do par em real, numa exchange brasileira, com a variação desde a abertura do dia. Mercado aberto todo dia, o tempo todo.",
+  },
   binance: {
     nome: "Binance, preço à vista das criptomoedas",
     url: "https://www.binance.com/",

@@ -11,7 +11,9 @@ recusa, entra o plano B, montado só com fontes abertas e sem cadastro:
     câmbio  Frankfurter, que republica a taxa de referência do Banco Central
             Europeu (uma vez por dia útil, não é tempo real e a resposta diz)
     ouro    gold-api, preço da onça troy em dólar, convertido pelo câmbio acima
-    cripto  Binance, preço à vista dos pares em real
+    cripto  Mercado Bitcoin, preço à vista dos pares em real, com a
+            Binance atrás (que responde 451 pra IP dos Estados Unidos,
+            e é de lá que o servidor fala)
 
 Cada cotação carrega a origem e se é ao vivo: numa página que se apoia em
 dizer de onde veio o dado, trocar de fonte em silêncio seria pior que o erro.
@@ -38,6 +40,7 @@ PARES = re.compile(r"^[A-Za-z]{3,4}-[A-Za-z]{3,4}(,[A-Za-z]{3,4}-[A-Za-z]{3,4})*
 FRANKFURTER = "https://api.frankfurter.dev/v1"
 GOLD_API = "https://api.gold-api.com/price"
 BINANCE = "https://api.binance.com/api/v3/ticker/24hr"
+MERCADO_BITCOIN = "https://api.mercadobitcoin.net/api/v4/tickers"
 
 # as moedas que o BCE publica e o Frankfurter repassa
 MOEDAS_BCE = frozenset(
@@ -85,7 +88,8 @@ class CotacoesConnector(BaseConnector):
     base_url = "https://economia.awesomeapi.com.br/json"
     description = (
         "Cotações de câmbio, ouro e cripto (preço de mercado), pela AwesomeAPI "
-        "com plano B em fontes abertas (Frankfurter/BCE, gold-api e Binance)"
+        "com plano B em fontes abertas (Frankfurter/BCE, gold-api, "
+        "Mercado Bitcoin e Binance)"
     )
     # o token da AwesomeAPI é opcional: melhora a cota, mas a falta dele não
     # pode tirar o caderno do ar; é pra isso que existe o plano B
@@ -144,6 +148,14 @@ class CotacoesConnector(BaseConnector):
             meta={
                 "plano_b": plano_b,
                 "origens": sorted({c.origem for c in cotacoes}),
+                # par que nenhuma fonte cobriu. Sumir uma seção inteira da tela
+                # sem ninguém avisar foi exatamente como a cripto se perdeu no
+                # primeiro deploy; agora a resposta denuncia o buraco.
+                "sem_fonte": [
+                    par
+                    for par in (f"{c}/{ci}" for c, ci in pedidos)
+                    if par not in {c.par for c in cotacoes}
+                ],
             },
         )
 
@@ -217,7 +229,7 @@ class CotacoesConnector(BaseConnector):
         cotacoes += self._do_cambio(cambio, taxas)
         novas, falha = await self._do_ouro(ouro, taxas, falha)
         cotacoes += novas
-        novas, falha = await self._da_binance(cripto, falha)
+        novas, falha = await self._da_cripto(cripto, falha)
         cotacoes += novas
 
         ordem = {par: i for i, par in enumerate(pedidos)}
@@ -323,23 +335,72 @@ class CotacoesConnector(BaseConnector):
             )
         return cotacoes, falha
 
-    async def _da_binance(
+    async def _da_cripto(
         self, pares: list[tuple[str, str]], falha: ErroUpstream | None
     ) -> tuple[list[Cotacao], ErroUpstream | None]:
+        """Duas casas, na ordem: o Mercado Bitcoin (brasileiro, par em real
+        nativo) e a Binance atrás. Não é preciosismo: a Binance responde 451
+        pra IP dos Estados Unidos, que é onde o servidor roda, então depender
+        só dela apagava a cripto da tela em produção."""
         if not pares:
             return [], falha
+        cotacoes: list[Cotacao] = []
+        for fonte in (self._mercado_bitcoin, self._binance):
+            faltando = [p for p in pares if f"{p[0]}/{p[1]}" not in {c.par for c in cotacoes}]
+            if not faltando:
+                break
+            try:
+                cotacoes += await fonte(faltando)
+            except ErroUpstream as exc:
+                falha = exc
+        return cotacoes, falha
+
+    async def _mercado_bitcoin(self, pares: list[tuple[str, str]]) -> list[Cotacao]:
+        # a fonte já fala o mesmo dialeto de par que a nossa rota: BTC-BRL
+        simbolos = [f"{code}-{codein}" for code, codein in pares]
+        bruto = await self.get_json(
+            MERCADO_BITCOIN,
+            params={"symbols": ",".join(simbolos)},
+            breaker=self._breaker_livre,
+        )
+        de_par = {f"{code}-{codein}": (code, codein) for code, codein in pares}
+        cotacoes = []
+        for t in bruto or []:
+            par = de_par.get(t.get("pair", ""))
+            if not par or not t.get("last"):
+                continue
+            code, codein = par
+            try:
+                ultimo = Decimal(str(t["last"]))
+                # a fonte não manda a variação pronta; sai da abertura do dia
+                abertura = Decimal(str(t["open"])) if t.get("open") else None
+                cotacoes.append(
+                    Cotacao(
+                        par=f"{code}/{codein}",
+                        moeda=code,
+                        nome=_nome(par),
+                        compra=_quantiza(ultimo),
+                        venda=_quantiza(Decimal(str(t["sell"]))) if t.get("sell") else None,
+                        variacao_pct=_variacao(ultimo, abertura) if abertura else None,
+                        maxima=_quantiza(Decimal(str(t["high"]))) if t.get("high") else None,
+                        minima=_quantiza(Decimal(str(t["low"]))) if t.get("low") else None,
+                        atualizado=self._hora_local(t.get("date")),
+                        origem="mercadobitcoin",
+                        ao_vivo=True,
+                    )
+                )
+            except (ValidationError, InvalidOperation, KeyError, TypeError, ValueError):
+                continue
+        return cotacoes
+
+    async def _binance(self, pares: list[tuple[str, str]]) -> list[Cotacao]:
         simbolos = [f"{code}{codein}" for code, codein in pares]
-        try:
-            bruto = await self.get_json(
-                BINANCE,
-                # a Binance quer o lote como array JSON, sem espaço nenhum
-                params={"symbols": json.dumps(simbolos, separators=(",", ":"))},
-                breaker=self._breaker_livre,
-            )
-        except ErroUpstream as exc:
-            # a Binance recusa o lote inteiro se um símbolo não existir; sem
-            # cripto o resto da página segue de pé
-            return [], exc
+        bruto = await self.get_json(
+            BINANCE,
+            # a Binance quer o lote como array JSON, sem espaço nenhum
+            params={"symbols": json.dumps(simbolos, separators=(",", ":"))},
+            breaker=self._breaker_livre,
+        )
         de_par = {f"{code}{codein}": (code, codein) for code, codein in pares}
         cotacoes = []
         for t in bruto or []:
@@ -367,7 +428,7 @@ class CotacoesConnector(BaseConnector):
                 )
             except (ValidationError, InvalidOperation, KeyError, TypeError, ValueError):
                 continue
-        return cotacoes, falha
+        return cotacoes
 
     @staticmethod
     def _hora_local(quando: Any) -> str | None:
@@ -376,8 +437,10 @@ class CotacoesConnector(BaseConnector):
         if quando in (None, ""):
             return None
         try:
-            if isinstance(quando, (int, float)):  # epoch em ms (Binance)
-                momento = datetime.fromtimestamp(quando / 1000, SAO_PAULO)
+            if isinstance(quando, (int, float)):
+                # epoch: a Binance manda em ms, o Mercado Bitcoin em segundos
+                segundos = quando / 1000 if quando > 1e11 else quando
+                momento = datetime.fromtimestamp(segundos, SAO_PAULO)
             else:  # ISO com Z (gold-api)
                 momento = datetime.fromisoformat(str(quando).replace("Z", "+00:00"))
                 momento = momento.astimezone(SAO_PAULO)

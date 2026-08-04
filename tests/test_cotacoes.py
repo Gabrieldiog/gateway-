@@ -75,8 +75,8 @@ async def test_plano_b_serve_cambio_ouro_e_cripto(api_awesomeapi_fora):
     assert round(float(por_moeda["USD"]["compra"]), 4) == 5.0677
     # ouro: 4053.800049 USD a onca, convertido pelo mesmo dolar
     assert round(float(por_moeda["XAU"]["compra"])) == 20543
-    # cripto: preco ja vem em real na Binance
-    assert float(por_moeda["BTC"]["compra"]) == 324000.0
+    # cripto: preco ja vem em real na exchange brasileira
+    assert float(por_moeda["BTC"]["compra"]) == 324100.0
 
 
 async def test_plano_b_diz_de_onde_veio_cada_numero(api_awesomeapi_fora):
@@ -87,9 +87,9 @@ async def test_plano_b_diz_de_onde_veio_cada_numero(api_awesomeapi_fora):
     por_moeda = {c["moeda"]: c for c in corpo["dados"]}
     assert por_moeda["USD"]["origem"] == "frankfurter"
     assert por_moeda["XAU"]["origem"] == "gold-api"
-    assert por_moeda["BTC"]["origem"] == "binance"
+    assert por_moeda["BTC"]["origem"] == "mercadobitcoin"
     assert corpo["meta"]["plano_b"] is True
-    assert set(corpo["meta"]["origens"]) == {"frankfurter", "gold-api", "binance"}
+    assert set(corpo["meta"]["origens"]) == {"frankfurter", "gold-api", "mercadobitcoin"}
 
 
 async def test_plano_b_nao_finge_tempo_real_no_cambio(api_awesomeapi_fora):
@@ -124,6 +124,44 @@ async def test_par_sem_cobertura_no_plano_b_nao_derruba_o_resto(api_awesomeapi_f
     resp = await api_awesomeapi_fora.get("/v1/cotacoes/last/USD-BRL,ZZZ-BRL")
     assert resp.status_code == 200
     assert [c["moeda"] for c in resp.json()["dados"]] == ["USD"]
+
+
+async def test_cripto_sobrevive_ao_bloqueio_da_binance(api_como_no_render):
+    # o que aconteceu no deploy: a Binance responde 451 pra IP dos EUA (regiao
+    # padrao do Render) e a secao de cripto do Pulso sumia inteira, calada
+    resp = await api_como_no_render.get("/v1/cotacoes/last/USD-BRL,BTC-BRL,ETH-BRL")
+    assert resp.status_code == 200
+    por_moeda = {c["moeda"]: c for c in resp.json()["dados"]}
+    assert set(por_moeda) == {"USD", "BTC", "ETH"}
+    assert por_moeda["BTC"]["origem"] == "mercadobitcoin"
+    assert float(por_moeda["BTC"]["compra"]) == 324100.0
+
+
+async def test_mercado_bitcoin_calcula_variacao_do_dia(api_como_no_render):
+    # a fonte da abertura e o ultimo preco; a variacao sai dai
+    resp = await api_como_no_render.get("/v1/cotacoes/last/BTC-BRL")
+    # de 323368 pra 324100
+    assert resp.json()["dados"][0]["variacao_pct"] == 0.23
+
+
+async def test_cripto_cai_pra_binance_se_o_mercado_bitcoin_faltar(api_sem_mercado_bitcoin):
+    # duas fontes de cripto, nao uma: a brasileira primeiro, a global atras
+    resp = await api_sem_mercado_bitcoin.get("/v1/cotacoes/last/BTC-BRL")
+    assert resp.status_code == 200
+    assert resp.json()["dados"][0]["origem"] == "binance"
+
+
+async def test_meta_denuncia_o_par_que_ninguem_serviu(api_como_no_render):
+    # some uma secao da tela sem ninguem avisar foi exatamente o bug; agora a
+    # resposta diz quais pares ficaram sem fonte
+    resp = await api_como_no_render.get("/v1/cotacoes/last/USD-BRL,ZZZ-BRL")
+    assert resp.status_code == 200
+    assert resp.json()["meta"]["sem_fonte"] == ["ZZZ/BRL"]
+
+
+async def test_meta_nao_inventa_falta_quando_veio_tudo(api_como_no_render):
+    resp = await api_como_no_render.get("/v1/cotacoes/last/USD-BRL,BTC-BRL")
+    assert resp.json()["meta"]["sem_fonte"] == []
 
 
 async def test_plano_b_tambem_falhando_vira_502(api_awesomeapi_fora):
