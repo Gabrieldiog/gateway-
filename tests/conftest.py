@@ -119,6 +119,13 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=carrega_fixture("frankfurter_serie"))
     if "api.gold-api.com/price/" in url:
         return httpx.Response(200, json=carrega_fixture("goldapi_xau"))
+    if "api.mercadobitcoin.net" in url and "/tickers" in url:
+        pedidos = set(re.findall(r"[A-Z0-9]+-BRL", unquote(url)))
+        casados = [t for t in carrega_fixture("mercadobitcoin_tickers") if t["pair"] in pedidos]
+        # a fonte devolve 400 quando nenhum simbolo do lote existe
+        return httpx.Response(200, json=casados) if casados else httpx.Response(
+            400, json={"code": "PARAMETER|INVALID", "message": "invalid symbol"}
+        )
     if "api.binance.com/api/v3/ticker/24hr" in url:
         pedidos = set(re.findall(r"[A-Z0-9]+BRL", unquote(url)))
         todos = carrega_fixture("binance_cripto")
@@ -379,6 +386,22 @@ def responde_fake(request: httpx.Request) -> httpx.Response:
     return httpx.Response(500, json={"erro": f"sem fixture pra {url}"})
 
 
+def bloqueia(*hosts: str):
+    """Devolve um transporte que recusa certos hosts, pra reproduzir o que o
+    IP do servidor sofre: a AwesomeAPI anonima barra datacenter com 429 e a
+    Binance responde 451 pra IP dos EUA, que e onde o Render roda."""
+
+    def transporte(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        for host in hosts:
+            if host in url:
+                codigo = 451 if "binance" in host else 429
+                return httpx.Response(codigo, json={"status": codigo, "message": "bloqueado"})
+        return responde_fake(request)
+
+    return transporte
+
+
 def bloqueia_awesomeapi(request: httpx.Request) -> httpx.Response:
     """A AwesomeAPI anonima barra IP de datacenter com 429; foi o que derrubou
     o /pulso no Render. Reproduz isso e deixa o resto da suite intacto."""
@@ -426,6 +449,28 @@ async def api_awesomeapi_fora():
     """O mesmo gateway, mas com a AwesomeAPI devolvendo 429; o cenario do
     servidor publico, onde o plano B sem cadastro precisa assumir."""
     app, cliente_fake = monta_app(bloqueia_awesomeapi)
+    transporte = ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transporte, base_url="http://teste") as cliente:
+        yield cliente
+    await cliente_fake.aclose()
+
+
+@pytest.fixture
+async def api_como_no_render():
+    """O cenario exato do servidor publico: a AwesomeAPI barra o IP de
+    datacenter (429) e a Binance barra IP dos EUA (451), que e a regiao padrao
+    do Render. Foi assim que a cripto sumiu do Pulso depois do deploy."""
+    app, cliente_fake = monta_app(bloqueia("awesomeapi.com.br", "api.binance.com"))
+    transporte = ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transporte, base_url="http://teste") as cliente:
+        yield cliente
+    await cliente_fake.aclose()
+
+
+@pytest.fixture
+async def api_sem_mercado_bitcoin():
+    """AwesomeAPI e Mercado Bitcoin fora: a Binance ainda cobre a cripto."""
+    app, cliente_fake = monta_app(bloqueia("awesomeapi.com.br", "api.mercadobitcoin.net"))
     transporte = ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transporte, base_url="http://teste") as cliente:
         yield cliente

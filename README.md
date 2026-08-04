@@ -146,7 +146,7 @@ Testes (a suite roda **sem internet**, as fixtures gravadas respondem no lugar d
 | IBGE SIDRA (agro) | produção agrícola (PAM) e pecuária por estado/município | não |
 | ANEEL · MME · ANTT (CKAN) | datasets e linhas reais (datastore) de energia, mineração e transporte | não |
 | IPEADATA | séries macro, regionais e sociais | não |
-| AwesomeAPI (câmbio) | dólar, euro, libra, ouro e cripto quase em tempo real, com plano B em fontes abertas (Frankfurter/BCE, gold-api e Binance) quando ela recusa | não |
+| AwesomeAPI (câmbio) | dólar, euro, libra, ouro e cripto quase em tempo real, com plano B em fontes abertas (Frankfurter/BCE, gold-api, Mercado Bitcoin e Binance) quando ela recusa | não |
 | B3 via brapi | ações e Ibovespa (~15 min de atraso; fan-out de 1 ativo por chamada) | token grátis |
 | ONS | geração do SIN por fonte quase em tempo real + % renovável | não |
 | INPE Queimadas | focos de incêndio do dia por estado, bioma e município (CSV diário) | não |
